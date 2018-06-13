@@ -1,0 +1,17 @@
+
+################################################################################
+# Assets
+#
+GET     /scommons-admin/assets/*file                controllers.Assets.versioned(file)
+
+GET     /scommons-admin/admin.html                  controllers.AdminController.index
+
+################################################################################
+# swagger
+GET     /scommons-admin/api-docs                    controllers.ApiHelpController.getResources
+GET     /scommons-admin/swagger.html                scommons.play.controllers.CommonSwaggerController.swaggerUi(prefix = "/scommons-admin")
+
+################################################################################
+# REST API
+#
+

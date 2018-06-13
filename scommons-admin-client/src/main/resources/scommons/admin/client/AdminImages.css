@@ -1,0 +1,72 @@
+
+.cog {
+  background: url('./images/cog.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.computer {
+  background: url('./images/computer.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.group {
+  background: url('./images/group.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.key {
+  background: url('./images/key.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.keySmall {
+  background: url('./images/key_small.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.monitor {
+  background: url('./images/monitor.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.role {
+  background: url('./images/role.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.roleBase {
+  background: url('./images/role_base.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.roles {
+  background: url('./images/roles.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.user {
+  background: url('./images/user.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.vcard {
+  background: url('./images/vcard.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
+
+.wrench {
+  background: url('./images/wrench.png') no-repeat 0px 0px;
+  width: 16px;
+  height: 16px;
+}
