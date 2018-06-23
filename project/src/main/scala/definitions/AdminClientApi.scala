@@ -1,10 +1,11 @@
 package definitions
 
-import common.{Common, Libs}
+import common.Libs
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import org.scalajs.sbtplugin.cross.CrossProject
 import sbt.Keys._
 import sbt._
+import scommons.sbtplugin.project.CommonModule
 
 object AdminClientApi {
 
@@ -13,7 +14,8 @@ object AdminClientApi {
   def base: File = file(id)
 
   private lazy val `scommons-admin-client-api`: CrossProject = crossProject.crossType(CrossType.Pure).in(base)
-    .settings(Common.settings: _*)
+    .settings(CommonModule.settings: _*)
+    .settings(AdminModule.settings: _*)
     .settings(
       libraryDependencies ++= Seq(
         Libs.scommonsApiCore.value,

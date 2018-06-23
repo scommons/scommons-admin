@@ -1,8 +1,9 @@
-import common.Common
 import definitions._
+import scommons.sbtplugin.project.CommonModule
 
 lazy val `scommons-admin` = (project in file("."))
-  .settings(Common.settings)
+  .settings(CommonModule.settings: _*)
+  .settings(AdminModule.settings: _*)
   .settings(
     ideaExcludeFolders += s"${baseDirectory.value}/docs/_site"
   )
