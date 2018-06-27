@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+<!--======================== Changes #1 ========================-->
+    <changeSet id="1" author="vpodzigun">
+        <comment>Changed system_id type from long to int</comment>
+        
+        <modifyDataType columnName="system_id" newDataType="int4" tableName="permissions"/>
+        <modifyDataType columnName="system_id" newDataType="int4" tableName="roles"/>
+        <modifyDataType columnName="id" newDataType="int4" tableName="systems"/>
+        <modifyDataType columnName="parent_id" newDataType="int4" tableName="systems"/>
+        <modifyDataType columnName="system_id" newDataType="int4" tableName="systems_servers"/>
+        <modifyDataType columnName="system_id" newDataType="int4" tableName="systems_users"/>
+        <modifyDataType columnName="system_id" newDataType="int4" tableName="users_groups"/>
+        <createSequence schemaName="public" sequenceName="systems_id_seq"/>
+    </changeSet>
+
+
+    <!--======================== Changes #2 ========================-->
+    <changeSet id="2" author="vpodzigun">
+        <comment>Added systems_groups table</comment>
+        
+        <createTable tableName="systems_groups">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="systems_groups_pkey"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modifiedby_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addColumn tableName="systems">
+            <column name="title" type="VARCHAR(32)"/>
+        </addColumn>
+        <dropForeignKeyConstraint baseTableName="systems" baseTableSchemaName="public" constraintName="fk9871d4246b24886e"/>
+        <modifyDataType columnName="parent_id" newDataType="int8" tableName="systems"/>
+        <addUniqueConstraint columnNames="name" constraintName="systems_groups_name_key" deferrable="false" disabled="false" initiallyDeferred="false" tableName="systems_groups"/>
+        <addForeignKeyConstraint baseColumnNames="parent_id" baseTableName="systems" baseTableSchemaName="public" constraintName="fk9871d424b4ccd034" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="systems_groups" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="modifiedby_id" baseTableName="systems_groups" baseTableSchemaName="public" constraintName="fka2efd24fa6d05151" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+    
+        <!-- Fixing errors in generated SQL (bugs in Liquibase 2.0.3) -->
+        <modifySql>
+            <replace replace="TIMESTAMP WITH TIME ZONE" with="TIMESTAMP WITHOUT TIME ZONE"/>
+        </modifySql>
+    </changeSet>
+
+
+    <!--===== This changeset MUST always be at the end of the file !!! =====-->
+    <changeSet id="0" author="viktorp" runAlways="true">
+        <comment>Ensure that admin user has proper rights on all tables</comment>
+        
+        <sql splitStatements="false">
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO admin;
+            GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO admin;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

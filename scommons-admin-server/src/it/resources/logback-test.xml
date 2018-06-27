@@ -5,6 +5,14 @@
     </encoder>
   </appender>
 
+  <!--
+    quill-async
+    change to INFO to show the SQL queries
+  -->
+  <logger name="io.getquill" level="WARN" />
+
+  <logger name="liquibase" level="INFO" />
+
   <root level="INFO">
     <appender-ref ref="STDOUT"/>
   </root>

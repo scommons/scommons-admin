@@ -17,11 +17,15 @@ object AdminServer extends AdminModule with CommonPlayModule {
   }
 
   override def internalDependencies: Seq[ClasspathDep[ProjectReference]] = Seq(
-    AdminClientApi.jvm
+    AdminClientApi.jvm,
+    AdminDao.definition
   )
 
   override def runtimeDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {
     super.runtimeDependencies.value ++ Seq(
+      Libs.postgresJdbc.value,
+      Libs.playLiquibase.value,
+      
       Libs.swaggerPlay.value,
       Libs.swaggerAnnotations.value,
       Libs.swaggerUi.value
@@ -30,7 +34,9 @@ object AdminServer extends AdminModule with CommonPlayModule {
 
   override def testDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {
     super.testDependencies.value ++ Seq[ModuleID](
-      TestLibs.scommonsApiPlayWs.value
+      TestLibs.scommonsApiPlayWs.value,
+      TestLibs.dockerTestkitScalatest.value,
+      TestLibs.dockerTestkitImpl.value
     ).map(_ % "it,test")
   }
 }

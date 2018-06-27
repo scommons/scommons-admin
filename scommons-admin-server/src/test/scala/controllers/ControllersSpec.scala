@@ -1,6 +1,8 @@
 package controllers
 
 import akka.testkit.SocketUtil
+import com.ticketfly.play.liquibase.PlayLiquibaseModule
+import modules.ApplicationModule
 import org.scalatest.{Suites, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
@@ -17,5 +19,10 @@ class ControllersSpec extends Suites(
     serverPort
   }
 
-  implicit override lazy val app: Application = new ScaldiApplicationBuilder().build()
+  implicit override lazy val app: Application = new ScaldiApplicationBuilder(
+    disabled = List(
+      classOf[ApplicationModule],
+      classOf[PlayLiquibaseModule]
+    )
+  ).build()
 }
