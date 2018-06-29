@@ -8,7 +8,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import scaldi.Module
 import scaldi.play.ScaldiApplicationBuilder
-import scommons.admin.client.api.AdminApiClient
+import scommons.admin.client.api.AdminUiApiClient
 import scommons.api.http.ws.WsApiHttpClient
 import scommons.service.test.it.docker._
 
@@ -30,14 +30,14 @@ class AllAdminIntegrationTests extends Suites(
   private val dbName = "admin_db"
 
   implicit override lazy val app: Application = {
-    val adminApiUrl = s"http://localhost:$port/scommons-admin"
-    println(s"adminApiUrl: $adminApiUrl")
+    val adminUiApiUrl = s"http://localhost:$port/scommons-admin/ui"
+    println(s"adminUiApiUrl: $adminUiApiUrl")
 
-    val apiClient = new AdminApiClient(new WsApiHttpClient(adminApiUrl)(ActorSystem("AdminApiWsClient")))
+    val uiApiClient = new AdminUiApiClient(new WsApiHttpClient(adminUiApiUrl)(ActorSystem("AdminUiApiWsClient")))
 
     new ScaldiApplicationBuilder(modules = List(new Module {
       //test-only
-      bind[AdminApiClient] to apiClient
+      bind[AdminUiApiClient] to uiApiClient
     })).configure(
       "quill.db.host" -> "localhost",
       "quill.db.port" -> postgresPort,
@@ -54,8 +54,5 @@ class AllAdminIntegrationTests extends Suites(
 
     initializeDb("/scommons/admin/dao/changelog/createDb.sql")
     initializeDb("/scommons/admin/dao/changelog/initialSql.sql", dbAdminUser, dbAdminPass, dbName)
-    if (true) {
-      
-    }
   }
 }

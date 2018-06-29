@@ -9,11 +9,16 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.7
+-- Dumped by pg_dump version 9.5.5
+
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 SET search_path = public, pg_catalog;
 
@@ -22,7 +27,8 @@ SET search_path = public, pg_catalog;
 --ALTER TABLE ONLY public.users_groups DROP CONSTRAINT fkd034efeba6d05151;
 --ALTER TABLE ONLY public.users_groups DROP CONSTRAINT fkd034efeb33195d18;
 --ALTER TABLE ONLY public.users_groups DROP CONSTRAINT fkd034efeb330af4c9;
---ALTER TABLE ONLY public.systems DROP CONSTRAINT fk9871d4246b24886e;
+--ALTER TABLE ONLY public.systems_groups DROP CONSTRAINT fka2efd24fa6d05151;
+--ALTER TABLE ONLY public.systems DROP CONSTRAINT fk9871d424b4ccd034;
 --ALTER TABLE ONLY public.systems_users DROP CONSTRAINT fk81e61a2da6d05151;
 --ALTER TABLE ONLY public.systems_users DROP CONSTRAINT fk81e61a2d33195d18;
 --ALTER TABLE ONLY public.systems_users DROP CONSTRAINT fk81e61a2d330af4c9;
@@ -50,9 +56,12 @@ SET search_path = public, pg_catalog;
 --ALTER TABLE ONLY public.systems_servers DROP CONSTRAINT systems_servers_name_system_id_key;
 --ALTER TABLE ONLY public.systems DROP CONSTRAINT systems_pkey;
 --ALTER TABLE ONLY public.systems DROP CONSTRAINT systems_name_key;
+--ALTER TABLE ONLY public.systems_groups DROP CONSTRAINT systems_groups_pkey;
+--ALTER TABLE ONLY public.systems_groups DROP CONSTRAINT systems_groups_name_key;
 --ALTER TABLE ONLY public.roles DROP CONSTRAINT roles_pkey;
 --ALTER TABLE ONLY public.roles_permissions DROP CONSTRAINT roles_permissions_pkey;
 --ALTER TABLE ONLY public.roles DROP CONSTRAINT roles_bit_index_system_id_key;
+--ALTER TABLE ONLY public.databasechangeloglock DROP CONSTRAINT pk_databasechangeloglock;
 --ALTER TABLE ONLY public.permissions DROP CONSTRAINT permissions_pkey;
 --ALTER TABLE ONLY public.permissions DROP CONSTRAINT permissions_is_node_name_parent_id_key;
 --ALTER TABLE ONLY public.contacts DROP CONSTRAINT contacts_pkey;
@@ -65,11 +74,15 @@ SET search_path = public, pg_catalog;
 --DROP TABLE public.users;
 --DROP TABLE public.systems_users;
 --DROP TABLE public.systems_servers;
+--DROP SEQUENCE public.systems_id_seq;
+--DROP TABLE public.systems_groups;
 --DROP TABLE public.systems;
 --DROP TABLE public.roles_permissions;
 --DROP TABLE public.roles;
 --DROP TABLE public.permissions;
 --DROP SEQUENCE public.hibernate_sequence;
+--DROP TABLE public.databasechangeloglock;
+--DROP TABLE public.databasechangelog;
 --DROP TABLE public.contacts;
 --DROP TABLE public.companies;
 --DROP EXTENSION plpgsql;
@@ -111,7 +124,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: companies; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: companies; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE companies (
@@ -120,10 +133,10 @@ CREATE TABLE companies (
 );
 
 
-ALTER TABLE public.companies OWNER TO admin_admin;
+ALTER TABLE companies OWNER TO admin_admin;
 
 --
--- Name: contacts; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: contacts; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE contacts (
@@ -137,7 +150,7 @@ CREATE TABLE contacts (
 );
 
 
-ALTER TABLE public.contacts OWNER TO admin_admin;
+ALTER TABLE contacts OWNER TO admin_admin;
 
 --
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: admin_admin
@@ -151,10 +164,10 @@ CREATE SEQUENCE hibernate_sequence
     CACHE 1;
 
 
-ALTER TABLE public.hibernate_sequence OWNER TO admin_admin;
+ALTER TABLE hibernate_sequence OWNER TO admin_admin;
 
 --
--- Name: permissions; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: permissions; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE permissions (
@@ -163,28 +176,28 @@ CREATE TABLE permissions (
     name character varying(80) NOT NULL,
     parent_id bigint,
     title character varying(256),
-    system_id bigint NOT NULL
+    system_id integer NOT NULL
 );
 
 
-ALTER TABLE public.permissions OWNER TO admin_admin;
+ALTER TABLE permissions OWNER TO admin_admin;
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: roles; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE roles (
     id bigint NOT NULL,
     bit_index integer NOT NULL,
     title character varying(64) NOT NULL,
-    system_id bigint NOT NULL
+    system_id integer NOT NULL
 );
 
 
-ALTER TABLE public.roles OWNER TO admin_admin;
+ALTER TABLE roles OWNER TO admin_admin;
 
 --
--- Name: roles_permissions; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: roles_permissions; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE roles_permissions (
@@ -193,39 +206,68 @@ CREATE TABLE roles_permissions (
 );
 
 
-ALTER TABLE public.roles_permissions OWNER TO admin_admin;
+ALTER TABLE roles_permissions OWNER TO admin_admin;
 
 --
--- Name: systems; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE systems (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying(32) NOT NULL,
     password character varying(32) NOT NULL,
     url character varying(128),
-    parent_id bigint
+    parent_id bigint,
+    title character varying(32)
 );
 
 
-ALTER TABLE public.systems OWNER TO admin_admin;
+ALTER TABLE systems OWNER TO admin_admin;
 
 --
--- Name: systems_servers; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_groups; Type: TABLE; Schema: public; Owner: admin_admin
+--
+
+CREATE TABLE systems_groups (
+    id bigint NOT NULL,
+    modified_date timestamp without time zone NOT NULL,
+    name character varying(64) NOT NULL,
+    modifiedby_id integer NOT NULL
+);
+
+
+ALTER TABLE systems_groups OWNER TO admin_admin;
+
+--
+-- Name: systems_id_seq; Type: SEQUENCE; Schema: public; Owner: admin_admin
+--
+
+CREATE SEQUENCE systems_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE systems_id_seq OWNER TO admin_admin;
+
+--
+-- Name: systems_servers; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE systems_servers (
     id bigint NOT NULL,
     name character varying(32) NOT NULL,
     url character varying(128) NOT NULL,
-    system_id bigint NOT NULL
+    system_id integer NOT NULL
 );
 
 
-ALTER TABLE public.systems_servers OWNER TO admin_admin;
+ALTER TABLE systems_servers OWNER TO admin_admin;
 
 --
--- Name: systems_users; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_users; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE systems_users (
@@ -233,16 +275,16 @@ CREATE TABLE systems_users (
     modified_date timestamp without time zone,
     roles bigint,
     user_id integer NOT NULL,
-    system_id bigint NOT NULL,
+    system_id integer NOT NULL,
     modifiedby_id integer,
     parent_id bigint
 );
 
 
-ALTER TABLE public.systems_users OWNER TO admin_admin;
+ALTER TABLE systems_users OWNER TO admin_admin;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE users (
@@ -260,10 +302,10 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE public.users OWNER TO admin_admin;
+ALTER TABLE users OWNER TO admin_admin;
 
 --
--- Name: users_groups; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_groups; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE users_groups (
@@ -274,11 +316,11 @@ CREATE TABLE users_groups (
     parent_id bigint,
     roles bigint,
     modifiedby_id integer NOT NULL,
-    system_id bigint NOT NULL
+    system_id integer NOT NULL
 );
 
 
-ALTER TABLE public.users_groups OWNER TO admin_admin;
+ALTER TABLE users_groups OWNER TO admin_admin;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: admin_admin
@@ -292,10 +334,10 @@ CREATE SEQUENCE users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO admin_admin;
+ALTER TABLE users_id_seq OWNER TO admin_admin;
 
 --
--- Name: users_tokens; Type: TABLE; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_tokens; Type: TABLE; Schema: public; Owner: admin_admin
 --
 
 CREATE TABLE users_tokens (
@@ -306,13 +348,16 @@ CREATE TABLE users_tokens (
 );
 
 
-ALTER TABLE public.users_tokens OWNER TO admin_admin;
+ALTER TABLE users_tokens OWNER TO admin_admin;
 
 --
 -- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: admin_admin
 --
 
 SELECT pg_catalog.setval('hibernate_sequence', 23, true);
+
+
+SELECT pg_catalog.setval('systems_id_seq', 1, false);
 
 
 --
@@ -323,7 +368,7 @@ SELECT pg_catalog.setval('users_id_seq', 2, true);
 
 
 --
--- Name: companies_name_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: companies_name_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY companies
@@ -331,7 +376,7 @@ ALTER TABLE ONLY companies
 
 
 --
--- Name: companies_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: companies_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY companies
@@ -339,7 +384,7 @@ ALTER TABLE ONLY companies
 
 
 --
--- Name: contacts_email_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: contacts_email_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY contacts
@@ -347,7 +392,7 @@ ALTER TABLE ONLY contacts
 
 
 --
--- Name: contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY contacts
@@ -355,7 +400,7 @@ ALTER TABLE ONLY contacts
 
 
 --
--- Name: permissions_is_node_name_parent_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: permissions_is_node_name_parent_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY permissions
@@ -363,7 +408,7 @@ ALTER TABLE ONLY permissions
 
 
 --
--- Name: permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY permissions
@@ -371,7 +416,7 @@ ALTER TABLE ONLY permissions
 
 
 --
--- Name: roles_bit_index_system_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: roles_bit_index_system_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY roles
@@ -379,7 +424,7 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: roles_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: roles_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY roles_permissions
@@ -387,7 +432,7 @@ ALTER TABLE ONLY roles_permissions
 
 
 --
--- Name: roles_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: roles_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY roles
@@ -395,7 +440,23 @@ ALTER TABLE ONLY roles
 
 
 --
--- Name: systems_name_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_groups_name_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
+--
+
+ALTER TABLE ONLY systems_groups
+    ADD CONSTRAINT systems_groups_name_key UNIQUE (name);
+
+
+--
+-- Name: systems_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
+--
+
+ALTER TABLE ONLY systems_groups
+    ADD CONSTRAINT systems_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: systems_name_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY systems
@@ -403,7 +464,7 @@ ALTER TABLE ONLY systems
 
 
 --
--- Name: systems_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY systems
@@ -411,7 +472,7 @@ ALTER TABLE ONLY systems
 
 
 --
--- Name: systems_servers_name_system_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_servers_name_system_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY systems_servers
@@ -419,7 +480,7 @@ ALTER TABLE ONLY systems_servers
 
 
 --
--- Name: systems_servers_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_servers_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY systems_servers
@@ -427,7 +488,7 @@ ALTER TABLE ONLY systems_servers
 
 
 --
--- Name: systems_users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: systems_users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY systems_users
@@ -435,7 +496,7 @@ ALTER TABLE ONLY systems_users
 
 
 --
--- Name: users_groups_name_system_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_groups_name_system_id_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY users_groups
@@ -443,7 +504,7 @@ ALTER TABLE ONLY users_groups
 
 
 --
--- Name: users_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY users_groups
@@ -451,7 +512,7 @@ ALTER TABLE ONLY users_groups
 
 
 --
--- Name: users_login_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_login_key; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY users
@@ -459,7 +520,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY users
@@ -467,7 +528,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: users_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY users_tokens
@@ -475,28 +536,28 @@ ALTER TABLE ONLY users_tokens
 
 
 --
--- Name: idx_contacts_company_id; Type: INDEX; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: idx_contacts_company_id; Type: INDEX; Schema: public; Owner: admin_admin
 --
 
 CREATE INDEX idx_contacts_company_id ON contacts USING btree (company_id);
 
 
 --
--- Name: idx_permissions_name; Type: INDEX; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: idx_permissions_name; Type: INDEX; Schema: public; Owner: admin_admin
 --
 
 CREATE INDEX idx_permissions_name ON permissions USING btree (name);
 
 
 --
--- Name: idx_permissions_system_id; Type: INDEX; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: idx_permissions_system_id; Type: INDEX; Schema: public; Owner: admin_admin
 --
 
 CREATE INDEX idx_permissions_system_id ON permissions USING btree (system_id);
 
 
 --
--- Name: idx_roles_system_id; Type: INDEX; Schema: public; Owner: admin_admin; Tablespace: 
+-- Name: idx_roles_system_id; Type: INDEX; Schema: public; Owner: admin_admin
 --
 
 CREATE INDEX idx_roles_system_id ON roles USING btree (system_id);
@@ -607,11 +668,19 @@ ALTER TABLE ONLY systems_users
 
 
 --
--- Name: fk9871d4246b24886e; Type: FK CONSTRAINT; Schema: public; Owner: admin_admin
+-- Name: fk9871d424b4ccd034; Type: FK CONSTRAINT; Schema: public; Owner: admin_admin
 --
 
 ALTER TABLE ONLY systems
-    ADD CONSTRAINT fk9871d4246b24886e FOREIGN KEY (parent_id) REFERENCES systems(id);
+    ADD CONSTRAINT fk9871d424b4ccd034 FOREIGN KEY (parent_id) REFERENCES systems_groups(id);
+
+
+--
+-- Name: fka2efd24fa6d05151; Type: FK CONSTRAINT; Schema: public; Owner: admin_admin
+--
+
+ALTER TABLE ONLY systems_groups
+    ADD CONSTRAINT fka2efd24fa6d05151 FOREIGN KEY (modifiedby_id) REFERENCES users(id);
 
 
 --
@@ -662,6 +731,10 @@ REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+--
 
 
 -- Ensure that admin user has proper rights on all tables

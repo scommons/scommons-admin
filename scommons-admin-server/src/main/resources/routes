@@ -12,6 +12,11 @@ GET     /scommons-admin/api-docs                    controllers.ApiHelpControlle
 GET     /scommons-admin/swagger.html                scommons.play.controllers.CommonSwaggerController.swaggerUi(prefix = "/scommons-admin")
 
 ################################################################################
-# REST API
+# UI REST API
 #
+
+GET     /scommons-admin/ui/companies/:id            controllers.ui.CompanyController.getById(id: Int)
+GET     /scommons-admin/ui/companies                controllers.ui.CompanyController.list(offset: Option[Int], limit: Option[Int], symbols: Option[String])
+POST    /scommons-admin/ui/companies                controllers.ui.CompanyController.create
+PUT     /scommons-admin/ui/companies                controllers.ui.CompanyController.update
 
