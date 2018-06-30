@@ -6,6 +6,7 @@ import org.scalajs.sbtplugin.cross.CrossProject
 import sbt.Keys._
 import sbt._
 import scommons.sbtplugin.project.CommonModule
+import scoverage.ScoverageKeys._
 
 object AdminClientApi {
 
@@ -13,7 +14,8 @@ object AdminClientApi {
 
   def base: File = file(id)
 
-  private lazy val `scommons-admin-client-api`: CrossProject = crossProject.crossType(CrossType.Pure).in(base)
+  private lazy val `scommons-admin-client-api`: CrossProject = crossProject
+    .crossType(CrossType.Pure).in(base)
     .settings(CommonModule.settings: _*)
     .settings(AdminModule.settings: _*)
     .settings(
@@ -25,6 +27,7 @@ object AdminClientApi {
       // Add JVM-specific settings here
     ).jsSettings(
       // Add JS-specific settings here
+      coverageEnabled := false
     )
 
   lazy val jvm: Project = `scommons-admin-client-api`.jvm
