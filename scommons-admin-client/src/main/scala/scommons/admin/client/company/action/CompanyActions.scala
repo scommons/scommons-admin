@@ -13,11 +13,10 @@ trait CompanyActions {
   protected def client: CompanyApi
 
   def companyListFetch(dispatch: Dispatch,
-                       offset: Option[Int] = None,
-                       limit: Option[Int] = Some(CompanyActions.listLimit),
-                       symbols: Option[String] = None): CompanyListFetchAction = {
+                       offset: Option[Int],
+                       symbols: Option[String]): CompanyListFetchAction = {
 
-    val future = client.listCompanies(offset, limit, symbols).andThen {
+    val future = client.listCompanies(offset, Some(CompanyActions.listLimit), symbols).andThen {
       case Success(CompanyListResp(Ok, Some(dataList), totalCount)) =>
         dispatch(CompanyListFetchedAction(dataList, totalCount))
     }

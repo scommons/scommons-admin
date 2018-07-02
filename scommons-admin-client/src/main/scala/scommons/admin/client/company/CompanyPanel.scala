@@ -1,46 +1,30 @@
 package scommons.admin.client.company
 
 import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
-import io.github.shogowada.scalajs.reactjs.redux.ReactRedux
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.AdminState
-import scommons.admin.client.action.ApiActions
 import scommons.admin.client.company.action._
 import scommons.client.ui.page._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 import scommons.client.ui.table._
-import scommons.client.ui.{Buttons, ButtonsPanel, ButtonsPanelProps}
+import scommons.client.ui._
 import scommons.client.util.ActionsData
 
-object CompanyPanelController {
+case class CompanyPanelProps(dispatch: Dispatch,
+                             actions: CompanyActions,
+                             state: CompanyState)
+
+object CompanyPanel extends UiComponent[CompanyPanelProps] {
 
   def apply(): ReactClass = reactClass
-  private lazy val reactClass = createComp
-  
-  private def createComp = ReactRedux.connectAdvanced(
-    (dispatch: Dispatch) => {
-      (state: AdminState, _: Props[Unit]) => {
-        CompanyPanelProps(dispatch, state.companyState)
-      }
-    }
-  )(CompanyPanel())
-}
+  lazy val reactClass: ReactClass = createComp
 
-case class CompanyPanelProps(dispatch: Dispatch, state: CompanyState)
-
-object CompanyPanel {
-
-  def apply(): ReactClass = reactClass
-  private lazy val reactClass = createComp
-
-  private def createComp = React.createClass[CompanyPanelProps, Unit](
+  private def createComp = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.state.dataList.isEmpty) {
-        props.dispatch(ApiActions.companyListFetch(props.dispatch, props.state.offset))
+        props.dispatch(props.actions.companyListFetch(props.dispatch, None, None))
       }
     },
     render = { self =>
@@ -82,8 +66,9 @@ object CompanyPanel {
         ))(),
         
         <(PaginationPanel())(^.wrapped := PaginationPanelProps(totalPages, selectedPage, onPage = { page =>
-          props.dispatch(ApiActions.companyListFetch(props.dispatch,
-            offset = Some(PaginationPanel.toOffset(page, limit))
+          props.dispatch(props.actions.companyListFetch(props.dispatch,
+            offset = Some(PaginationPanel.toOffset(page, limit)),
+            symbols = None
           ))
         }))(),
         
@@ -92,7 +77,7 @@ object CompanyPanel {
           "Enter Company name:",
           onOk = { text =>
             props.dispatch(CompanyCreateRequestAction(create = false))
-            props.dispatch(ApiActions.companyCreate(props.dispatch, text))
+            props.dispatch(props.actions.companyCreate(props.dispatch, text))
           },
           onCancel = { () =>
             props.dispatch(CompanyCreateRequestAction(create = false))
@@ -106,7 +91,7 @@ object CompanyPanel {
             "Enter new Company name:",
             onOk = { text =>
               props.dispatch(CompanyUpdateRequestAction(update = false))
-              props.dispatch(ApiActions.companyUpdate(props.dispatch, data.copy(name = text)))
+              props.dispatch(props.actions.companyUpdate(props.dispatch, data.copy(name = text)))
             },
             onCancel = { () =>
               props.dispatch(CompanyUpdateRequestAction(update = false))

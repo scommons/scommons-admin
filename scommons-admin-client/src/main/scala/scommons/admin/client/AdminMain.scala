@@ -10,6 +10,7 @@ import io.github.shogowada.scalajs.reactjs.redux.{ReactRedux, Redux}
 import io.github.shogowada.scalajs.reactjs.router.WithRouter
 import io.github.shogowada.scalajs.reactjs.router.dom.RouterDOM._
 import org.scalajs.dom
+import scommons.admin.client.action.ApiActions
 import scommons.client.app._
 import scommons.client.task._
 import scommons.client.ui.Buttons
@@ -24,7 +25,8 @@ object AdminMain {
 
     dom.document.title = "scommons-admin"
 
-    val store = Redux.createStore(AdminStateReducer.reduce)
+    val reducer = new AdminStateReducer(ApiActions)
+    val store = Redux.createStore(reducer.reduce)
 
     val appMainPanelProps = AppMainPanelProps(
       name = "scommons-admin",
@@ -57,7 +59,7 @@ object RouteController {
       (state: AdminState, _: Props[Unit]) => {
         AppBrowseControllerProps(
           List(Buttons.REFRESH, Buttons.ADD, Buttons.REMOVE, Buttons.EDIT),
-          AdminStateReducer.getTreeRoots(state),
+          state.treeRoots,
           dispatch
         )
       }
