@@ -1,7 +1,7 @@
 package scommons.admin.client
 
 import scommons.admin.client.api.company.CompanyListResp
-import scommons.admin.client.company.{CompanyPanelController, CompanyState}
+import scommons.admin.client.company.CompanyState
 import scommons.admin.client.company.action._
 import scommons.api.ApiStatus
 import scommons.client.task.FutureTask
@@ -31,7 +31,7 @@ class AdminStateReducerSpec extends TestSpec {
     result.text shouldBe "Companies"
     result.path.value shouldBe "/companies"
     result.image shouldBe Some(ButtonImagesCss.folder)
-    result.reactClass shouldBe Some(CompanyPanelController())
+    result.reactClass should not be None
     result.actions.enabledCommands shouldBe Set(Buttons.REFRESH.command)
     result.actions.onCommand(dispatch)(Buttons.REFRESH.command) shouldBe companyListFetchAction
   }

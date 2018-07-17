@@ -2,10 +2,19 @@ package definitions
 
 import sbt._
 import scommons.sbtplugin.project.CommonClientModule
+import scoverage.ScoverageKeys._
 
 object AdminClient extends AdminModule with CommonClientModule {
 
   override val id: String = "scommons-admin-client"
+
+  override def definition: Project = {
+    super.definition
+      .settings(
+        coverageExcludedPackages := coverageExcludedPackages.value +
+          ";.*Raw"
+      )
+  }
 
   override def internalDependencies: Seq[ClasspathDep[ProjectReference]] = Seq(
     AdminClientApi.js

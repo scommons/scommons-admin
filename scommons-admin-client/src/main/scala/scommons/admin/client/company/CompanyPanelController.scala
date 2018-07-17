@@ -2,21 +2,19 @@ package scommons.admin.client.company
 
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
-import io.github.shogowada.scalajs.reactjs.redux.ReactRedux
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.AdminState
-import scommons.admin.client.action.ApiActions
+import scommons.admin.client.company.action.CompanyActions
+import scommons.admin.client.AdminStateDef
+import scommons.client.app.BaseStateControllerRaw
 
-object CompanyPanelController {
+class CompanyPanelController(apiActions: CompanyActions)
+  extends BaseStateControllerRaw[AdminStateDef, CompanyPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  private lazy val reactClass = createComp
+  lazy val component: ReactClass = CompanyPanel()
 
-  private def createComp = ReactRedux.connectAdvanced(
-    (dispatch: Dispatch) => {
-      (state: AdminState, _: Props[Unit]) => {
-        CompanyPanelProps(dispatch, ApiActions, state.companyState)
-      }
-    }
-  )(CompanyPanel())
+  def mapStateToProps(dispatch: Dispatch)
+                     (state: AdminStateDef, props: Props[Unit]): CompanyPanelProps = {
+    
+    CompanyPanelProps(dispatch, apiActions, state.companyState)
+  }
 }
