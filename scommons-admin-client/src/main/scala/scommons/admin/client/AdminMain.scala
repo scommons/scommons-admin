@@ -12,7 +12,7 @@ import scommons.client.app._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-object AdminMainRaw {
+object AdminMain {
 
   @JSExportTopLevel("scommons.admin.client.main")
   def main(args: Array[String]): Unit = {

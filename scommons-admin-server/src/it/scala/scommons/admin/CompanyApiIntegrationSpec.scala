@@ -5,6 +5,7 @@ import java.util.UUID
 import org.scalatest.DoNotDiscover
 import scommons.admin.client.api.AdminUiApiStatuses._
 import scommons.admin.client.api.company.CompanyData
+import scommons.api.ApiStatus
 
 @DoNotDiscover
 class CompanyApiIntegrationSpec extends BaseAdminIntegrationSpec {
@@ -101,6 +102,18 @@ class CompanyApiIntegrationSpec extends BaseAdminIntegrationSpec {
 
     //when & then
     callCompanyUpdate(data, CompanyAlreadyExists) shouldBe None
+  }
+
+  it should "fail with BadRequest if company name is blank" in {
+    //given
+    val existing = createRandomCompany()
+    val data = CompanyData(
+      existing.id,
+      " "
+    )
+
+    //when & then
+    callCompanyUpdate(data, ApiStatus(400, "name is blank")) shouldBe None
   }
 
   it should "update existing company" in {

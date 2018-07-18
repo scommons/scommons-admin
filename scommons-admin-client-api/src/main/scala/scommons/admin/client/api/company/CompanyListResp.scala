@@ -13,9 +13,6 @@ object CompanyListResp {
   implicit val jsonFormat: Format[CompanyListResp] =
     Json.format[CompanyListResp]
 
-  def apply(status: ApiStatus): CompanyListResp =
-    CompanyListResp(status, None, None)
-
   def apply(dataList: List[CompanyData], totalCount: Option[Int] = None): CompanyListResp =
     CompanyListResp(ApiStatus.Ok, Some(dataList), totalCount)
 }
