@@ -2,7 +2,6 @@ package scommons.admin.client.company
 
 import scommons.admin.client.api.company.{CompanyData, CompanyListResp}
 import scommons.admin.client.company.action._
-import scommons.api.ApiStatus
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 
@@ -49,7 +48,7 @@ class CompanyStateReducerSpec extends TestSpec {
   
   it should "set offset when CompanyListFetchAction" in {
     //given
-    val task = FutureTask("test task", Future.successful(CompanyListResp(ApiStatus.Ok)))
+    val task = FutureTask("test task", Future.successful(CompanyListResp(Nil)))
     val offset = Some(123)
     
     //when & then

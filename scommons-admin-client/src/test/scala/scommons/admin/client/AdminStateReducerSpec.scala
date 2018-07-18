@@ -3,7 +3,6 @@ package scommons.admin.client
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.company.CompanyState
 import scommons.admin.client.company.action._
-import scommons.api.ApiStatus
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 import scommons.client.ui.{ButtonImagesCss, Buttons}
@@ -54,7 +53,7 @@ class AdminStateReducerSpec extends TestSpec {
   
   it should "set currentTask when TaskAction" in {
     //given
-    val task = FutureTask("test task", Future.successful(CompanyListResp(ApiStatus.Ok)))
+    val task = FutureTask("test task", Future.successful(CompanyListResp(Nil)))
     val companyActions = mock[CompanyActions]
     val reducer = new AdminStateReducer(companyActions)
     
