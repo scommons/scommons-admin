@@ -99,7 +99,8 @@ class SystemGroupApiIntegrationSpec extends BaseAdminIntegrationSpec {
     val existing = createRandomSystemGroup()
     val data = SystemGroupData(
       existing.id,
-      existing.name
+      existing.name,
+      version = existing.version
     )
     callSystemGroupUpdate(data)
 
@@ -112,7 +113,8 @@ class SystemGroupApiIntegrationSpec extends BaseAdminIntegrationSpec {
     val existing = createRandomSystemGroup()
     val data = SystemGroupData(
       existing.id,
-      s"  ${UUID.randomUUID()}  "
+      s"  ${UUID.randomUUID()}  ",
+      version = existing.version
     )
 
     //when
@@ -126,6 +128,25 @@ class SystemGroupApiIntegrationSpec extends BaseAdminIntegrationSpec {
     
     result.createdAt shouldBe existing.createdAt
     result.version.get shouldBe existing.version.get + 1
+  }
+
+  it should "update updated SystemGroup" in {
+    //given
+    val existing = createRandomSystemGroup()
+    val data = callSystemGroupUpdate(SystemGroupData(
+      existing.id,
+      s"${UUID.randomUUID()}",
+      version = existing.version
+    ))
+
+    //when
+    val result = callSystemGroupUpdate(data)
+
+    //then
+    result.id shouldBe existing.id
+    result.name shouldBe data.name.trim
+
+    assertSystemGroup(result, callSystemGroupGetById(result.id.get))
   }
 
   private def assertSystemGroup(result: SystemGroupData, expected: SystemGroupData): Unit = {

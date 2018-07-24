@@ -90,6 +90,7 @@ object SystemGroupApiImpl {
   def convertToSystemGroup(data: SystemGroupData): SystemGroup = SystemGroup(
     data.id.getOrElse(-1),
     data.name.trim,
-    1 //TODO: use current userId (from request)
+    1, //TODO: use current userId (from request)
+    version = data.version.getOrElse(-1)
   )
 }
