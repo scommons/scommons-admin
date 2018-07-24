@@ -3,7 +3,7 @@ package controllers
 import akka.actor.ActorSystem
 import akka.testkit.SocketUtil
 import com.ticketfly.play.liquibase.PlayLiquibaseModule
-import controllers.ui.CompanyController
+import controllers.ui.{CompanyController, SystemGroupController}
 import modules.ApplicationModule
 import org.scalatest.{Suites, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -34,6 +34,7 @@ class ControllersSpec extends Suites(
       
       //test-only
       bind[CompanyController] to new CompanyController(null)
+      bind[SystemGroupController] to new SystemGroupController(null)
     })
   ).build()
 }

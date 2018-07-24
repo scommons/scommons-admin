@@ -15,9 +15,9 @@ sbt clean test it:test
 
 #### How to Run Server
 
-To start the application server locally, use the following command:
+To start the application server locally in development mode with refresh workflow:
 ```bash
-sbt "project scommons-admin-server" run
+sbt ';project scommons-admin-server ;set WebKeys.exportedMappings in Assets := Seq()' run
 ```
 
 #### Admin Client UI

@@ -20,6 +20,55 @@
         </sql>
     </changeSet>
 
+    <!--======================== Changes #2 ========================-->
+    <changeSet id="2" author="viktorp">
+        <comment>Changed systems_groups.id type from long to int</comment>
+        
+        <sql splitStatements="false">
+            ALTER TABLE systems_groups ALTER COLUMN id SET DATA TYPE integer;
+            ALTER TABLE systems ALTER COLUMN parent_id SET DATA TYPE integer;
+
+            CREATE SEQUENCE systems_groups_id_seq OWNED BY systems_groups.id;
+            SELECT setval('systems_groups_id_seq', coalesce(max(id), 0) + 1) FROM systems_groups;
+            ALTER TABLE systems_groups ALTER COLUMN id SET DEFAULT nextval('systems_groups_id_seq');
+        </sql>
+    </changeSet>
+
+    <!--======================== Changes #3 ========================-->
+    <changeSet id="3" author="viktorp">
+        <comment>Added version, created_at, updated_at to systems_groups</comment>
+        
+        <sql splitStatements="false">
+            ALTER TABLE systems_groups RENAME COLUMN modified_date TO updated_at;
+            ALTER TABLE systems_groups RENAME COLUMN modifiedby_id TO updated_by;
+            
+            ALTER TABLE systems_groups
+                ADD COLUMN version integer NOT NULL DEFAULT 1,
+                ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+                ALTER COLUMN updated_at SET DEFAULT now();
+
+            UPDATE systems_groups SET created_at = updated_at;
+
+            CREATE FUNCTION systems_groups_before_save() RETURNS trigger AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    NEW.version := 1;
+                    NEW.created_at := now();
+                ELSE
+                    NEW.version := OLD.version + 1;
+                    NEW.created_at := OLD.created_at;
+                END IF;
+    
+                NEW.updated_at := now();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER systems_groups_before_save BEFORE INSERT OR UPDATE ON systems_groups
+                FOR EACH ROW EXECUTE PROCEDURE systems_groups_before_save();
+        </sql>
+    </changeSet>
+
 
     <!--===== This changeset MUST always be at the end of the file !!! =====-->
     <changeSet id="0" author="viktorp" runAlways="true">

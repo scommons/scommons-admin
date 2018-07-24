@@ -8,7 +8,8 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.ConfiguredServer
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.api.company.CompanyData
-import scommons.admin.domain.dao.CompanyDao
+import scommons.admin.client.api.system.group.SystemGroupData
+import scommons.admin.domain.dao.{CompanyDao, SystemGroupDao}
 import scommons.api.ApiStatus
 import services.CompanyService
 
@@ -32,6 +33,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   protected lazy val companyService: CompanyService = inject[CompanyService]
   protected lazy val companyDao: CompanyDao = inject[CompanyDao]
+  protected lazy val systemGroupDao: SystemGroupDao = inject[SystemGroupDao]
   
   private lazy val uiApiClient = inject[AdminUiApiClient]
 
@@ -91,6 +93,63 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   def callCompanyUpdate(data: CompanyData, expectedStatus: ApiStatus): Option[CompanyData] = {
     val resp = uiApiClient.updateCompany(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // systems/groups
+
+  def removeAllSystemGroups(): Unit = {
+    val futureResult = for {
+      _ <- systemGroupDao.deleteAll()
+    } yield {
+      ()
+    }
+
+    // wait for operation to complete
+    futureResult.futureValue
+  }
+
+  def createRandomSystemGroup(partOfName: Option[String] = None): SystemGroupData = {
+    callSystemGroupCreate(SystemGroupData(None,
+      if (partOfName.isDefined) s"${System.nanoTime()}-${partOfName.get}-random"
+      else s"${UUID.randomUUID()} random name"
+    ))
+  }
+
+  def callSystemGroupGetById(id: Int): SystemGroupData = {
+    callSystemGroupGetById(id, ApiStatus.Ok).get
+  }
+
+  def callSystemGroupGetById(id: Int, expectedStatus: ApiStatus): Option[SystemGroupData] = {
+    val resp = uiApiClient.getSystemGroupById(id).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callSystemGroupList(): List[SystemGroupData] = {
+    val resp = uiApiClient.listSystemGroups().futureValue
+    resp.status shouldBe ApiStatus.Ok
+    resp.dataList.get
+  }
+
+  def callSystemGroupCreate(data: SystemGroupData): SystemGroupData = {
+    callSystemGroupCreate(data, ApiStatus.Ok).get
+  }
+
+  def callSystemGroupCreate(data: SystemGroupData, expectedStatus: ApiStatus): Option[SystemGroupData] = {
+    val resp = uiApiClient.createSystemGroup(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callSystemGroupUpdate(data: SystemGroupData): SystemGroupData = {
+    callSystemGroupUpdate(data, ApiStatus.Ok).get
+  }
+
+  def callSystemGroupUpdate(data: SystemGroupData, expectedStatus: ApiStatus): Option[SystemGroupData] = {
+    val resp = uiApiClient.updateSystemGroup(data).futureValue
     resp.status shouldBe expectedStatus
     resp.data
   }

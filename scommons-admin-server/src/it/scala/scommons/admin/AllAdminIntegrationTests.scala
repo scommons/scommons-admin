@@ -13,7 +13,8 @@ import scommons.api.http.ws.WsApiHttpClient
 import scommons.service.test.it.docker._
 
 class AllAdminIntegrationTests extends Suites(
-  new CompanyApiIntegrationSpec
+  new CompanyApiIntegrationSpec,
+  new SystemGroupApiIntegrationSpec
 ) with TestSuite
   with MockitoSugar
   with GuiceOneServerPerSuite
@@ -33,7 +34,9 @@ class AllAdminIntegrationTests extends Suites(
     val adminUiApiUrl = s"http://localhost:$port/scommons-admin/ui"
     println(s"adminUiApiUrl: $adminUiApiUrl")
 
-    val uiApiClient = new AdminUiApiClient(new WsApiHttpClient(adminUiApiUrl)(ActorSystem("AdminUiApiWsClient")))
+    val uiApiClient = new AdminUiApiClient(
+      new WsApiHttpClient(adminUiApiUrl)(ActorSystem("AdminUiApiWsClient"))
+    )
 
     new ScaldiApplicationBuilder(modules = List(new Module {
       //test-only
@@ -54,5 +57,6 @@ class AllAdminIntegrationTests extends Suites(
 
     initializeDb("/scommons/admin/dao/changelog/createDb.sql")
     initializeDb("/scommons/admin/dao/changelog/initialSql.sql", dbAdminUser, dbAdminPass, dbName)
+    initializeDb("/test_data.sql", dbAdminUser, dbAdminPass, dbName)
   }
 }

@@ -1,6 +1,7 @@
 package scommons.admin
 
-import java.util.UUID
+import java.text.Collator
+import java.util.{Locale, UUID}
 
 import org.scalatest.DoNotDiscover
 import scommons.admin.client.api.AdminUiApiStatuses._
@@ -17,10 +18,15 @@ class CompanyApiIntegrationSpec extends BaseAdminIntegrationSpec {
 
   "listCompanies" should "return paginated, filtered list, ordered by name" in {
     //given
-    removeAllCompanies()
+    //removeAllCompanies()
+    val collator = Collator.getInstance(Locale.US)
+    implicit val o: Ordering[String] = new Ordering[String] {
+      def compare(x: String, y: String): Int = collator.compare(x, y)
+    }
 
     val symbols = s"${System.nanoTime()}SeArCH"
     val companies = List(
+      CompanyData(Some(1), "Test Company"),
       createRandomCompany(),
       createRandomCompany(partOfName = Some(symbols.toUpperCase)),
       createRandomCompany(partOfName = Some(symbols)),

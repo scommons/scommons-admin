@@ -1,19 +1,17 @@
 package scommons.admin.domain
 
-import java.time.{LocalDateTime, ZoneId}
-
 import com.typesafe.config.Config
+import io.getquill.context.async.SqlTypes
 import io.getquill.{PostgresAsyncContext, SnakeCase}
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone, LocalDateTime}
 
-//noinspection TypeAnnotation
 class AdminDBContext(config: Config) extends PostgresAsyncContext[SnakeCase](config) {
 
-  implicit val encodeDateTime = MappedEncoding[DateTime, LocalDateTime](d =>
-    LocalDateTime.ofInstant(d.toDate.toInstant, ZoneId.of("UTC"))
-  )
+  implicit val jodaDateTimeDecoder: Decoder[DateTime] = decoder[DateTime]({
+    case d: LocalDateTime => d.toDateTime(DateTimeZone.UTC)
+  }, SqlTypes.TIMESTAMP)
 
-  implicit val decodeDateTime = MappedEncoding[LocalDateTime, DateTime](d =>
-    new DateTime(d.atZone(ZoneId.of("UTC")).toInstant.toEpochMilli)
-  )
+  implicit val jodaDateTimeEncoder: Encoder[DateTime] = encoder[DateTime]({ (d: DateTime) =>
+    d.withZone(DateTimeZone.UTC).toLocalDateTime
+  }, SqlTypes.TIMESTAMP)
 }

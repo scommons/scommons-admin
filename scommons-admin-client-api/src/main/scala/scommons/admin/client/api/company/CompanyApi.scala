@@ -12,6 +12,5 @@ trait CompanyApi {
 
   def createCompany(data: CompanyData): Future[CompanyResp]
   
-  
   def updateCompany(data: CompanyData): Future[CompanyResp]
 }

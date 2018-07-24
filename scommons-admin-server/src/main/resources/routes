@@ -20,3 +20,7 @@ GET     /scommons-admin/ui/companies                controllers.ui.CompanyContro
 POST    /scommons-admin/ui/companies                controllers.ui.CompanyController.create
 PUT     /scommons-admin/ui/companies                controllers.ui.CompanyController.update
 
+GET     /scommons-admin/ui/systems/groups/:id       controllers.ui.SystemGroupController.getById(id: Int)
+GET     /scommons-admin/ui/systems/groups           controllers.ui.SystemGroupController.list
+POST    /scommons-admin/ui/systems/groups           controllers.ui.SystemGroupController.create
+PUT     /scommons-admin/ui/systems/groups           controllers.ui.SystemGroupController.update
