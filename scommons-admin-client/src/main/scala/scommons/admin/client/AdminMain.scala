@@ -21,9 +21,8 @@ object AdminMain {
 
     dom.document.title = "scommons-admin"
 
-    val reducer = new AdminStateReducer(ApiActions)
-    val store = Redux.createStore(reducer.reduce)
-
+    val store = Redux.createStore(AdminStateReducer.reduce)
+    
     val appMainPanelProps = AppMainPanelProps(
       name = "scommons-admin",
       user = "me",
@@ -31,13 +30,17 @@ object AdminMain {
       version = "(version: 0.1.0-SNAPSHOT)"
     )
 
+    val apiActions = ApiActions
+    val routeController = new AdminRouteController(apiActions)
+    val envController = new SystemGroupController(apiActions)
+
     ReactDOM.render(
       <.Provider(^.store := store)(
         <.HashRouter()(
           <(WithRouter(AppMainPanel()))(^.wrapped := appMainPanelProps)(
-            <(new AdminRouteController(reducer)()).empty,
+            <(routeController()).empty,
             <(AdminTaskController()).empty,
-            <(WithRouter(new SystemGroupController(ApiActions)())).empty
+            <(WithRouter(envController())).empty
           )
         )
       ),
