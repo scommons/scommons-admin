@@ -6,7 +6,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps, BaseStateController}
 import scommons.client.ui.Buttons
 
-object AdminRouteController
+class AdminRouteController(reducer: AdminStateReducer)
   extends BaseStateController[AdminStateDef, AppBrowseControllerProps] {
 
   lazy val component: ReactClass = AppBrowseController()
@@ -16,8 +16,9 @@ object AdminRouteController
 
     AppBrowseControllerProps(
       List(Buttons.REFRESH, Buttons.ADD, Buttons.REMOVE, Buttons.EDIT),
-      state.treeRoots,
-      dispatch
+      reducer.getTreeRoots(state),
+      dispatch,
+      reducer.getInitiallyOpenedNodes
     )
   }
 }

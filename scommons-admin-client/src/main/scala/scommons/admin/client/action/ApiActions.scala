@@ -3,10 +3,12 @@ package scommons.admin.client.action
 import org.scalajs.dom
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.company.action._
+import scommons.admin.client.system.group.action.SystemGroupActions
 import scommons.api.http.js.JsApiHttpClient
 
-object ApiActions extends CompanyActions {
-
+trait ApiActions extends CompanyActions
+  with SystemGroupActions {
+  
   private val baseUrl = {
     val loc = dom.window.location
     s"${loc.protocol}//${loc.host}/scommons-admin/ui"
@@ -16,3 +18,5 @@ object ApiActions extends CompanyActions {
     new AdminUiApiClient(new JsApiHttpClient(baseUrl))
   }
 }
+
+object ApiActions extends ApiActions

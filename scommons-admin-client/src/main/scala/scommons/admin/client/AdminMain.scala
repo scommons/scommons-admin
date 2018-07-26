@@ -8,6 +8,7 @@ import io.github.shogowada.scalajs.reactjs.router.WithRouter
 import io.github.shogowada.scalajs.reactjs.router.dom.RouterDOM._
 import org.scalajs.dom
 import scommons.admin.client.action.ApiActions
+import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
@@ -34,8 +35,9 @@ object AdminMain {
       <.Provider(^.store := store)(
         <.HashRouter()(
           <(WithRouter(AppMainPanel()))(^.wrapped := appMainPanelProps)(
-            <(AdminRouteController()).empty,
-            <(AdminTaskController()).empty
+            <(new AdminRouteController(reducer)()).empty,
+            <(AdminTaskController()).empty,
+            <(WithRouter(new SystemGroupController(ApiActions)())).empty
           )
         )
       ),

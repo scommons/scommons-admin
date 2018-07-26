@@ -11,20 +11,28 @@ import scommons.client.util.BrowsePath
 class AdminRouteControllerSpec extends TestSpec {
 
   it should "return component" in {
+    //given
+    val reducer = mock[AdminStateReducer]
+    val controller = new AdminRouteController(reducer)
+
     //when & then
-    AdminRouteController.component shouldBe AppBrowseController()
+    controller.component shouldBe AppBrowseController()
   }
   
   it should "map state to props" in {
     //given
+    val reducer = mock[AdminStateReducer]
+    val controller = new AdminRouteController(reducer)
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
     val expectedTreeRoots = List(BrowseTreeItemData("Test Item", BrowsePath("/test")))
+    val expectedOpenedNodes = Set(BrowsePath("/test_opened"))
     val state = mock[AdminStateDef]
-    (state.treeRoots _).expects().returning(expectedTreeRoots)
+    (reducer.getTreeRoots _).expects(state).returning(expectedTreeRoots)
+    (reducer.getInitiallyOpenedNodes _).expects().returning(expectedOpenedNodes)
 
     //when
-    val result = AdminRouteController.mapStateToProps(expectedDispatch)(state, props)
+    val result = controller.mapStateToProps(expectedDispatch)(state, props)
     
     //then
     inside(result) {
@@ -37,7 +45,7 @@ class AdminRouteControllerSpec extends TestSpec {
         buttons shouldBe List(Buttons.REFRESH, Buttons.ADD, Buttons.REMOVE, Buttons.EDIT)
         treeRoots shouldBe expectedTreeRoots
         dispatch shouldBe expectedDispatch
-        initiallyOpenedNodes shouldBe Set.empty[BrowsePath]
+        initiallyOpenedNodes shouldBe expectedOpenedNodes
     }
   }
 }
