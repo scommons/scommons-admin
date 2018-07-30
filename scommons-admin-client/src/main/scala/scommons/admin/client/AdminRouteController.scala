@@ -6,6 +6,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.action.ApiActions
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.company.CompanyPanelController
+import scommons.admin.client.system.group.SystemGroupController
 import scommons.admin.client.system.group.action._
 import scommons.client.app._
 import scommons.client.ui.{ButtonImagesCss, Buttons}
@@ -17,9 +18,7 @@ class AdminRouteController(apiActions: ApiActions)
 
   lazy val component: ReactClass = AppBrowseController()
 
-  def mapStateToProps(dispatch: Dispatch)
-                     (state: AdminStateDef, props: Props[Unit]): AppBrowseControllerProps = {
-
+  def mapStateToProps(dispatch: Dispatch, state: AdminStateDef, props: Props[Unit]): AppBrowseControllerProps = {
     AppBrowseControllerProps(
       buttons = List(Buttons.REFRESH, Buttons.ADD, Buttons.REMOVE, Buttons.EDIT),
       treeRoots = getTreeRoots(state),
@@ -47,7 +46,7 @@ class AdminRouteController(apiActions: ApiActions)
 
   lazy val environmentsNode = BrowseTreeNodeData(
     "Environments",
-    BrowsePath("/environments"),
+    BrowsePath(SystemGroupController.path),
     Some(AdminImagesCss.computer),
     ActionsData(Set(Buttons.REFRESH.command, Buttons.ADD.command), dispatch => {
       case Buttons.REFRESH.command => dispatch(apiActions.systemGroupListFetch(dispatch))
@@ -69,7 +68,7 @@ class AdminRouteController(apiActions: ApiActions)
   def getEnvironmentItem(data: SystemGroupData): BrowseTreeItemData = {
     environmentItem.copy(
       text = data.name,
-      path = BrowsePath(s"/environments/${data.id.get}")
+      path = BrowsePath(s"${SystemGroupController.path}/${data.id.get}")
     )
   }
 }

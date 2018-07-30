@@ -12,9 +12,7 @@ class CompanyPanelController(apiActions: CompanyActions)
 
   lazy val component: ReactClass = CompanyPanel()
 
-  def mapStateToProps(dispatch: Dispatch)
-                     (state: AdminStateDef, props: Props[Unit]): CompanyPanelProps = {
-    
+  def mapStateToProps(dispatch: Dispatch, state: AdminStateDef, props: Props[Unit]): CompanyPanelProps = {
     CompanyPanelProps(dispatch, apiActions, state.companyState)
   }
 }

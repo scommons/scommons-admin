@@ -11,9 +11,7 @@ object AdminTaskController
 
   lazy val component: ReactClass = TaskManager()
 
-  def mapStateToProps(dispatch: Dispatch)
-                     (state: AdminStateDef, props: Props[Unit]): TaskManagerProps = {
-
+  def mapStateToProps(dispatch: Dispatch, state: AdminStateDef, props: Props[Unit]): TaskManagerProps = {
     TaskManagerProps(state.currentTask)
   }
 }

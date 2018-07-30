@@ -3,22 +3,23 @@ package scommons.admin.client.system.group
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.router.RouterProps
+import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminStateDef
 import scommons.admin.client.system.group.SystemGroupController._
 import scommons.admin.client.system.group.action.SystemGroupActions
-import scommons.client.app.BaseStateController
+import scommons.client.app.BaseStateAndRouteController
 
 class SystemGroupController(apiActions: SystemGroupActions)
-  extends BaseStateController[AdminStateDef, SystemGroupPanelProps]
-    with RouterProps {
+  extends BaseStateAndRouteController[AdminStateDef, SystemGroupPanelProps] {
 
   lazy val component: ReactClass = SystemGroupPanel()
 
-  def mapStateToProps(dispatch: Dispatch)
-                     (state: AdminStateDef, props: Props[Unit]): SystemGroupPanelProps = {
+  def mapStateAndRouteToProps(dispatch: Dispatch,
+                              state: AdminStateDef,
+                              props: Props[Unit],
+                              routerProps: RouterProps): SystemGroupPanelProps = {
 
-    val path = props.location.pathname
+    val path = routerProps.location.pathname
     
     SystemGroupPanelProps(dispatch, apiActions, state.systemGroupState, extractId(path))
   }
@@ -26,7 +27,9 @@ class SystemGroupController(apiActions: SystemGroupActions)
 
 object SystemGroupController {
   
-  private val idRegex = "/environments/(\\d+)".r
+  val path = "/environments"
+  
+  private val idRegex = s"$path/(\\d+)".r
   
   private[group] def extractId(path: String): Option[Int] = {
     for {

@@ -23,7 +23,7 @@ class AdminTaskControllerSpec extends TestSpec {
     (state.currentTask _).expects().returning(currentTask)
 
     //when
-    val result = AdminTaskController.mapStateToProps(dispatch)(state, props)
+    val result = AdminTaskController.mapStateToProps(dispatch, state, props)
     
     //then
     inside(result) { case TaskManagerProps(task) =>

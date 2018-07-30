@@ -44,7 +44,7 @@ class AdminRouteControllerSpec extends TestSpec {
       .returning(systemGroupState)
 
     //when
-    val result = controller.mapStateToProps(expectedDispatch)(state, props)
+    val result = controller.mapStateToProps(expectedDispatch, state, props)
     
     //then
     inside(result) {

@@ -28,7 +28,7 @@ class CompanyPanelControllerSpec extends TestSpec {
     (state.companyState _).expects().returning(companyState)
 
     //when
-    val result = controller.mapStateToProps(dispatch)(state, props)
+    val result = controller.mapStateToProps(dispatch, state, props)
     
     //then
     inside(result) { case CompanyPanelProps(disp, actions, compState) =>
