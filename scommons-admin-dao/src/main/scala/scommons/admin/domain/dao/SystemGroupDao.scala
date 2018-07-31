@@ -1,6 +1,6 @@
 package scommons.admin.domain.dao
 
-import scommons.admin.domain._
+import scommons.admin.domain.{AdminDBContext, SystemGroup, SystemGroupSchema}
 import scommons.service.dao.CommonDao
 
 import scala.concurrent.{ExecutionContext, Future}

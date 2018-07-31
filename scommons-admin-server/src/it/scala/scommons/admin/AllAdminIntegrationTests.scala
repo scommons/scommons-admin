@@ -14,7 +14,8 @@ import scommons.service.test.it.docker._
 
 class AllAdminIntegrationTests extends Suites(
   new CompanyApiIntegrationSpec,
-  new SystemGroupApiIntegrationSpec
+  new SystemGroupApiIntegrationSpec,
+  new SystemApiIntegrationSpec
 ) with TestSuite
   with MockitoSugar
   with GuiceOneServerPerSuite

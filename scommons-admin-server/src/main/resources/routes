@@ -24,3 +24,8 @@ GET     /scommons-admin/ui/systems/groups/:id       controllers.ui.SystemGroupCo
 GET     /scommons-admin/ui/systems/groups           controllers.ui.SystemGroupController.list
 POST    /scommons-admin/ui/systems/groups           controllers.ui.SystemGroupController.create
 PUT     /scommons-admin/ui/systems/groups           controllers.ui.SystemGroupController.update
+
+GET     /scommons-admin/ui/systems/:id              controllers.ui.SystemController.getById(id: Int)
+GET     /scommons-admin/ui/systems                  controllers.ui.SystemController.list
+POST    /scommons-admin/ui/systems                  controllers.ui.SystemController.create
+PUT     /scommons-admin/ui/systems                  controllers.ui.SystemController.update

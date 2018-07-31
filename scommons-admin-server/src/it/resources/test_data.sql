@@ -18,6 +18,14 @@ INSERT INTO users(id, active, created, last_login_date, ldap_domain, login, modi
     VALUES (1, TRUE, '2015-05-28 10:18:00.000', NULL, NULL, 'test', NULL, 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3', 1, 1, NULL);
 
 --
+-- Insert dev system group
+--
+INSERT INTO systems_groups(id, name, modified_date, modifiedby_id)
+  VALUES (1, 'dev', '2018-07-31 11:52:12.345', 1);
+
+UPDATE systems SET parent_id = 1, title = 'Admin (dev)';
+
+--
 -- Insert test admin system (application)
 --
 --INSERT INTO systems(id, name, password, title, url, parent_id)

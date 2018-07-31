@@ -16,4 +16,11 @@ object AdminUiApiStatuses {
   val SystemGroupNotFound = ApiStatus(1011, "SystemGroup not found")
   val SystemGroupAlreadyExists = ApiStatus(1012, "SystemGroup with such name already exists")
   val SystemGroupAlreadyUpdated = ApiStatus(1013, "SystemGroup was already updated by another user, try refresh")
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // systems
+
+  val SystemNotFound = ApiStatus(1021, "System not found")
+  val SystemAlreadyExists = ApiStatus(1022, "System with such name already exists")
+  val SystemAlreadyUpdated = ApiStatus(1023, "System was already updated by another user, try refresh")
 }

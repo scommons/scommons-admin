@@ -6,7 +6,8 @@ import scommons.admin.domain.AdminDBContext
 
 class ApplicationModule extends Module
   with CompanyModule
-  with SystemGroupModule {
+  with SystemGroupModule
+  with SystemModule {
 
   bind[AdminDBContext] to new AdminDBContext(
     inject[Configuration].get[Configuration]("quill.db").underlying

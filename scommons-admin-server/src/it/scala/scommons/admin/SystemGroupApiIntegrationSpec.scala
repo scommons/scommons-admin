@@ -17,9 +17,9 @@ class SystemGroupApiIntegrationSpec extends BaseAdminIntegrationSpec {
 
   "listSystemGroups" should "return list ordered by name" in {
     //given
-    removeAllSystemGroups()
+    //removeAllSystemGroups()
     
-    val companies = List(
+    val groups = List(
       createRandomSystemGroup(),
       createRandomSystemGroup(),
       createRandomSystemGroup(),
@@ -27,7 +27,7 @@ class SystemGroupApiIntegrationSpec extends BaseAdminIntegrationSpec {
     ).sortBy(_.name)
     
     //when & then
-    callSystemGroupList() shouldBe companies
+    callSystemGroupList().filterNot(_.id.contains(1)) shouldBe groups
   }
 
   "createSystemGroup" should "fail if SystemGroup with such name already exists" in {

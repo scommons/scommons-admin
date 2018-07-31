@@ -1,6 +1,7 @@
 package scommons.admin.client.api
 
 import scommons.admin.client.api.company._
+import scommons.admin.client.api.system._
 import scommons.admin.client.api.system.group._
 import scommons.api.http.ApiHttpClient
 
@@ -8,7 +9,8 @@ import scala.concurrent.Future
 
 class AdminUiApiClient(client: ApiHttpClient)
   extends CompanyApi
-    with SystemGroupApi {
+    with SystemGroupApi
+    with SystemApi {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // companies
@@ -53,6 +55,25 @@ class AdminUiApiClient(client: ApiHttpClient)
 
   def updateSystemGroup(data: SystemGroupData): Future[SystemGroupResp] = {
     client.execPut[SystemGroupData, SystemGroupResp]("/systems/groups", data)
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // systems
+
+  def getSystemById(id: Int): Future[SystemResp] = {
+    client.execGet[SystemResp](s"/systems/$id")
+  }
+
+  def listSystems(): Future[SystemListResp] = {
+    client.execGet[SystemListResp]("/systems")
+  }
+
+  def createSystem(data: SystemData): Future[SystemResp] = {
+    client.execPost[SystemData, SystemResp]("/systems", data)
+  }
+
+  def updateSystem(data: SystemData): Future[SystemResp] = {
+    client.execPut[SystemData, SystemResp]("/systems", data)
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

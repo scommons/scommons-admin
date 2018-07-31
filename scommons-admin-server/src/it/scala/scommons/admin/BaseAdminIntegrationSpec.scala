@@ -8,8 +8,9 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.ConfiguredServer
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.api.company.CompanyData
+import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
-import scommons.admin.domain.dao.{CompanyDao, SystemGroupDao}
+import scommons.admin.domain.dao._
 import scommons.api.ApiStatus
 import services.CompanyService
 
@@ -34,6 +35,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val companyService: CompanyService = inject[CompanyService]
   protected lazy val companyDao: CompanyDao = inject[CompanyDao]
   protected lazy val systemGroupDao: SystemGroupDao = inject[SystemGroupDao]
+  protected lazy val systemDao: SystemDao = inject[SystemDao]
   
   private lazy val uiApiClient = inject[AdminUiApiClient]
 
@@ -111,10 +113,10 @@ trait BaseAdminIntegrationSpec extends FlatSpec
     futureResult.futureValue
   }
 
-  def createRandomSystemGroup(partOfName: Option[String] = None): SystemGroupData = {
-    callSystemGroupCreate(SystemGroupData(None,
-      if (partOfName.isDefined) s"${System.nanoTime()}-${partOfName.get}-random"
-      else s"${UUID.randomUUID()} random name"
+  def createRandomSystemGroup(): SystemGroupData = {
+    callSystemGroupCreate(SystemGroupData(
+      id = None,
+      name = s"${UUID.randomUUID()} random name"
     ))
   }
 
@@ -150,6 +152,67 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   def callSystemGroupUpdate(data: SystemGroupData, expectedStatus: ApiStatus): Option[SystemGroupData] = {
     val resp = uiApiClient.updateSystemGroup(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // systems
+
+  def removeAllSystems(): Unit = {
+    val futureResult = for {
+      _ <- systemDao.deleteAll()
+    } yield {
+      ()
+    }
+
+    // wait for operation to complete
+    futureResult.futureValue
+  }
+
+  def createRandomSystem(parentId: Int): SystemData = {
+    callSystemCreate(SystemData(
+      id = None,
+      name = s"${System.nanoTime()} test name",
+      password = s"${System.nanoTime()} test password",
+      title = s"${System.nanoTime()} test title",
+      url = s"http://${System.nanoTime()}.test.com/random/url",
+      parentId = parentId
+    ))
+  }
+
+  def callSystemGetById(id: Int): SystemData = {
+    callSystemGetById(id, ApiStatus.Ok).get
+  }
+
+  def callSystemGetById(id: Int, expectedStatus: ApiStatus): Option[SystemData] = {
+    val resp = uiApiClient.getSystemById(id).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callSystemList(): List[SystemData] = {
+    val resp = uiApiClient.listSystems().futureValue
+    resp.status shouldBe ApiStatus.Ok
+    resp.dataList.get
+  }
+
+  def callSystemCreate(data: SystemData): SystemData = {
+    callSystemCreate(data, ApiStatus.Ok).get
+  }
+
+  def callSystemCreate(data: SystemData, expectedStatus: ApiStatus): Option[SystemData] = {
+    val resp = uiApiClient.createSystem(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callSystemUpdate(data: SystemData): SystemData = {
+    callSystemUpdate(data, ApiStatus.Ok).get
+  }
+
+  def callSystemUpdate(data: SystemData, expectedStatus: ApiStatus): Option[SystemData] = {
+    val resp = uiApiClient.updateSystem(data).futureValue
     resp.status shouldBe expectedStatus
     resp.data
   }

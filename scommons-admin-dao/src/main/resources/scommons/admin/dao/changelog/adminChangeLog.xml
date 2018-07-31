@@ -69,6 +69,55 @@
         </sql>
     </changeSet>
 
+    <!--======================== Changes #4 ========================-->
+    <changeSet id="4" author="viktorp">
+        <comment>Set systems.id default to systems_id_seq; added NOT NULL constraints</comment>
+
+        <sql splitStatements="false">
+            SELECT setval('systems_id_seq', coalesce(max(id), 0) + 1) FROM systems;
+            ALTER TABLE systems
+                ALTER COLUMN id SET DEFAULT nextval('systems_id_seq'),
+                ALTER COLUMN url SET NOT NULL,
+                ALTER COLUMN parent_id SET NOT NULL,
+                ALTER COLUMN title SET NOT NULL;
+        </sql>
+    </changeSet>
+
+    <!--======================== Changes #5 ========================-->
+    <changeSet id="5" author="viktorp">
+        <comment>Added updated_by, version, created_at, updated_at to systems</comment>
+
+        <sql splitStatements="false">
+            ALTER TABLE systems ADD COLUMN updated_by integer;
+            UPDATE systems SET updated_by = 1;
+            
+            ALTER TABLE systems
+                ALTER COLUMN updated_by SET NOT NULL,
+                ADD CONSTRAINT systems_updated_by FOREIGN KEY (updated_by) REFERENCES users (id),
+                ADD COLUMN version integer NOT NULL DEFAULT 1,
+                ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+                ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now();
+
+            CREATE FUNCTION systems_before_save() RETURNS trigger AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    NEW.version := 1;
+                    NEW.created_at := now();
+                ELSE
+                    NEW.version := OLD.version + 1;
+                    NEW.created_at := OLD.created_at;
+                END IF;
+    
+                NEW.updated_at := now();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER systems_before_save BEFORE INSERT OR UPDATE ON systems
+                FOR EACH ROW EXECUTE PROCEDURE systems_before_save();
+        </sql>
+    </changeSet>
+
 
     <!--===== This changeset MUST always be at the end of the file !!! =====-->
     <changeSet id="0" author="viktorp" runAlways="true">
