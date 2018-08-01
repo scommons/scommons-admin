@@ -3,9 +3,12 @@ package scommons.admin.client
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.action.ApiActions
+import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.company.action.CompanyListFetchAction
-import scommons.admin.client.system.group.SystemGroupState
+import scommons.admin.client.system.SystemState
+import scommons.admin.client.system.action._
+import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
 import scommons.admin.client.system.group.action._
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
 import scommons.client.test.TestSpec
@@ -33,15 +36,21 @@ class AdminRouteControllerSpec extends TestSpec {
       SystemGroupData(Some(1), "env 1"),
       SystemGroupData(Some(2), "env 2")
     ))
+    val systemState = SystemState(Map(
+      1 -> List(SystemData(Some(11), "app_1", "", "App 1", "http://app1", 1)),
+      2 -> List(SystemData(Some(12), "app_2", "", "App 2", "http://app2", 2))
+    ))
     val expectedTreeRoots = List(
       controller.companiesItem,
-      controller.environmentsNode.copy(
-        children = systemGroupState.dataList.map(controller.getEnvironmentItem)
+      controller.applicationsNode.copy(
+        children = systemGroupState.dataList.map { group =>
+          controller.getEnvironmentNode(group, systemState.systemsByParentId.getOrElse(group.id.get, Nil))
+      }
       )
     )
     val state = mock[AdminStateDef]
-    (state.systemGroupState _).expects()
-      .returning(systemGroupState)
+    (state.systemGroupState _).expects().returning(systemGroupState)
+    (state.systemState _).expects().returning(systemState)
 
     //when
     val result = controller.mapStateToProps(expectedDispatch, state, props)
@@ -57,7 +66,7 @@ class AdminRouteControllerSpec extends TestSpec {
         buttons shouldBe List(Buttons.REFRESH, Buttons.ADD, Buttons.REMOVE, Buttons.EDIT)
         treeRoots shouldBe expectedTreeRoots
         dispatch shouldBe expectedDispatch
-        initiallyOpenedNodes shouldBe Set(controller.environmentsNode.path)
+        initiallyOpenedNodes shouldBe Set(controller.applicationsNode.path)
     }
   }
 
@@ -66,6 +75,9 @@ class AdminRouteControllerSpec extends TestSpec {
     val apiActions = mock[ApiActions]
     val controller = new AdminRouteController(apiActions)
     val companyListFetchAction = mock[CompanyListFetchAction]
+    val expectedActions = Map(
+      Buttons.REFRESH.command -> companyListFetchAction
+    )
     val dispatch = mockFunction[Any, Any]
 
     (apiActions.companyListFetch _).expects(dispatch, None, None)
@@ -89,17 +101,23 @@ class AdminRouteControllerSpec extends TestSpec {
         path.value shouldBe "/companies"
         image shouldBe Some(ButtonImagesCss.folder)
         reactClass should not be None
-        actions.enabledCommands shouldBe Set(Buttons.REFRESH.command)
-        actions.onCommand(dispatch)(Buttons.REFRESH.command) shouldBe companyListFetchAction
+        actions.enabledCommands shouldBe expectedActions.keySet
+        expectedActions.foreach { case (cmd, action) =>
+          actions.onCommand(dispatch)(cmd) shouldBe action
+        }
     }
   }
 
-  it should "setup environments node" in {
+  it should "setup applications node" in {
     //given
     val apiActions = mock[ApiActions]
     val controller = new AdminRouteController(apiActions)
     val systemGroupListFetchAction = mock[SystemGroupListFetchAction]
     val systemGroupCreateRequestAction = SystemGroupCreateRequestAction(create = true)
+    val expectedActions = Map(
+      Buttons.REFRESH.command -> systemGroupListFetchAction,
+      Buttons.ADD.command -> systemGroupCreateRequestAction
+    )
     val dispatch = mockFunction[Any, Any]
 
     (apiActions.systemGroupListFetch _).expects(dispatch)
@@ -108,7 +126,7 @@ class AdminRouteControllerSpec extends TestSpec {
     dispatch.expects(systemGroupCreateRequestAction).returning(*)
 
     //when
-    val result = controller.environmentsNode
+    val result = controller.applicationsNode
 
     //then
     inside(result) {
@@ -120,28 +138,89 @@ class AdminRouteControllerSpec extends TestSpec {
       reactClass,
       _
       ) =>
-        text shouldBe "Environments"
-        path.value shouldBe "/environments"
+        text shouldBe "Applications"
+        path.value shouldBe SystemGroupController.path
         image shouldBe Some(AdminImagesCss.computer)
         reactClass shouldBe None
-        actions.enabledCommands shouldBe Set(Buttons.REFRESH.command, Buttons.ADD.command)
-        actions.onCommand(dispatch)(Buttons.REFRESH.command) shouldBe systemGroupListFetchAction
-        actions.onCommand(dispatch)(Buttons.ADD.command) shouldBe systemGroupCreateRequestAction
+        actions.enabledCommands shouldBe expectedActions.keySet
+        expectedActions.foreach { case (cmd, action) =>
+          actions.onCommand(dispatch)(cmd) shouldBe action
+        }
     }
   }
 
-  it should "setup environment item" in {
+  it should "setup environment node" in {
     //given
     val apiActions = mock[ApiActions]
     val controller = new AdminRouteController(apiActions)
     val data = SystemGroupData(Some(1), "env 1")
+    val systems = List(
+      SystemData(Some(11), "app_1", "", "App 1", "http://app1", 1)
+    )
+    val systemListFetchAction = mock[SystemListFetchAction]
+    val systemCreateRequestAction = SystemCreateRequestAction(create = true)
     val systemGroupUpdateRequestAction = SystemGroupUpdateRequestAction(update = true)
+    val expectedActions = Map(
+      Buttons.REFRESH.command -> systemListFetchAction,
+      Buttons.ADD.command -> systemCreateRequestAction,
+      Buttons.EDIT.command -> systemGroupUpdateRequestAction
+    )
     val dispatch = mockFunction[Any, Any]
-    
+
+    (apiActions.systemListFetch _).expects(dispatch)
+      .returning(systemListFetchAction)
+    dispatch.expects(systemListFetchAction).returning(*)
+    dispatch.expects(systemCreateRequestAction).returning(*)
     dispatch.expects(systemGroupUpdateRequestAction).returning(*)
 
     //when
-    val result = controller.getEnvironmentItem(data)
+    val result = controller.getEnvironmentNode(data, systems)
+
+    //then
+    inside(result) {
+      case BrowseTreeNodeData(
+      text,
+      path,
+      image,
+      actions,
+      reactClass,
+      _
+      ) =>
+        text shouldBe data.name
+        path.value shouldBe s"${SystemGroupController.path}/${data.id.get}"
+        image shouldBe Some(ButtonImagesCss.folder)
+        reactClass shouldBe None
+        actions.enabledCommands shouldBe expectedActions.keySet
+        expectedActions.foreach { case (cmd, action) =>
+          actions.onCommand(dispatch)(cmd) shouldBe action
+        }
+    }
+  }
+  
+  it should "setup application item" in {
+    //given
+    val apiActions = mock[ApiActions]
+    val controller = new AdminRouteController(apiActions)
+    val parentId = 1
+    val parentPath = s"${SystemGroupController.path}/$parentId"
+    val data = SystemData(
+      id = Some(11),
+      name = "app_1",
+      password = "",
+      title = "App 1",
+      url = "http://app1",
+      parentId = parentId
+    )
+    val systemUpdateRequestAction = SystemUpdateRequestAction(update = true)
+    val expectedActions = Map(
+      Buttons.EDIT.command -> systemUpdateRequestAction
+    )
+    val dispatch = mockFunction[Any, Any]
+
+    dispatch.expects(systemUpdateRequestAction).returning(*)
+
+    //when
+    val result = controller.getApplicationItem(parentPath, data)
 
     //then
     inside(result) {
@@ -153,11 +232,13 @@ class AdminRouteControllerSpec extends TestSpec {
       reactClass
       ) =>
         text shouldBe data.name
-        path.value shouldBe s"/environments/${data.id.get}"
-        image shouldBe Some(ButtonImagesCss.folder)
+        path.value shouldBe s"$parentPath/${data.id.get}"
+        image shouldBe Some(AdminImagesCss.computer)
         reactClass shouldBe None
-        actions.enabledCommands shouldBe Set(Buttons.EDIT.command)
-        actions.onCommand(dispatch)(Buttons.EDIT.command) shouldBe systemGroupUpdateRequestAction
+        actions.enabledCommands shouldBe expectedActions.keySet
+        expectedActions.foreach { case (cmd, action) =>
+          actions.onCommand(dispatch)(cmd) shouldBe action
+        }
     }
   }
 }

@@ -9,6 +9,8 @@ import scommons.admin.client.system.group.SystemGroupController._
 import scommons.admin.client.system.group.action.SystemGroupActions
 import scommons.client.app.BaseStateAndRouteController
 
+import scala.util.matching.Regex
+
 class SystemGroupController(apiActions: SystemGroupActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemGroupPanelProps] {
 
@@ -27,11 +29,13 @@ class SystemGroupController(apiActions: SystemGroupActions)
 
 object SystemGroupController {
   
-  val path = "/environments"
+  val path = "/apps"
   
-  private val idRegex = s"$path/(\\d+)".r
+  private val groupIdRegex = s"$path/(\\d+)".r
   
-  private[group] def extractId(path: String): Option[Int] = {
+  def extractId(path: String): Option[Int] = extractId(groupIdRegex, path)
+  
+  def extractId(idRegex: Regex, path: String): Option[Int] = {
     for {
       idRegex(id) <- idRegex.findPrefixMatchOf(path)
     } yield {
