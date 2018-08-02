@@ -49,24 +49,6 @@ class SystemGroupControllerSpec extends TestSpec {
       selectedId shouldBe Some(123)
     }
   }
-  
-  it should "extract id from the given location path" in {
-    //given
-    val prefix = SystemGroupController.path
-    
-    //when & then
-    SystemGroupController.extractId("") shouldBe None
-    SystemGroupController.extractId("/") shouldBe None
-    SystemGroupController.extractId("/test") shouldBe None
-    SystemGroupController.extractId(s"/test/$prefix/1") shouldBe None
-    SystemGroupController.extractId(s"$prefix/test") shouldBe None
-    SystemGroupController.extractId(s"$prefix/1") shouldBe Some(1)
-    SystemGroupController.extractId(s"$prefix/123") shouldBe Some(123)
-    SystemGroupController.extractId(s"$prefix/123") shouldBe Some(123)
-    SystemGroupController.extractId(s"$prefix/123?test") shouldBe Some(123)
-    SystemGroupController.extractId(s"$prefix/123/test") shouldBe Some(123)
-    SystemGroupController.extractId(s"$prefix/123$prefix/456") shouldBe Some(123)
-  }
 }
 
 object SystemGroupControllerSpec {

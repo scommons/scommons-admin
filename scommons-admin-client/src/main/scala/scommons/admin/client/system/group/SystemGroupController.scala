@@ -5,11 +5,10 @@ import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminStateDef
-import scommons.admin.client.system.group.SystemGroupController._
+import scommons.admin.client.system.group.SystemGroupController.extractGroupId
 import scommons.admin.client.system.group.action.SystemGroupActions
 import scommons.client.app.BaseStateAndRouteController
-
-import scala.util.matching.Regex
+import scommons.client.util.PathParamsExtractors
 
 class SystemGroupController(apiActions: SystemGroupActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemGroupPanelProps] {
@@ -23,7 +22,7 @@ class SystemGroupController(apiActions: SystemGroupActions)
 
     val path = routerProps.location.pathname
     
-    SystemGroupPanelProps(dispatch, apiActions, state.systemGroupState, extractId(path))
+    SystemGroupPanelProps(dispatch, apiActions, state.systemGroupState, extractGroupId(path))
   }
 }
 
@@ -33,13 +32,7 @@ object SystemGroupController {
   
   private val groupIdRegex = s"$path/(\\d+)".r
   
-  def extractId(path: String): Option[Int] = extractId(groupIdRegex, path)
-  
-  def extractId(idRegex: Regex, path: String): Option[Int] = {
-    for {
-      idRegex(id) <- idRegex.findPrefixMatchOf(path)
-    } yield {
-      id.toInt
-    }
+  def extractGroupId(path: String): Option[Int] = {
+    PathParamsExtractors.extractId(groupIdRegex, path)
   }
 }

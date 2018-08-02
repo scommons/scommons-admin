@@ -7,7 +7,6 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.action._
 import scommons.client.ui._
-import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 
 case class SystemPanelProps(dispatch: Dispatch,
                             actions: SystemActions,
@@ -37,38 +36,47 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
       
       <.div()(
         props.selectedParentId.map { parentId =>
-          <(InputPopup())(^.wrapped := InputPopupProps(
-            props.state.showCreatePopup,
-            "Enter Application name:",
-            onOk = { text =>
+          <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
+            show = props.state.showCreatePopup,
+            title = "New Application",
+            onSave = { data =>
               props.dispatch(SystemCreateRequestAction(create = false))
-              props.dispatch(props.actions.systemCreate(props.dispatch, SystemData(
-                id = None,
-                name = text,
-                password = "",
-                title = text,
-                url = "http://test.com",
-                parentId = parentId
-              )))
+              props.dispatch(props.actions.systemCreate(props.dispatch, data))
             },
             onCancel = { () =>
               props.dispatch(SystemCreateRequestAction(create = false))
             },
-            initialValue = "New Application"
+            initialData = SystemData(
+              id = None,
+              name = "",
+              password = "",
+              title = "",
+              url = "",
+              parentId = parentId
+            )
           ))()
         },
         selectedData.map { data =>
-          <(InputPopup())(^.wrapped := InputPopupProps(
-            props.state.showEditPopup,
-            "Enter new Application name:",
-            onOk = { text =>
+          <(SystemEditPanel())(^.wrapped := SystemEditPanelProps(
+            readOnly = true,
+            initialData = data,
+            requestFocus = false,
+            onChange = _ => (),
+            onEnter = () => ()
+          ))()
+        },
+        selectedData.map { data =>
+          <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
+            show = props.state.showEditPopup,
+            title = "Edit Application",
+            onSave = { updatedData =>
               props.dispatch(SystemUpdateRequestAction(update = false))
-              props.dispatch(props.actions.systemUpdate(props.dispatch, data.copy(name = text)))
+              props.dispatch(props.actions.systemUpdate(props.dispatch, updatedData))
             },
             onCancel = { () =>
               props.dispatch(SystemUpdateRequestAction(update = false))
             },
-            initialValue = data.name
+            initialData = data
           ))()
         }
       )

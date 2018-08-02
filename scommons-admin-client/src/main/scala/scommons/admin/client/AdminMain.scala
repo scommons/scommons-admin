@@ -40,10 +40,11 @@ object AdminMain {
       <.Provider(^.store := store)(
         <.HashRouter()(
           <(WithRouter(AppMainPanel()))(^.wrapped := appMainPanelProps)(
-            <(routeController()).empty,
+            <(routeController())()(
+              <(WithRouter(appController())).empty
+            ),
             <(AdminTaskController()).empty,
-            <(WithRouter(envController())).empty,
-            <(WithRouter(appController())).empty
+            <(WithRouter(envController())).empty
           )
         )
       ),
