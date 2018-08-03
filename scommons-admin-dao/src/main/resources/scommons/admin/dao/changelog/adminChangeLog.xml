@@ -118,6 +118,55 @@
         </sql>
     </changeSet>
 
+    <!--======================== Changes #6 ========================-->
+    <changeSet id="6" author="viktorp">
+        <comment>Changed roles.id type from long to int</comment>
+
+        <sql splitStatements="false">
+            ALTER TABLE roles ALTER COLUMN id SET DATA TYPE integer;
+            ALTER TABLE roles_permissions ALTER COLUMN role_id SET DATA TYPE integer;
+
+            CREATE SEQUENCE roles_id_seq OWNED BY roles.id;
+            SELECT setval('roles_id_seq', coalesce(max(id), 0) + 1) FROM roles;
+            ALTER TABLE roles ALTER COLUMN id SET DEFAULT nextval('roles_id_seq');
+        </sql>
+    </changeSet>
+
+    <!--======================== Changes #7 ========================-->
+    <changeSet id="7" author="viktorp">
+        <comment>Added updated_by, version, created_at, updated_at to roles</comment>
+
+        <sql splitStatements="false">
+            ALTER TABLE roles ADD COLUMN updated_by integer;
+            UPDATE roles SET updated_by = 1;
+
+            ALTER TABLE roles
+                ALTER COLUMN updated_by SET NOT NULL,
+                ADD CONSTRAINT roles_updated_by FOREIGN KEY (updated_by) REFERENCES users (id),
+                ADD COLUMN version integer NOT NULL DEFAULT 1,
+                ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+                ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now();
+
+            CREATE FUNCTION roles_before_save() RETURNS trigger AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    NEW.version := 1;
+                    NEW.created_at := now();
+                ELSE
+                    NEW.version := OLD.version + 1;
+                    NEW.created_at := OLD.created_at;
+                END IF;
+    
+                NEW.updated_at := now();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER roles_before_save BEFORE INSERT OR UPDATE ON roles
+                FOR EACH ROW EXECUTE PROCEDURE roles_before_save();
+        </sql>
+    </changeSet>
+
 
     <!--===== This changeset MUST always be at the end of the file !!! =====-->
     <changeSet id="0" author="viktorp" runAlways="true">

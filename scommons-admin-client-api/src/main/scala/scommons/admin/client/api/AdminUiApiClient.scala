@@ -1,6 +1,7 @@
 package scommons.admin.client.api
 
 import scommons.admin.client.api.company._
+import scommons.admin.client.api.role._
 import scommons.admin.client.api.system._
 import scommons.admin.client.api.system.group._
 import scommons.api.http.ApiHttpClient
@@ -10,7 +11,8 @@ import scala.concurrent.Future
 class AdminUiApiClient(client: ApiHttpClient)
   extends CompanyApi
     with SystemGroupApi
-    with SystemApi {
+    with SystemApi
+    with RoleApi {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // companies
@@ -74,6 +76,25 @@ class AdminUiApiClient(client: ApiHttpClient)
 
   def updateSystem(data: SystemData): Future[SystemResp] = {
     client.execPut[SystemData, SystemResp]("/systems", data)
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // roles
+
+  def getRoleById(id: Int): Future[RoleResp] = {
+    client.execGet[RoleResp](s"/roles/$id")
+  }
+
+  def listRoles(): Future[RoleListResp] = {
+    client.execGet[RoleListResp]("/roles")
+  }
+
+  def createRole(data: RoleData): Future[RoleResp] = {
+    client.execPost[RoleData, RoleResp]("/roles", data)
+  }
+
+  def updateRole(data: RoleData): Future[RoleResp] = {
+    client.execPut[RoleData, RoleResp]("/roles", data)
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

@@ -8,6 +8,7 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.ConfiguredServer
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.api.company.CompanyData
+import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.domain.dao._
@@ -36,6 +37,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val companyDao: CompanyDao = inject[CompanyDao]
   protected lazy val systemGroupDao: SystemGroupDao = inject[SystemGroupDao]
   protected lazy val systemDao: SystemDao = inject[SystemDao]
+  protected lazy val roleDao: RoleDao = inject[RoleDao]
   
   private lazy val uiApiClient = inject[AdminUiApiClient]
 
@@ -213,6 +215,64 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   def callSystemUpdate(data: SystemData, expectedStatus: ApiStatus): Option[SystemData] = {
     val resp = uiApiClient.updateSystem(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // roles
+
+  def removeAllRoles(): Unit = {
+    val futureResult = for {
+      _ <- roleDao.deleteAll()
+    } yield {
+      ()
+    }
+
+    // wait for operation to complete
+    futureResult.futureValue
+  }
+
+  def createRandomRole(systemId: Int): RoleData = {
+    callRoleCreate(RoleData(
+      id = None,
+      systemId = systemId,
+      title = s"${System.nanoTime()} test title"
+    ))
+  }
+
+  def callRoleGetById(id: Int): RoleData = {
+    callRoleGetById(id, ApiStatus.Ok).get
+  }
+
+  def callRoleGetById(id: Int, expectedStatus: ApiStatus): Option[RoleData] = {
+    val resp = uiApiClient.getRoleById(id).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callRoleList(): List[RoleData] = {
+    val resp = uiApiClient.listRoles().futureValue
+    resp.status shouldBe ApiStatus.Ok
+    resp.dataList.get
+  }
+
+  def callRoleCreate(data: RoleData): RoleData = {
+    callRoleCreate(data, ApiStatus.Ok).get
+  }
+
+  def callRoleCreate(data: RoleData, expectedStatus: ApiStatus): Option[RoleData] = {
+    val resp = uiApiClient.createRole(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callRoleUpdate(data: RoleData): RoleData = {
+    callRoleUpdate(data, ApiStatus.Ok).get
+  }
+
+  def callRoleUpdate(data: RoleData, expectedStatus: ApiStatus): Option[RoleData] = {
+    val resp = uiApiClient.updateRole(data).futureValue
     resp.status shouldBe expectedStatus
     resp.data
   }

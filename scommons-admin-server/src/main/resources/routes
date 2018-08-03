@@ -29,3 +29,8 @@ GET     /scommons-admin/ui/systems/:id              controllers.ui.SystemControl
 GET     /scommons-admin/ui/systems                  controllers.ui.SystemController.list
 POST    /scommons-admin/ui/systems                  controllers.ui.SystemController.create
 PUT     /scommons-admin/ui/systems                  controllers.ui.SystemController.update
+
+GET     /scommons-admin/ui/roles/:id                controllers.ui.RoleController.getById(id: Int)
+GET     /scommons-admin/ui/roles                    controllers.ui.RoleController.list
+POST    /scommons-admin/ui/roles                    controllers.ui.RoleController.create
+PUT     /scommons-admin/ui/roles                    controllers.ui.RoleController.update

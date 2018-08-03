@@ -70,7 +70,13 @@ class SystemApiImpl(service: SystemService)(implicit ec: ExecutionContext)
           getByName(current, entity)
         )).flatMap {
           case List(Some(_)) => Future.successful(SystemResp(SystemAlreadyExists))
-          case List(None) => onSuccess(entity)
+          case List(None) => current match {
+            case None => onSuccess(entity)
+            case Some(curr) => onSuccess(entity.copy(
+              //DON'T UPDATE READ-ONLY FIELDS !!!
+              parentId = curr.parentId
+            ))
+          }
         }
       }
     }

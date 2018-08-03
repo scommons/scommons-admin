@@ -38,6 +38,7 @@ class ControllersSpec extends Suites(
       bind[CompanyController] to new CompanyController(null)
       bind[SystemGroupController] to new SystemGroupController(null)
       bind[SystemController] to new SystemController(null)
+      bind[RoleController] to new RoleController(null)
     })
   ).build()
 }

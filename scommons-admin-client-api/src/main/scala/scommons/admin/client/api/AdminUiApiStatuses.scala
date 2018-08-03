@@ -23,4 +23,11 @@ object AdminUiApiStatuses {
   val SystemNotFound = ApiStatus(1021, "System not found")
   val SystemAlreadyExists = ApiStatus(1022, "System with such name already exists")
   val SystemAlreadyUpdated = ApiStatus(1023, "System was already updated by another user, try refresh")
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // roles
+
+  val RoleNotFound = ApiStatus(1031, "Role not found")
+  val RoleAlreadyExists = ApiStatus(1032, "Role with such title already exists")
+  val RoleAlreadyUpdated = ApiStatus(1033, "Role was already updated by another user, try refresh")
 }
