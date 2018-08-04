@@ -3,6 +3,7 @@ package scommons.admin.client
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.company.CompanyState
 import scommons.admin.client.company.action._
+import scommons.admin.client.role.RoleState
 import scommons.admin.client.system.SystemState
 import scommons.admin.client.system.group.SystemGroupState
 import scommons.client.task.FutureTask
@@ -22,12 +23,14 @@ class AdminStateReducerSpec extends TestSpec {
       currentTask,
       companyState,
       systemGroupState,
-      systemState
+      systemState,
+      roleState
       ) =>
         currentTask shouldBe None
         companyState shouldBe CompanyState()
         systemGroupState shouldBe SystemGroupState()
         systemState shouldBe SystemState()
+        roleState shouldBe RoleState()
     }
   }
   

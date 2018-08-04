@@ -8,6 +8,7 @@ import io.github.shogowada.scalajs.reactjs.router.WithRouter
 import io.github.shogowada.scalajs.reactjs.router.dom.RouterDOM._
 import org.scalajs.dom
 import scommons.admin.client.action.ApiActions
+import scommons.admin.client.role.RoleController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
@@ -35,13 +36,15 @@ object AdminMain {
     val routeController = new AdminRouteController(apiActions)
     val envController = new SystemGroupController(apiActions)
     val appController = new SystemController(apiActions)
+    val roleController = new RoleController(apiActions)
 
     ReactDOM.render(
       <.Provider(^.store := store)(
         <.HashRouter()(
           <(WithRouter(AppMainPanel()))(^.wrapped := appMainPanelProps)(
             <(routeController())()(
-              <(WithRouter(appController())).empty
+              <(WithRouter(appController())).empty,
+              <(WithRouter(roleController())).empty
             ),
             <(AdminTaskController()).empty,
             <(WithRouter(envController())).empty

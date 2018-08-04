@@ -4,9 +4,12 @@ import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.action.ApiActions
+import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.company.CompanyPanelController
+import scommons.admin.client.role.RoleController
+import scommons.admin.client.role.action._
 import scommons.admin.client.system.action._
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.admin.client.system.group.action._
@@ -31,12 +34,17 @@ class AdminRouteController(apiActions: ApiActions)
 
   private def getTreeRoots(state: AdminStateDef): List[BrowseTreeData] = {
     val systemsByParentId = state.systemState.systemsByParentId
+    val rolesBySystemId = state.roleState.rolesBySystemId
     
     List(
       companiesItem,
       applicationsNode.copy(
         children = state.systemGroupState.dataList.map { group =>
-          getEnvironmentNode(group, systemsByParentId.getOrElse(group.id.get, Nil))
+          getEnvironmentNode(
+            group,
+            systemsByParentId.getOrElse(group.id.get, Nil),
+            rolesBySystemId
+          )
         }
       )
     )
@@ -75,7 +83,22 @@ class AdminRouteController(apiActions: ApiActions)
     None
   )
 
-  private lazy val applicationItem = BrowseTreeItemData(
+  def getEnvironmentNode(data: SystemGroupData,
+                         systems: List[SystemData],
+                         rolesBySystemId: Map[Int, List[RoleData]]): BrowseTreeNodeData = {
+
+    val parentPath = s"${SystemGroupController.path}/${data.id.get}"
+
+    environmentNode.copy(
+      text = data.name,
+      path = BrowsePath(parentPath),
+      children = systems.map { system =>
+        getApplicationNode(parentPath, system, rolesBySystemId.getOrElse(system.id.get, Nil))
+      }
+    )
+  }
+
+  private lazy val applicationNode = BrowseTreeNodeData(
     "",
     BrowsePath("/"),
     Some(AdminImagesCss.computer),
@@ -85,20 +108,52 @@ class AdminRouteController(apiActions: ApiActions)
     None
   )
 
-  def getEnvironmentNode(data: SystemGroupData, systems: List[SystemData]): BrowseTreeNodeData = {
-    val parentPath = s"${SystemGroupController.path}/${data.id.get}"
+  def getApplicationNode(parentPath: String, data: SystemData, roles: List[RoleData]): BrowseTreeNodeData = {
+    val appPath = s"$parentPath/${data.id.get}"
     
-    environmentNode.copy(
+    applicationNode.copy(
       text = data.name,
-      path = BrowsePath(parentPath),
-      children = systems.map(getApplicationItem(parentPath, _))
+      path = BrowsePath(appPath),
+      children = List(
+        getRolesNode(appPath, data, roles)
+      )
     )
   }
   
-  def getApplicationItem(parentPath: String, data: SystemData): BrowseTreeItemData = {
-    applicationItem.copy(
-      text = data.name,
-      path = BrowsePath(s"$parentPath/${data.id.get}")
+  private lazy val rolesNode = BrowseTreeNodeData(
+    "Roles",
+    BrowsePath("/"),
+    Some(AdminImagesCss.role),
+    ActionsData(Set(Buttons.REFRESH.command, Buttons.ADD.command), dispatch => {
+      case Buttons.REFRESH.command => dispatch(apiActions.roleListFetch(dispatch))
+      case Buttons.ADD.command => dispatch(RoleCreateRequestAction(create = true))
+    }),
+    None
+  )
+
+  def getRolesNode(appPath: String, data: SystemData, roles: List[RoleData]): BrowseTreeNodeData = {
+    val rolesPath = s"$appPath/${RoleController.pathName}"
+    
+    rolesNode.copy(
+      path = BrowsePath(rolesPath),
+      children = roles.map(getRoleItem(rolesPath, _))
+    )
+  }
+
+  private lazy val roleItem = BrowseTreeItemData(
+    "",
+    BrowsePath("/"),
+    Some(AdminImagesCss.role),
+    ActionsData(Set(Buttons.EDIT.command), dispatch => {
+      case Buttons.EDIT.command => dispatch(RoleUpdateRequestAction(update = true))
+    }),
+    None
+  )
+
+  def getRoleItem(rolesPath: String, data: RoleData): BrowseTreeItemData = {
+    roleItem.copy(
+      text = data.title,
+      path = BrowsePath(s"$rolesPath/${data.id.get}")
     )
   }
 }
