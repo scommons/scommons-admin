@@ -135,6 +135,25 @@ class SystemApiIntegrationSpec extends BaseAdminIntegrationSpec {
     result.version.get shouldBe existing.version.get + 1
   }
 
+  it should "not update read-only fields" in {
+    //given
+    val parent = createRandomSystemGroup()
+    val parent2 = createRandomSystemGroup()
+    val existing = createRandomSystem(parent.id.get)
+    val data = existing.copy(
+      name = s"  ${System.nanoTime()}  ",
+      parentId = parent2.id.get
+    )
+
+    //when
+    val result = callSystemUpdate(data)
+
+    //then
+    result.parentId shouldBe existing.parentId
+
+    assertSystem(result, callSystemGetById(result.id.get))
+  }
+
   it should "update updated System" in {
     //given
     val parent = createRandomSystemGroup()

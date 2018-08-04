@@ -45,6 +45,28 @@ class RoleApiIntegrationSpec extends BaseAdminIntegrationSpec {
     callRoleCreate(data, RoleAlreadyExists) shouldBe None
   }
 
+  it should "fail if role bit_index limit is reached" in {
+    //given
+    val group = createRandomSystemGroup()
+    val system = createRandomSystem(group.id.get)
+    for (_ <- 1 to 64) {
+      createRandomRole(system.id.get)
+    }
+    val data = RoleData(
+      id = None,
+      systemId = system.id.get,
+      title = s"  ${System.nanoTime()}  "
+    )
+
+    //when
+    val status = uiApiClient.createRole(data).futureValue.status
+    
+    //then
+    status.code shouldBe 500
+    status.error.get shouldBe "Error while processing request"
+    status.details.get should include("Reached role bit_index limit(63)")
+  }
+
   it should "create fresh new Role" in {
     //given
     val group = createRandomSystemGroup()
@@ -138,6 +160,29 @@ class RoleApiIntegrationSpec extends BaseAdminIntegrationSpec {
     
     result.createdAt shouldBe existing.createdAt
     result.version.get shouldBe existing.version.get + 1
+  }
+
+  it should "not update read-only fields" in {
+    //given
+    val group = createRandomSystemGroup()
+    val system = createRandomSystem(group.id.get)
+    val system2 = createRandomSystem(group.id.get)
+    createRandomRole(system.id.get)
+    val existing = createRandomRole(system.id.get)
+    val data = existing.copy(
+      systemId = system2.id.get,
+      title = s"  ${System.nanoTime()}  "
+    )
+    val bitIndex = roleDao.getById(existing.id.get).futureValue.get.bitIndex
+
+    //when
+    val result = callRoleUpdate(data)
+
+    //then
+    result.systemId shouldBe existing.systemId
+    roleDao.getById(result.id.get).futureValue.get.bitIndex shouldBe bitIndex
+
+    assertRole(result, callRoleGetById(result.id.get))
   }
 
   it should "update updated Role" in {

@@ -39,7 +39,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val systemDao: SystemDao = inject[SystemDao]
   protected lazy val roleDao: RoleDao = inject[RoleDao]
   
-  private lazy val uiApiClient = inject[AdminUiApiClient]
+  protected lazy val uiApiClient: AdminUiApiClient = inject[AdminUiApiClient]
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // companies

@@ -26,9 +26,9 @@ class RoleDao(val ctx: AdminDBContext)(implicit ec: ExecutionContext)
   def getMaxBitIndex(systemId: Int): Future[Option[Int]] = {
     ctx.run(roles
       .filter(c => c.systemId == lift(systemId))
-      .sortBy(_.bitIndex)(Ord.desc)
       .map(_.bitIndex)
-    ).map(_.headOption)
+      .max
+    )
   }
 
   def list(): Future[List[Role]] = {

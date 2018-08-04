@@ -80,17 +80,17 @@ class SystemGroupApiImpl(service: SystemGroupService)(implicit ec: ExecutionCont
 object SystemGroupApiImpl {
 
   def convertToSystemGroupData(c: SystemGroup): SystemGroupData = SystemGroupData(
-    Some(c.id),
-    c.name,
-    Some(c.updatedAt),
-    Some(c.createdAt),
-    Some(c.version)
+    id = Some(c.id),
+    name = c.name,
+    updatedAt = Some(c.updatedAt),
+    createdAt = Some(c.createdAt),
+    version = Some(c.version)
   )
 
   def convertToSystemGroup(data: SystemGroupData): SystemGroup = SystemGroup(
-    data.id.getOrElse(-1),
-    data.name.trim,
-    1, //TODO: use current userId (from request)
+    id = data.id.getOrElse(-1),
+    name = data.name.trim,
+    updatedBy = 1, //TODO: use current userId (from request)
     version = data.version.getOrElse(-1)
   )
 }

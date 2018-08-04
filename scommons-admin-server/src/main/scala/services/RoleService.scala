@@ -24,7 +24,13 @@ class RoleService(roleDao: RoleDao)(implicit ec: ExecutionContext) {
   def createRole(entity: Role): Future[Role] = {
     ctx.transaction { implicit ec =>
       roleDao.getMaxBitIndex(entity.systemId).flatMap { maxBitIndex =>
-        val roleWithBitIndex = entity.copy(bitIndex = maxBitIndex.map(_ + 1).getOrElse(0))
+        val roleWithBitIndex = entity.copy(bitIndex = maxBitIndex.map { bitIndex =>
+          if (bitIndex == RoleService.bitIndexLimit) {
+            throw new IllegalStateException(s"Reached role bit_index limit($bitIndex)")
+          }
+          
+          bitIndex + 1
+        }.getOrElse(0))
         
         roleDao.insert(roleWithBitIndex).flatMap { id =>
           roleDao.getById(id).map(_.get)
@@ -41,4 +47,9 @@ class RoleService(roleDao: RoleDao)(implicit ec: ExecutionContext) {
       }
     }
   }
+}
+
+object RoleService {
+  
+  private val bitIndexLimit = 63
 }

@@ -87,20 +87,20 @@ class RoleApiImpl(service: RoleService)(implicit ec: ExecutionContext)
 object RoleApiImpl {
 
   def convertToRoleData(c: Role): RoleData = RoleData(
-    Some(c.id),
-    c.systemId,
-    c.title,
-    Some(c.updatedAt),
-    Some(c.createdAt),
-    Some(c.version)
+    id = Some(c.id),
+    systemId = c.systemId,
+    title = c.title,
+    updatedAt = Some(c.updatedAt),
+    createdAt = Some(c.createdAt),
+    version = Some(c.version)
   )
 
   def convertToRole(data: RoleData): Role = Role(
-    data.id.getOrElse(-1),
-    data.systemId,
-    0,
-    data.title.trim,
-    1, //TODO: use current userId (from request)
+    id = data.id.getOrElse(-1),
+    systemId = data.systemId,
+    bitIndex = 0,
+    title = data.title.trim,
+    updatedBy = 1, //TODO: use current userId (from request)
     version = data.version.getOrElse(-1)
   )
 }
