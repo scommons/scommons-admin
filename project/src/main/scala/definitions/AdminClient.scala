@@ -13,7 +13,7 @@ object AdminClient extends AdminModule with CommonClientModule {
       .settings(
         coverageExcludedPackages := coverageExcludedPackages.value +
           ";.*AdminMain" +
-          ";.*ApiActions"
+          ";.*AdminActions"
       )
   }
 

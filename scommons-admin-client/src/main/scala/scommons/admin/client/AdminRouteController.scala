@@ -3,7 +3,6 @@ package scommons.admin.client
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.action.ApiActions
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
@@ -18,7 +17,7 @@ import scommons.client.ui.tree._
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.{ActionsData, BrowsePath}
 
-class AdminRouteController(apiActions: ApiActions)
+class AdminRouteController(apiActions: AdminActions)
   extends BaseStateController[AdminStateDef, AppBrowseControllerProps] {
 
   lazy val component: ReactClass = AppBrowseController()

@@ -1,4 +1,4 @@
-package scommons.admin.client.action
+package scommons.admin.client
 
 import org.scalajs.dom
 import scommons.admin.client.api.AdminUiApiClient
@@ -8,7 +8,7 @@ import scommons.admin.client.system.action.SystemActions
 import scommons.admin.client.system.group.action.SystemGroupActions
 import scommons.api.http.js.JsApiHttpClient
 
-trait ApiActions extends CompanyActions
+trait AdminActions extends CompanyActions
   with SystemGroupActions
   with SystemActions
   with RoleActions {
@@ -23,4 +23,4 @@ trait ApiActions extends CompanyActions
   }
 }
 
-object ApiActions extends ApiActions
+object AdminActions extends AdminActions

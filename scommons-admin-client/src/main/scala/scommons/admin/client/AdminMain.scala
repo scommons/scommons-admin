@@ -7,7 +7,6 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux
 import io.github.shogowada.scalajs.reactjs.router.WithRouter
 import io.github.shogowada.scalajs.reactjs.router.dom.RouterDOM._
 import org.scalajs.dom
-import scommons.admin.client.action.ApiActions
 import scommons.admin.client.role.RoleController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
@@ -32,7 +31,7 @@ object AdminMain {
       version = "(version: 0.1.0-SNAPSHOT)"
     )
 
-    val apiActions = ApiActions
+    val apiActions = AdminActions
     val routeController = new AdminRouteController(apiActions)
     val envController = new SystemGroupController(apiActions)
     val appController = new SystemController(apiActions)
