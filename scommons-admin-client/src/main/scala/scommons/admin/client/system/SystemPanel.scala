@@ -30,7 +30,7 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
       val props = self.props.wrapped
       
       val selectedData = props.selectedParentId.flatMap { parentId =>
-        props.state.systemsByParentId.getOrElse(parentId, Nil)
+        props.state.getSystems(parentId)
           .find(_.id == props.selectedId)
       }
       

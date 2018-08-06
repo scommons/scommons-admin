@@ -7,7 +7,12 @@ import scommons.client.test.TestSpec
 class RoleStateReducerSpec extends TestSpec {
 
   private val reduce = RoleStateReducer.apply _
-  
+
+  it should "return empty list if no such systemId when state.getRoles" in {
+    //when & then
+    RoleState().getRoles(123) shouldBe Nil
+  }
+
   it should "return default state when state is None" in {
     //when & then
     reduce(None, "") shouldBe RoleState()

@@ -8,6 +8,11 @@ class SystemStateReducerSpec extends TestSpec {
 
   private val reduce = SystemStateReducer.apply _
   
+  it should "return empty list if no such parentId when state.getSystems" in {
+    //when & then
+    SystemState().getSystems(123) shouldBe Nil
+  }
+  
   it should "return default state when state is None" in {
     //when & then
     reduce(None, "") shouldBe SystemState()

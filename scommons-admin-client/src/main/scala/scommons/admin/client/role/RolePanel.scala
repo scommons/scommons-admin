@@ -31,7 +31,7 @@ object RolePanel extends UiComponent[RolePanelProps] {
       val props = self.props.wrapped
 
       val selectedData = props.selectedSystemId.flatMap { systemId =>
-        props.state.rolesBySystemId.getOrElse(systemId, Nil)
+        props.state.getRoles(systemId)
           .find(_.id == props.selectedId)
       }
       

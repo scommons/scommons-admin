@@ -53,7 +53,7 @@ class AdminRouteControllerSpec extends TestSpec {
           controller.getEnvironmentNode(
             group,
             systemState.systemsByParentId.getOrElse(group.id.get, Nil),
-            roleState.rolesBySystemId
+            roleState
           )
         }
       )
@@ -188,7 +188,7 @@ class AdminRouteControllerSpec extends TestSpec {
     dispatch.expects(systemGroupUpdateRequestAction).returning(*)
 
     //when
-    val result = controller.getEnvironmentNode(data, systems, roles.groupBy(_.systemId))
+    val result = controller.getEnvironmentNode(data, systems, RoleState(roles.groupBy(_.systemId)))
 
     //then
     inside(result) {

@@ -5,7 +5,12 @@ import scommons.admin.client.system.SystemActions._
 
 case class SystemState(systemsByParentId: Map[Int, List[SystemData]] = Map.empty,
                        showCreatePopup: Boolean = false,
-                       showEditPopup: Boolean = false)
+                       showEditPopup: Boolean = false) {
+  
+  def getSystems(parentId: Int): List[SystemData] = {
+    systemsByParentId.getOrElse(parentId, Nil)
+  }
+}
 
 object SystemStateReducer {
 
@@ -20,12 +25,12 @@ object SystemStateReducer {
       systemsByParentId = dataList.groupBy(_.parentId)
     )
     case SystemCreatedAction(data) =>
-      val dataList = state.systemsByParentId.getOrElse(data.parentId, Nil)
+      val dataList = state.getSystems(data.parentId)
       state.copy(
         systemsByParentId = state.systemsByParentId + (data.parentId -> (dataList :+ data))
       )
     case SystemUpdatedAction(data) =>
-      val dataList = state.systemsByParentId.getOrElse(data.parentId, Nil).map {
+      val dataList = state.getSystems(data.parentId).map {
         case curr if curr.id == data.id => data
         case curr => curr
       }

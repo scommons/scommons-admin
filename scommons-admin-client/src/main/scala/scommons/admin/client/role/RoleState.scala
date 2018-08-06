@@ -5,7 +5,12 @@ import scommons.admin.client.role.RoleActions._
 
 case class RoleState(rolesBySystemId: Map[Int, List[RoleData]] = Map.empty,
                      showCreatePopup: Boolean = false,
-                     showEditPopup: Boolean = false)
+                     showEditPopup: Boolean = false) {
+
+  def getRoles(systemId: Int): List[RoleData] = {
+    rolesBySystemId.getOrElse(systemId, Nil)
+  }
+}
 
 object RoleStateReducer {
 
@@ -20,12 +25,12 @@ object RoleStateReducer {
       rolesBySystemId = dataList.groupBy(_.systemId)
     )
     case RoleCreatedAction(data) =>
-      val dataList = state.rolesBySystemId.getOrElse(data.systemId, Nil)
+      val dataList = state.getRoles(data.systemId)
       state.copy(
         rolesBySystemId = state.rolesBySystemId + (data.systemId -> (dataList :+ data))
       )
     case RoleUpdatedAction(data) =>
-      val dataList = state.rolesBySystemId.getOrElse(data.systemId, Nil).map {
+      val dataList = state.getRoles(data.systemId).map {
         case curr if curr.id == data.id => data
         case curr => curr
       }

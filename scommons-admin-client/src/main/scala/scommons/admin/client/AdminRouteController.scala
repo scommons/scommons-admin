@@ -8,7 +8,7 @@ import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.company.CompanyPanelController
 import scommons.admin.client.role.RoleActions._
-import scommons.admin.client.role.RoleController
+import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.SystemGroupController
@@ -32,8 +32,8 @@ class AdminRouteController(apiActions: AdminActions)
   }
 
   private def getTreeRoots(state: AdminStateDef): List[BrowseTreeData] = {
-    val systemsByParentId = state.systemState.systemsByParentId
-    val rolesBySystemId = state.roleState.rolesBySystemId
+    val systemState = state.systemState
+    val roleState = state.roleState
     
     List(
       companiesItem,
@@ -41,8 +41,8 @@ class AdminRouteController(apiActions: AdminActions)
         children = state.systemGroupState.dataList.map { group =>
           getEnvironmentNode(
             group,
-            systemsByParentId.getOrElse(group.id.get, Nil),
-            rolesBySystemId
+            systemState.getSystems(group.id.get),
+            roleState
           )
         }
       )
@@ -84,7 +84,7 @@ class AdminRouteController(apiActions: AdminActions)
 
   def getEnvironmentNode(data: SystemGroupData,
                          systems: List[SystemData],
-                         rolesBySystemId: Map[Int, List[RoleData]]): BrowseTreeNodeData = {
+                         roleState: RoleState): BrowseTreeNodeData = {
 
     val parentPath = s"${SystemGroupController.path}/${data.id.get}"
 
@@ -92,7 +92,7 @@ class AdminRouteController(apiActions: AdminActions)
       text = data.name,
       path = BrowsePath(parentPath),
       children = systems.map { system =>
-        getApplicationNode(parentPath, system, rolesBySystemId.getOrElse(system.id.get, Nil))
+        getApplicationNode(parentPath, system, roleState.getRoles(system.id.get))
       }
     )
   }
