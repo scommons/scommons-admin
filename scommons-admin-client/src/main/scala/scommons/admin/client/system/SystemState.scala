@@ -1,7 +1,7 @@
 package scommons.admin.client.system
 
 import scommons.admin.client.api.system.SystemData
-import scommons.admin.client.system.action._
+import scommons.admin.client.system.SystemActions._
 
 case class SystemState(systemsByParentId: Map[Int, List[SystemData]] = Map.empty,
                        showCreatePopup: Boolean = false,

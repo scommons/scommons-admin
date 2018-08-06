@@ -1,9 +1,11 @@
-package scommons.admin.client.system.action
+package scommons.admin.client.system
 
+import io.github.shogowada.scalajs.reactjs.redux.Action
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system._
+import scommons.admin.client.system.SystemActions._
 import scommons.api.ApiStatus.Ok
-import scommons.client.task.FutureTask
+import scommons.client.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
@@ -38,4 +40,18 @@ trait SystemActions {
 
     SystemUpdateAction(FutureTask("Updating Application", future))
   }
+}
+
+object SystemActions {
+
+  case class SystemCreateAction(task: FutureTask[SystemResp]) extends TaskAction
+  case class SystemCreatedAction(data: SystemData) extends Action
+  case class SystemCreateRequestAction(create: Boolean) extends Action
+
+  case class SystemListFetchAction(task: FutureTask[SystemListResp]) extends TaskAction
+  case class SystemListFetchedAction(dataList: List[SystemData]) extends Action
+
+  case class SystemUpdateAction(task: FutureTask[SystemResp]) extends TaskAction
+  case class SystemUpdatedAction(data: SystemData) extends Action
+  case class SystemUpdateRequestAction(update: Boolean) extends Action
 }

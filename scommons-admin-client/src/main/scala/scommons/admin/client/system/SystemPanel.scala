@@ -5,7 +5,7 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemData
-import scommons.admin.client.system.action._
+import scommons.admin.client.system.SystemActions._
 import scommons.client.ui._
 
 case class SystemPanelProps(dispatch: Dispatch,
