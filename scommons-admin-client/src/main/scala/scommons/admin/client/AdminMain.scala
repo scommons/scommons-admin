@@ -34,8 +34,8 @@ object AdminMain {
 
     val apiActions = AdminActions
     val companyController = new CompanyController(apiActions)
-    val routeController = new AdminRouteController(apiActions, companyController)
-    val envController = new SystemGroupController(apiActions)
+    val envController = new SystemGroupController(apiActions, apiActions)
+    val routeController = new AdminRouteController(apiActions, companyController, envController)
     val appController = new SystemController(apiActions)
     val roleController = new RoleController(apiActions)
 
