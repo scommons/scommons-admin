@@ -10,8 +10,8 @@ import scommons.admin.client.company.CompanyPanelController
 import scommons.admin.client.role.RoleController
 import scommons.admin.client.role.action._
 import scommons.admin.client.system.action._
+import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.SystemGroupController
-import scommons.admin.client.system.group.action._
 import scommons.client.app._
 import scommons.client.ui.tree._
 import scommons.client.ui.{ButtonImagesCss, Buttons}

@@ -1,7 +1,7 @@
 package scommons.admin.client.system.group
 
 import scommons.admin.client.api.system.group.SystemGroupData
-import scommons.admin.client.system.group.action._
+import scommons.admin.client.system.group.SystemGroupActions._
 
 case class SystemGroupState(dataList: List[SystemGroupData] = Nil,
                             showCreatePopup: Boolean = false,

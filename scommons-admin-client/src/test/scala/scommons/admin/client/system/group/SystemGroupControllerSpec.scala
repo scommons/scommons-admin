@@ -6,7 +6,6 @@ import io.github.shogowada.scalajs.reactjs.router.Location
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminStateDef
 import scommons.admin.client.system.group.SystemGroupControllerSpec.LocationMock
-import scommons.admin.client.system.group.action.SystemGroupActions
 import scommons.client.test.TestSpec
 
 import scala.scalajs.js.annotation.JSExportAll

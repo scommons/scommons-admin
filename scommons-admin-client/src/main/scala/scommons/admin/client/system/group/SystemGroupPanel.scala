@@ -4,7 +4,7 @@ import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.system.group.action._
+import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.client.ui._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 

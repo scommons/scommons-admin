@@ -10,7 +10,7 @@ import scommons.admin.client.role.action._
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.SystemState
 import scommons.admin.client.system.action._
-import scommons.admin.client.system.group.action._
+import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
 import scommons.client.test.TestSpec

@@ -5,7 +5,7 @@ import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.role.action.RoleActions
 import scommons.admin.client.system.action.SystemActions
-import scommons.admin.client.system.group.action.SystemGroupActions
+import scommons.admin.client.system.group.SystemGroupActions
 import scommons.api.http.js.JsApiHttpClient
 
 trait AdminActions extends CompanyActions

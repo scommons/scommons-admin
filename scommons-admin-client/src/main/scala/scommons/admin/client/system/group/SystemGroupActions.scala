@@ -1,9 +1,11 @@
-package scommons.admin.client.system.group.action
+package scommons.admin.client.system.group
 
+import io.github.shogowada.scalajs.reactjs.redux.Action
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.group._
+import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.api.ApiStatus.Ok
-import scommons.client.task.FutureTask
+import scommons.client.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
@@ -38,4 +40,18 @@ trait SystemGroupActions {
 
     SystemGroupUpdateAction(FutureTask("Updating Environment", future))
   }
+}
+
+object SystemGroupActions {
+
+  case class SystemGroupCreateAction(task: FutureTask[SystemGroupResp]) extends TaskAction
+  case class SystemGroupCreatedAction(data: SystemGroupData) extends Action
+  case class SystemGroupCreateRequestAction(create: Boolean) extends Action
+
+  case class SystemGroupListFetchAction(task: FutureTask[SystemGroupListResp]) extends TaskAction
+  case class SystemGroupListFetchedAction(dataList: List[SystemGroupData]) extends Action
+
+  case class SystemGroupUpdateAction(task: FutureTask[SystemGroupResp]) extends TaskAction
+  case class SystemGroupUpdatedAction(data: SystemGroupData) extends Action
+  case class SystemGroupUpdateRequestAction(update: Boolean) extends Action
 }

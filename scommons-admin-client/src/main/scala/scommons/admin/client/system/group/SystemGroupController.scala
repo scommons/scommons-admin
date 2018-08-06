@@ -6,7 +6,6 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminStateDef
 import scommons.admin.client.system.group.SystemGroupController.extractGroupId
-import scommons.admin.client.system.group.action.SystemGroupActions
 import scommons.client.app.BaseStateAndRouteController
 import scommons.client.util.PathParamsExtractors
 
