@@ -17,7 +17,7 @@ import scommons.client.ui.tree._
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.{ActionsData, BrowsePath}
 
-class AdminRouteController(apiActions: AdminActions)
+class AdminRouteController(apiActions: AdminActions, companyController: CompanyController)
   extends BaseStateController[AdminStateDef, AppBrowseControllerProps] {
 
   lazy val component: ReactClass = AppBrowseController()
@@ -36,7 +36,7 @@ class AdminRouteController(apiActions: AdminActions)
     val roleState = state.roleState
     
     List(
-      companiesItem,
+      companyController.getCompaniesItem,
       applicationsNode.copy(
         children = state.systemGroupState.dataList.map { group =>
           getEnvironmentNode(
@@ -48,16 +48,6 @@ class AdminRouteController(apiActions: AdminActions)
       )
     )
   }
-
-  lazy val companiesItem = BrowseTreeItemData(
-    "Companies",
-    BrowsePath("/companies"),
-    Some(ButtonImagesCss.folder),
-    ActionsData(Set(Buttons.REFRESH.command), dispatch => {
-      case Buttons.REFRESH.command => dispatch(apiActions.companyListFetch(dispatch, None, None))
-    }),
-    Some(new CompanyController(apiActions)())
-  )
 
   lazy val applicationsNode = BrowseTreeNodeData(
     "Applications",

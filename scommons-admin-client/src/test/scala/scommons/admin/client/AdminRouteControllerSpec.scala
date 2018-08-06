@@ -5,7 +5,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
-import scommons.admin.client.company.CompanyActions._
+import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.SystemActions._
@@ -16,13 +16,15 @@ import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
 import scommons.client.test.TestSpec
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.ui.{ButtonImagesCss, Buttons}
+import scommons.client.util.BrowsePath
 
 class AdminRouteControllerSpec extends TestSpec {
 
   it should "return component" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
 
     //when & then
     controller.component shouldBe AppBrowseController()
@@ -31,7 +33,8 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "map state to props" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
     val systemGroupState = SystemGroupState(List(
@@ -46,8 +49,10 @@ class AdminRouteControllerSpec extends TestSpec {
       11 -> List(RoleData(Some(111), 11, "ROLE_1")),
       12 -> List(RoleData(Some(122), 12, "ROLE_2"))
     ))
+    val companiesItem = BrowseTreeItemData("Test", BrowsePath("/"))
+    (companyController.getCompaniesItem _).expects().returning(companiesItem)
     val expectedTreeRoots = List(
-      controller.companiesItem,
+      companiesItem,
       controller.applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
           controller.getEnvironmentNode(
@@ -81,48 +86,11 @@ class AdminRouteControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup companies item" in {
-    //given
-    val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
-    val companyListFetchAction = mock[CompanyListFetchAction]
-    val expectedActions = Map(
-      Buttons.REFRESH.command -> companyListFetchAction
-    )
-    val dispatch = mockFunction[Any, Any]
-
-    (apiActions.companyListFetch _).expects(dispatch, None, None)
-      .returning(companyListFetchAction)
-    dispatch.expects(companyListFetchAction)
-      .returning(*)
-
-    //when
-    val result = controller.companiesItem
-
-    //then
-    inside(result) {
-      case BrowseTreeItemData(
-      text,
-      path,
-      image,
-      actions,
-      reactClass
-      ) =>
-        text shouldBe "Companies"
-        path.value shouldBe "/companies"
-        image shouldBe Some(ButtonImagesCss.folder)
-        reactClass should not be None
-        actions.enabledCommands shouldBe expectedActions.keySet
-        expectedActions.foreach { case (cmd, action) =>
-          actions.onCommand(dispatch)(cmd) shouldBe action
-        }
-    }
-  }
-
   it should "setup applications node" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
     val systemGroupListFetchAction = mock[SystemGroupListFetchAction]
     val systemGroupCreateRequestAction = SystemGroupCreateRequestAction(create = true)
     val expectedActions = Map(
@@ -163,7 +131,8 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "setup environment node" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
     val data = SystemGroupData(Some(1), "env 1")
     val systems = List(
       SystemData(Some(11), "app_1", "", "App 1", "http://app1", 1)
@@ -214,7 +183,8 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "setup application node" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
     val parentId = 1
     val parentPath = s"${SystemGroupController.path}/$parentId"
     val data = SystemData(
@@ -263,7 +233,8 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "setup roles node" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
     val parentId = 1
     val parentPath = s"${SystemGroupController.path}/$parentId"
     val data = SystemData(
@@ -318,7 +289,8 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "setup role item" in {
     //given
     val apiActions = mock[AdminActions]
-    val controller = new AdminRouteController(apiActions)
+    val companyController = mock[CompanyController]
+    val controller = new AdminRouteController(apiActions, companyController)
     val rolesPath = "/some-path"
     val data = RoleData(
       id = Some(111),
