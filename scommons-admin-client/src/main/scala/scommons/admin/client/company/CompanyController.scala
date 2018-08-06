@@ -6,7 +6,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
 import scommons.client.app.BaseStateController
 
-class CompanyPanelController(apiActions: CompanyActions)
+class CompanyController(apiActions: CompanyActions)
   extends BaseStateController[AdminStateDef, CompanyPanelProps] {
 
   lazy val component: ReactClass = CompanyPanel()

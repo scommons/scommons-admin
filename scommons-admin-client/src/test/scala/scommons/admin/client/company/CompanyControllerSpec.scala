@@ -5,12 +5,12 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
 import scommons.client.test.TestSpec
 
-class CompanyPanelControllerSpec extends TestSpec {
+class CompanyControllerSpec extends TestSpec {
 
   it should "return component" in {
     //given
     val apiActions = mock[CompanyActions]
-    val controller = new CompanyPanelController(apiActions)
+    val controller = new CompanyController(apiActions)
     
     //when & then
     controller.component shouldBe CompanyPanel()
@@ -20,7 +20,7 @@ class CompanyPanelControllerSpec extends TestSpec {
     //given
     val apiActions = mock[CompanyActions]
     val props = mock[Props[Unit]]
-    val controller = new CompanyPanelController(apiActions)
+    val controller = new CompanyController(apiActions)
     val dispatch = mock[Dispatch]
     val companyState = mock[CompanyState]
     val state = mock[AdminStateDef]

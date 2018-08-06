@@ -6,7 +6,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
-import scommons.admin.client.company.CompanyPanelController
+import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.SystemActions._
@@ -56,7 +56,7 @@ class AdminRouteController(apiActions: AdminActions)
     ActionsData(Set(Buttons.REFRESH.command), dispatch => {
       case Buttons.REFRESH.command => dispatch(apiActions.companyListFetch(dispatch, None, None))
     }),
-    Some(new CompanyPanelController(apiActions)())
+    Some(new CompanyController(apiActions)())
   )
 
   lazy val applicationsNode = BrowseTreeNodeData(
