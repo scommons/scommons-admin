@@ -4,7 +4,7 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.role._
-import scommons.admin.client.role.action._
+import scommons.admin.client.role.RoleActions._
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance

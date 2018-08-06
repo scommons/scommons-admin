@@ -7,8 +7,8 @@ import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.company.CompanyPanelController
+import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RoleController
-import scommons.admin.client.role.action._
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.SystemGroupController

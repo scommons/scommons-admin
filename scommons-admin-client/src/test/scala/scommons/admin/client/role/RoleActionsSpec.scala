@@ -1,7 +1,8 @@
-package scommons.admin.client.role.action
+package scommons.admin.client.role
 
 import scommons.admin.client.api.role._
-import scommons.admin.client.role.action.RoleActionsSpec._
+import scommons.admin.client.role.RoleActions._
+import scommons.admin.client.role.RoleActionsSpec._
 import scommons.client.task.FutureTask
 import scommons.client.test.AsyncTestSpec
 

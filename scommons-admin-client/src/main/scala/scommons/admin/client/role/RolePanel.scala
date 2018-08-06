@@ -5,7 +5,7 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
-import scommons.admin.client.role.action._
+import scommons.admin.client.role.RoleActions._
 import scommons.client.ui._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 

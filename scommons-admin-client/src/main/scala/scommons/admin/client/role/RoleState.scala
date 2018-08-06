@@ -1,7 +1,7 @@
 package scommons.admin.client.role
 
 import scommons.admin.client.api.role.RoleData
-import scommons.admin.client.role.action._
+import scommons.admin.client.role.RoleActions._
 
 case class RoleState(rolesBySystemId: Map[Int, List[RoleData]] = Map.empty,
                      showCreatePopup: Boolean = false,

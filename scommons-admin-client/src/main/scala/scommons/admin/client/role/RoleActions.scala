@@ -1,9 +1,11 @@
-package scommons.admin.client.role.action
+package scommons.admin.client.role
 
+import io.github.shogowada.scalajs.reactjs.redux.Action
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role._
+import scommons.admin.client.role.RoleActions._
 import scommons.api.ApiStatus.Ok
-import scommons.client.task.FutureTask
+import scommons.client.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
@@ -38,4 +40,18 @@ trait RoleActions {
 
     RoleUpdateAction(FutureTask("Updating Role", future))
   }
+}
+
+object RoleActions {
+
+  case class RoleCreateAction(task: FutureTask[RoleResp]) extends TaskAction
+  case class RoleCreatedAction(data: RoleData) extends Action
+  case class RoleCreateRequestAction(create: Boolean) extends Action
+
+  case class RoleListFetchAction(task: FutureTask[RoleListResp]) extends TaskAction
+  case class RoleListFetchedAction(dataList: List[RoleData]) extends Action
+
+  case class RoleUpdateAction(task: FutureTask[RoleResp]) extends TaskAction
+  case class RoleUpdatedAction(data: RoleData) extends Action
+  case class RoleUpdateRequestAction(update: Boolean) extends Action
 }
