@@ -4,11 +4,11 @@ import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.company.action._
+import scommons.admin.client.company.CompanyActions._
+import scommons.client.ui._
 import scommons.client.ui.page._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 import scommons.client.ui.table._
-import scommons.client.ui._
 import scommons.client.util.ActionsData
 
 case class CompanyPanelProps(dispatch: Dispatch,

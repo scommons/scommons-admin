@@ -1,7 +1,7 @@
 package scommons.admin.client.company
 
 import scommons.admin.client.api.company.CompanyData
-import scommons.admin.client.company.action._
+import scommons.admin.client.company.CompanyActions._
 
 case class CompanyState(dataList: List[CompanyData] = Nil,
                         offset: Option[Int] = None,

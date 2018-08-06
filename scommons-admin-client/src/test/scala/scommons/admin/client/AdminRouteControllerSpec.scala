@@ -5,7 +5,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
-import scommons.admin.client.company.action.CompanyListFetchAction
+import scommons.admin.client.company.CompanyActions._
 import scommons.admin.client.role.action._
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.SystemState

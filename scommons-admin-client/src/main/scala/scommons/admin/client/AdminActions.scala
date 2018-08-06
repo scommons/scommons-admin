@@ -2,7 +2,7 @@ package scommons.admin.client
 
 import org.scalajs.dom
 import scommons.admin.client.api.AdminUiApiClient
-import scommons.admin.client.company.action._
+import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.role.action.RoleActions
 import scommons.admin.client.system.action.SystemActions
 import scommons.admin.client.system.group.action.SystemGroupActions

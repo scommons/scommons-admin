@@ -1,7 +1,8 @@
-package scommons.admin.client.company.action
+package scommons.admin.client.company
 
 import scommons.admin.client.api.company._
-import scommons.admin.client.company.action.CompanyActionsSpec._
+import scommons.admin.client.company.CompanyActions._
+import scommons.admin.client.company.CompanyActionsSpec._
 import scommons.client.task.FutureTask
 import scommons.client.test.AsyncTestSpec
 

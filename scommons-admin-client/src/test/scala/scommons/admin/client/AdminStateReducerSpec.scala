@@ -1,8 +1,8 @@
 package scommons.admin.client
 
 import scommons.admin.client.api.company.CompanyListResp
+import scommons.admin.client.company.CompanyActions._
 import scommons.admin.client.company.CompanyState
-import scommons.admin.client.company.action._
 import scommons.admin.client.role.RoleState
 import scommons.admin.client.system.SystemState
 import scommons.admin.client.system.group.SystemGroupState
