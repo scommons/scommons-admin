@@ -10,6 +10,7 @@ import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree._
+import scommons.client.util.PathParamsExtractors
 
 class AdminRouteController(companyController: CompanyController,
                            systemGroupController: SystemGroupController,
@@ -58,5 +59,27 @@ class AdminRouteController(companyController: CompanyController,
         }
       )
     )
+  }
+}
+
+object AdminRouteController {
+
+  val appsPath = "/apps"
+  val rolesPath = "roles"
+
+  private val groupIdRegex = s"$appsPath/(\\d+)".r
+  private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
+  private val roleIdRegex = s"$appsPath/\\d+/\\d+/$rolesPath/(\\d+)".r
+
+  def extractGroupId(path: String): Option[Int] = {
+    PathParamsExtractors.extractId(groupIdRegex, path)
+  }
+
+  def extractSystemId(path: String, exact: Boolean = false): Option[Int] = {
+    PathParamsExtractors.extractId(systemIdRegex, path, exact)
+  }
+  
+  def extractRoleId(path: String): Option[Int] = {
+    PathParamsExtractors.extractId(roleIdRegex, path)
   }
 }

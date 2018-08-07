@@ -4,11 +4,9 @@ import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
+import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
-import scommons.admin.client.role.RoleController._
-import scommons.admin.client.system.SystemController.extractSystemId
-import scommons.admin.client.system.group.SystemGroupController
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.app.BaseStateAndRouteController
 import scommons.client.ui.Buttons
@@ -29,7 +27,7 @@ class RoleController(apiActions: RoleActions)
     val path = routerProps.location.pathname
 
     RolePanelProps(dispatch, apiActions, state.roleState,
-      extractSystemId(path), extractId(roleIdRegex, path))
+      extractSystemId(path), extractRoleId(path))
   }
 
   private lazy val rolesNode = BrowseTreeNodeData(
@@ -54,18 +52,11 @@ class RoleController(apiActions: RoleActions)
   )
 
   def getRolesNode(appPath: String): BrowseTreeNodeData = rolesNode.copy(
-    path = BrowsePath(s"$appPath/${RoleController.pathName}")
+    path = BrowsePath(s"$appPath/$rolesPath")
   )
 
   def getRoleItem(rolesPath: String, data: RoleData): BrowseTreeItemData = roleItem.copy(
     text = data.title,
     path = BrowsePath(s"$rolesPath/${data.id.get}")
   )
-}
-
-object RoleController {
-  
-  val pathName = "roles"
-  
-  private val roleIdRegex = s"${SystemGroupController.path}/\\d+/\\d+/$pathName/(\\d+)".r
 }

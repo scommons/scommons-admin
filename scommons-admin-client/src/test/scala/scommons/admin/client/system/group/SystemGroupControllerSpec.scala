@@ -9,7 +9,7 @@ import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.SystemGroupControllerSpec.LocationMock
-import scommons.admin.client.{AdminImagesCss, AdminStateDef}
+import scommons.admin.client.{AdminImagesCss, AdminRouteController, AdminStateDef}
 import scommons.client.test.TestSpec
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
@@ -39,7 +39,7 @@ class SystemGroupControllerSpec extends TestSpec {
     val props = mock[Props[Unit]]
     val routerProps = mock[RouterProps]
     val location = mock[LocationMock]
-    val pathname = s"${SystemGroupController.path}/123"
+    val pathname = s"${AdminRouteController.appsPath}/123"
     
     (routerProps.location _).expects().returning(location.asInstanceOf[Location])
     (location.pathname _).expects().returning(pathname)
@@ -89,7 +89,7 @@ class SystemGroupControllerSpec extends TestSpec {
       _
       ) =>
         text shouldBe "Applications"
-        path.value shouldBe SystemGroupController.path
+        path.value shouldBe AdminRouteController.appsPath
         image shouldBe Some(AdminImagesCss.computer)
         reactClass shouldBe None
         actions.enabledCommands shouldBe expectedActions.keySet
@@ -135,7 +135,7 @@ class SystemGroupControllerSpec extends TestSpec {
       _
       ) =>
         text shouldBe data.name
-        path.value shouldBe s"${SystemGroupController.path}/${data.id.get}"
+        path.value shouldBe s"${AdminRouteController.appsPath}/${data.id.get}"
         image shouldBe Some(ButtonImagesCss.folder)
         reactClass shouldBe None
         actions.enabledCommands shouldBe expectedActions.keySet
