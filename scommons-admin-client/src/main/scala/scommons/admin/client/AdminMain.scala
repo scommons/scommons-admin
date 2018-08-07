@@ -36,8 +36,13 @@ object AdminMain {
     val companyController = new CompanyController(apiActions)
     val envController = new SystemGroupController(apiActions, apiActions)
     val appController = new SystemController(apiActions)
-    val routeController = new AdminRouteController(apiActions, companyController, envController, appController)
     val roleController = new RoleController(apiActions)
+    val routeController = new AdminRouteController(
+      companyController,
+      envController,
+      appController,
+      roleController
+    )
 
     ReactDOM.render(
       <.Provider(^.store := store)(
