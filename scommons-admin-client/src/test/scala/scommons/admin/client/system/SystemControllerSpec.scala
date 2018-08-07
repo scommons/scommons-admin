@@ -7,7 +7,7 @@ import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.SystemControllerSpec.LocationMock
-import scommons.admin.client.{AdminImagesCss, AdminRouteController, AdminStateDef}
+import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeNodeData
@@ -35,7 +35,7 @@ class SystemControllerSpec extends TestSpec {
     val props = mock[Props[Unit]]
     val routerProps = mock[RouterProps]
     val location = mock[LocationMock]
-    val pathname = s"${AdminRouteController.appsPath}/123/456"
+    val pathname = "/apps/123/456"
     
     (routerProps.location _).expects().returning(location.asInstanceOf[Location])
     (location.pathname _).expects().returning(pathname)
@@ -64,7 +64,7 @@ class SystemControllerSpec extends TestSpec {
     val props = mock[Props[Unit]]
     val routerProps = mock[RouterProps]
     val location = mock[LocationMock]
-    val pathname = s"${AdminRouteController.appsPath}/123/456/not-exact"
+    val pathname = "/apps/123/456/not-exact"
     
     (routerProps.location _).expects().returning(location.asInstanceOf[Location])
     (location.pathname _).expects().returning(pathname)
@@ -88,7 +88,7 @@ class SystemControllerSpec extends TestSpec {
     val apiActions = mock[SystemActions]
     val controller = new SystemController(apiActions)
     val parentId = 1
-    val parentPath = s"${AdminRouteController.appsPath}/$parentId"
+    val parentPath = s"/apps/$parentId"
     val data = SystemData(
       id = Some(11),
       name = "app_1",

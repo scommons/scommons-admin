@@ -48,6 +48,7 @@ class CompanyControllerSpec extends TestSpec {
     val expectedActions = Map(
       Buttons.REFRESH.command -> companyListFetchAction
     )
+    val companiesPath = "some-path"
     val dispatch = mockFunction[Any, Any]
 
     (apiActions.companyListFetch _).expects(dispatch, None, None)
@@ -56,7 +57,7 @@ class CompanyControllerSpec extends TestSpec {
       .returning(*)
 
     //when
-    val result = controller.getCompaniesItem
+    val result = controller.getCompaniesItem(companiesPath)
 
     //then
     inside(result) {
@@ -68,7 +69,7 @@ class CompanyControllerSpec extends TestSpec {
       reactClass
       ) =>
         text shouldBe "Companies"
-        path.value shouldBe "/companies"
+        path.value shouldBe companiesPath
         image shouldBe Some(ButtonImagesCss.folder)
         reactClass should not be None
         actions.enabledCommands shouldBe expectedActions.keySet

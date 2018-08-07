@@ -3,6 +3,7 @@ package scommons.admin.client
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleController
 import scommons.admin.client.system.SystemController
@@ -21,7 +22,7 @@ class AdminRouteController(companyController: CompanyController,
   lazy val component: ReactClass = AppBrowseController()
 
   def mapStateToProps(dispatch: Dispatch, state: AdminStateDef, props: Props[Unit]): AppBrowseControllerProps = {
-    val applicationsNode = systemGroupController.getApplicationsNode
+    val applicationsNode = systemGroupController.getApplicationsNode(appsPath)
     
     AppBrowseControllerProps(
       buttons = List(Buttons.REFRESH, Buttons.ADD, Buttons.REMOVE, Buttons.EDIT),
@@ -37,16 +38,16 @@ class AdminRouteController(companyController: CompanyController,
     val roleState = state.roleState
     
     List(
-      companyController.getCompaniesItem,
+      companyController.getCompaniesItem(companiesPath),
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
-          val groupNode = systemGroupController.getEnvironmentNode(group)
+          val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path.value, group)
           val systems = systemState.getSystems(group.id.get)
           groupNode.copy(
             children = systems.map { system =>
               val systemNode = systemController.getApplicationNode(groupNode.path.value, system)
               val roles = roleState.getRoles(system.id.get)
-              val rolesNode = roleController.getRolesNode(systemNode.path.value)
+              val rolesNode = roleController.getRolesNode(s"${systemNode.path}$rolesPath")
               systemNode.copy(
                 children = List(
                   rolesNode.copy(
@@ -64,12 +65,13 @@ class AdminRouteController(companyController: CompanyController,
 
 object AdminRouteController {
 
-  val appsPath = "/apps"
-  val rolesPath = "roles"
+  private val companiesPath = "/companies"
+  private val appsPath = "/apps"
+  private val rolesPath = "/roles"
 
   private val groupIdRegex = s"$appsPath/(\\d+)".r
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
-  private val roleIdRegex = s"$appsPath/\\d+/\\d+/$rolesPath/(\\d+)".r
+  private val roleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
 
   def extractGroupId(path: String): Option[Int] = {
     PathParamsExtractors.extractId(groupIdRegex, path)

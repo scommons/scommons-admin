@@ -7,7 +7,7 @@ import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RoleControllerSpec.LocationMock
-import scommons.admin.client.{AdminImagesCss, AdminRouteController, AdminStateDef}
+import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
@@ -35,7 +35,7 @@ class RoleControllerSpec extends TestSpec {
     val props = mock[Props[Unit]]
     val routerProps = mock[RouterProps]
     val location = mock[LocationMock]
-    val pathname = s"${AdminRouteController.appsPath}/1/2/roles/3"
+    val pathname = "/apps/1/2/roles/3"
     
     (routerProps.location _).expects().returning(location.asInstanceOf[Location])
     (location.pathname _).expects().returning(pathname)
@@ -58,7 +58,7 @@ class RoleControllerSpec extends TestSpec {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)
-    val appPath = "/some-path"
+    val rolesPath = "/some-path"
     val roleListFetchAction = mock[RoleListFetchAction]
     val roleCreateRequestAction = RoleCreateRequestAction(create = true)
     val expectedActions = Map(
@@ -73,7 +73,7 @@ class RoleControllerSpec extends TestSpec {
     dispatch.expects(roleCreateRequestAction).returning(*)
 
     //when
-    val result = controller.getRolesNode(appPath)
+    val result = controller.getRolesNode(rolesPath)
 
     //then
     inside(result) {
@@ -86,7 +86,7 @@ class RoleControllerSpec extends TestSpec {
       _
       ) =>
         text shouldBe "Roles"
-        path.value shouldBe s"$appPath/${AdminRouteController.rolesPath}"
+        path.value shouldBe rolesPath
         image shouldBe Some(AdminImagesCss.role)
         reactClass shouldBe None
         actions.enabledCommands shouldBe expectedActions.keySet

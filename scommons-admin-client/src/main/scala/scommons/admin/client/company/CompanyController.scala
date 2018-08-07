@@ -20,7 +20,7 @@ class CompanyController(apiActions: CompanyActions)
 
   private lazy val companiesItem = BrowseTreeItemData(
     "Companies",
-    BrowsePath("/companies"),
+    BrowsePath("/"),
     Some(ButtonImagesCss.folder),
     ActionsData(Set(Buttons.REFRESH.command), dispatch => {
       case Buttons.REFRESH.command => dispatch(apiActions.companyListFetch(dispatch, None, None))
@@ -28,5 +28,7 @@ class CompanyController(apiActions: CompanyActions)
     Some(apply())
   )
 
-  def getCompaniesItem: BrowseTreeItemData = companiesItem
+  def getCompaniesItem(companiesPath: String): BrowseTreeItemData = companiesItem.copy(
+    path = BrowsePath(companiesPath)
+  )
 }

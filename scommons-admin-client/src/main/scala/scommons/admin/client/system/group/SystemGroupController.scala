@@ -32,7 +32,7 @@ class SystemGroupController(groupActions: SystemGroupActions, systemActions: Sys
 
   private lazy val applicationsNode = BrowseTreeNodeData(
     "Applications",
-    BrowsePath(appsPath),
+    BrowsePath("/"),
     Some(AdminImagesCss.computer),
     ActionsData(Set(Buttons.REFRESH.command, Buttons.ADD.command), dispatch => {
       case Buttons.REFRESH.command => dispatch(groupActions.systemGroupListFetch(dispatch))
@@ -53,9 +53,11 @@ class SystemGroupController(groupActions: SystemGroupActions, systemActions: Sys
     None
   )
 
-  def getApplicationsNode: BrowseTreeNodeData = applicationsNode
+  def getApplicationsNode(appsPath: String): BrowseTreeNodeData = applicationsNode.copy(
+    path = BrowsePath(appsPath)
+  )
 
-  def getEnvironmentNode(data: SystemGroupData): BrowseTreeNodeData = environmentNode.copy(
+  def getEnvironmentNode(appsPath: String, data: SystemGroupData): BrowseTreeNodeData = environmentNode.copy(
     text = data.name,
     path = BrowsePath(s"$appsPath/${data.id.get}")
   )
