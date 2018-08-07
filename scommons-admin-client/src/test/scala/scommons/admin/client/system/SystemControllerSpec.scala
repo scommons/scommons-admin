@@ -4,10 +4,14 @@ import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import io.github.shogowada.scalajs.reactjs.router.Location
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
-import scommons.admin.client.AdminStateDef
+import scommons.admin.client.api.system.SystemData
+import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.SystemControllerSpec.LocationMock
 import scommons.admin.client.system.group.SystemGroupController
+import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
+import scommons.client.ui.Buttons
+import scommons.client.ui.tree.BrowseTreeNodeData
 
 import scala.scalajs.js.annotation.JSExportAll
 
@@ -77,6 +81,52 @@ class SystemControllerSpec extends TestSpec {
       compState shouldBe systemState
       selectedParentId shouldBe Some(123)
       selectedId shouldBe None
+    }
+  }
+
+  it should "setup application node" in {
+    //given
+    val apiActions = mock[SystemActions]
+    val controller = new SystemController(apiActions)
+    val parentId = 1
+    val parentPath = s"${SystemGroupController.path}/$parentId"
+    val data = SystemData(
+      id = Some(11),
+      name = "app_1",
+      password = "",
+      title = "App 1",
+      url = "http://app1",
+      parentId = parentId
+    )
+    val systemUpdateRequestAction = SystemUpdateRequestAction(update = true)
+    val expectedActions = Map(
+      Buttons.EDIT.command -> systemUpdateRequestAction
+    )
+    val dispatch = mockFunction[Any, Any]
+
+    dispatch.expects(systemUpdateRequestAction).returning(*)
+
+    //when
+    val result = controller.getApplicationNode(parentPath, data)
+
+    //then
+    inside(result) {
+      case BrowseTreeNodeData(
+      text,
+      path,
+      image,
+      actions,
+      reactClass,
+      _
+      ) =>
+        text shouldBe data.name
+        path.value shouldBe s"$parentPath/${data.id.get}"
+        image shouldBe Some(AdminImagesCss.computer)
+        reactClass shouldBe None
+        actions.enabledCommands shouldBe expectedActions.keySet
+        expectedActions.foreach { case (cmd, action) =>
+          actions.onCommand(dispatch)(cmd) shouldBe action
+        }
     }
   }
 }

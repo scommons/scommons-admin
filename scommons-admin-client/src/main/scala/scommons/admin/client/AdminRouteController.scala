@@ -8,7 +8,7 @@ import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RoleController
-import scommons.admin.client.system.SystemActions._
+import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
 import scommons.client.ui.Buttons
@@ -17,7 +17,8 @@ import scommons.client.util.{ActionsData, BrowsePath}
 
 class AdminRouteController(apiActions: AdminActions,
                            companyController: CompanyController,
-                           systemGroupController: SystemGroupController
+                           systemGroupController: SystemGroupController,
+                           systemController: SystemController
                           ) extends BaseStateController[AdminStateDef, AppBrowseControllerProps] {
 
   lazy val component: ReactClass = AppBrowseController()
@@ -46,7 +47,13 @@ class AdminRouteController(apiActions: AdminActions,
           val systems = systemState.getSystems(group.id.get)
           groupNode.copy(
             children = systems.map { system =>
-              getApplicationNode(groupNode.path.value, system, roleState.getRoles(system.id.get))
+              val systemNode = systemController.getApplicationNode(groupNode.path.value, system)
+              val roles = roleState.getRoles(system.id.get)
+              systemNode.copy(
+                children = List(
+                  getRolesNode(systemNode.path.value, system, roles)
+                )
+              )
             }
           )
         }
@@ -54,28 +61,6 @@ class AdminRouteController(apiActions: AdminActions,
     )
   }
 
-  private lazy val applicationNode = BrowseTreeNodeData(
-    "",
-    BrowsePath("/"),
-    Some(AdminImagesCss.computer),
-    ActionsData(Set(Buttons.EDIT.command), dispatch => {
-      case Buttons.EDIT.command => dispatch(SystemUpdateRequestAction(update = true))
-    }),
-    None
-  )
-
-  def getApplicationNode(parentPath: String, data: SystemData, roles: List[RoleData]): BrowseTreeNodeData = {
-    val appPath = s"$parentPath/${data.id.get}"
-    
-    applicationNode.copy(
-      text = data.name,
-      path = BrowsePath(appPath),
-      children = List(
-        getRolesNode(appPath, data, roles)
-      )
-    )
-  }
-  
   private lazy val rolesNode = BrowseTreeNodeData(
     "Roles",
     BrowsePath("/"),
