@@ -1,7 +1,6 @@
 package scommons.admin.client.role
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminRouteController._
@@ -9,15 +8,15 @@ import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.app.BaseStateAndRouteController
-import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
+import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath, PathParamsExtractors}
 
 class RoleController(apiActions: RoleActions)
   extends BaseStateAndRouteController[AdminStateDef, RolePanelProps]
     with PathParamsExtractors {
 
-  lazy val component: ReactClass = RolePanel()
+  lazy val uiComponent: UiComponent[RolePanelProps] = RolePanel
 
   def mapStateAndRouteToProps(dispatch: Dispatch,
                               state: AdminStateDef,

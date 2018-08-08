@@ -16,7 +16,7 @@ class CompanyControllerSpec extends TestSpec {
     val controller = new CompanyController(apiActions)
     
     //when & then
-    controller.component shouldBe CompanyPanel()
+    controller.uiComponent shouldBe CompanyPanel
   }
   
   it should "map state to props" in {

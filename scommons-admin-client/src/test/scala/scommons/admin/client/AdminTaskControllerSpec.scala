@@ -11,7 +11,7 @@ class AdminTaskControllerSpec extends TestSpec {
 
   it should "return component" in {
     //when & then
-    AdminTaskController.component shouldBe TaskManager()
+    AdminTaskController.uiComponent shouldBe TaskManager
   }
   
   it should "map state to props" in {

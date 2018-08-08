@@ -1,7 +1,6 @@
 package scommons.admin.client
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyController
@@ -9,8 +8,8 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
-import scommons.client.ui.Buttons
 import scommons.client.ui.tree._
+import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.PathParamsExtractors
 
 class AdminRouteController(companyController: CompanyController,
@@ -19,7 +18,7 @@ class AdminRouteController(companyController: CompanyController,
                            roleController: RoleController
                           ) extends BaseStateController[AdminStateDef, AppBrowseControllerProps] {
 
-  lazy val component: ReactClass = AppBrowseController()
+  lazy val uiComponent: UiComponent[AppBrowseControllerProps] = AppBrowseController
 
   def mapStateToProps(dispatch: Dispatch, state: AdminStateDef, props: Props[Unit]): AppBrowseControllerProps = {
     val applicationsNode = systemGroupController.getApplicationsNode(appsPath)

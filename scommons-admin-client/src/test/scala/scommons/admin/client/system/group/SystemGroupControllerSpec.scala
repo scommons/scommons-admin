@@ -25,7 +25,7 @@ class SystemGroupControllerSpec extends TestSpec {
     val controller = new SystemGroupController(groupActions, systemActions)
 
     //when & then
-    controller.component shouldBe SystemGroupPanel()
+    controller.uiComponent shouldBe SystemGroupPanel
   }
 
   it should "map state to props" in {

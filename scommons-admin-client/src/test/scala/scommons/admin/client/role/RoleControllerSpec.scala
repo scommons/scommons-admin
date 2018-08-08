@@ -22,7 +22,7 @@ class RoleControllerSpec extends TestSpec {
     val controller = new RoleController(apiActions)
 
     //when & then
-    controller.component shouldBe RolePanel()
+    controller.uiComponent shouldBe RolePanel
   }
 
   it should "map state to props" in {

@@ -1,7 +1,6 @@
 package scommons.admin.client.system.group
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminRouteController._
@@ -12,13 +11,13 @@ import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.app.BaseStateAndRouteController
 import scommons.client.ui.tree.BrowseTreeNodeData
-import scommons.client.ui.{ButtonImagesCss, Buttons}
+import scommons.client.ui.{ButtonImagesCss, Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}
 
 class SystemGroupController(groupActions: SystemGroupActions, systemActions: SystemActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemGroupPanelProps] {
 
-  lazy val component: ReactClass = SystemGroupPanel()
+  lazy val uiComponent: UiComponent[SystemGroupPanelProps] = SystemGroupPanel
 
   def mapStateAndRouteToProps(dispatch: Dispatch,
                               state: AdminStateDef,

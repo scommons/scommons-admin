@@ -22,7 +22,7 @@ class SystemControllerSpec extends TestSpec {
     val controller = new SystemController(apiActions)
 
     //when & then
-    controller.component shouldBe SystemPanel()
+    controller.uiComponent shouldBe SystemPanel
   }
 
   it should "map state to props" in {

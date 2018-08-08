@@ -28,7 +28,7 @@ class AdminRouteControllerSpec extends TestSpec {
     )
 
     //when & then
-    controller.component shouldBe AppBrowseController()
+    controller.uiComponent shouldBe AppBrowseController
   }
   
   it should "map state to props" in {
