@@ -7,14 +7,13 @@ import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.app.BaseStateAndRouteController
+import scommons.client.controller.BaseStateAndRouteController
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.ui.{Buttons, UiComponent}
-import scommons.client.util.{ActionsData, BrowsePath, PathParamsExtractors}
+import scommons.client.util.{ActionsData, BrowsePath}
 
 class RoleController(apiActions: RoleActions)
-  extends BaseStateAndRouteController[AdminStateDef, RolePanelProps]
-    with PathParamsExtractors {
+  extends BaseStateAndRouteController[AdminStateDef, RolePanelProps] {
 
   lazy val uiComponent: UiComponent[RolePanelProps] = RolePanel
 

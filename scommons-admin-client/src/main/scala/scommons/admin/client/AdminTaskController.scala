@@ -2,7 +2,7 @@ package scommons.admin.client
 
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.client.app.BaseStateController
+import scommons.client.controller.BaseStateController
 import scommons.client.task.{TaskManager, TaskManagerProps}
 import scommons.client.ui.UiComponent
 

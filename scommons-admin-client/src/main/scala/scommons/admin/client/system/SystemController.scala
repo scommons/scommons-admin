@@ -7,7 +7,7 @@ import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions.SystemUpdateRequestAction
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.app.BaseStateAndRouteController
+import scommons.client.controller.BaseStateAndRouteController
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}

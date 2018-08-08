@@ -3,7 +3,7 @@ package scommons.admin.client.company
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
-import scommons.client.app.BaseStateController
+import scommons.client.controller.BaseStateController
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.ui.{ButtonImagesCss, Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}

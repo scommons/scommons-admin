@@ -9,7 +9,7 @@ import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.SystemActions.SystemCreateRequestAction
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.app.BaseStateAndRouteController
+import scommons.client.controller.BaseStateAndRouteController
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}
