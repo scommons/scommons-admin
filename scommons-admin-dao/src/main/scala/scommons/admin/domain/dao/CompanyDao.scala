@@ -5,19 +5,19 @@ import scommons.service.dao.CommonDao
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CompanyDao(val ctx: AdminDBContext)(implicit ec: ExecutionContext)
+class CompanyDao(val ctx: AdminDBContext)
   extends CommonDao
     with CompanySchema {
 
   import ctx._
 
-  def getById(id: Int): Future[Option[Company]] = {
+  def getById(id: Int)(implicit ec: ExecutionContext): Future[Option[Company]] = {
     getOne("getById", ctx.run(companies
       .filter(c => c.id == lift(id))
     ))
   }
 
-  def getByName(name: String): Future[Option[Company]] = {
+  def getByName(name: String)(implicit ec: ExecutionContext): Future[Option[Company]] = {
     getOne("getByName", ctx.run(companies
       .filter(c => c.name == lift(name))
     ))
@@ -25,7 +25,7 @@ class CompanyDao(val ctx: AdminDBContext)(implicit ec: ExecutionContext)
 
   def list(optOffset: Option[Int],
            limit: Int,
-           symbols: Option[String]): Future[(List[Company], Option[Int])] = {
+           symbols: Option[String])(implicit ec: ExecutionContext): Future[(List[Company], Option[Int])] = {
 
     val textLower = s"%${symbols.getOrElse("").trim.toLowerCase}%"
     val offset = optOffset.getOrElse(0)
@@ -51,21 +51,21 @@ class CompanyDao(val ctx: AdminDBContext)(implicit ec: ExecutionContext)
     }
   }
 
-  def insert(entity: Company): Future[Int] = {
+  def insert(entity: Company)(implicit ec: ExecutionContext): Future[Int] = {
     ctx.run(companies
       .insert(lift(entity))
       .returning(_.id)
     )
   }
 
-  def update(entity: Company): Future[Boolean] = {
+  def update(entity: Company)(implicit ec: ExecutionContext): Future[Boolean] = {
     isUpdated(ctx.run(companies
       .filter(c => c.id == lift(entity.id))
       .update(lift(entity))
     ))
   }
 
-  def deleteAll(): Future[Unit] = {
+  def deleteAll()(implicit ec: ExecutionContext): Future[Unit] = {
     ctx.run(companies.delete).map(_ => ())
   }
 }

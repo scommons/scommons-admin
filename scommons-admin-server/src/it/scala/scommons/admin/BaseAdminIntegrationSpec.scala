@@ -2,6 +2,7 @@ package scommons.admin
 
 import java.util.UUID
 
+import akka.actor.ActorSystem
 import org.scalatest._
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -15,7 +16,7 @@ import scommons.admin.domain.dao._
 import scommons.api.ApiStatus
 import services.CompanyService
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 trait BaseAdminIntegrationSpec extends FlatSpec
@@ -33,6 +34,8 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   private def inject[T: ClassTag]: T = app.injector.instanceOf[T]
 
+  implicit lazy val ec: ExecutionContext = inject[ActorSystem].dispatcher
+  
   protected lazy val companyService: CompanyService = inject[CompanyService]
   protected lazy val companyDao: CompanyDao = inject[CompanyDao]
   protected lazy val systemGroupDao: SystemGroupDao = inject[SystemGroupDao]
