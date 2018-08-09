@@ -49,12 +49,12 @@ class RoleController(apiActions: RoleActions)
     None
   )
 
-  def getRolesNode(rolesPath: String): BrowseTreeNodeData = rolesNode.copy(
-    path = BrowsePath(rolesPath)
+  def getRolesNode(path: BrowsePath): BrowseTreeNodeData = rolesNode.copy(
+    path = path
   )
 
-  def getRoleItem(rolesPath: String, data: RoleData): BrowseTreeItemData = roleItem.copy(
+  def getRoleItem(path: BrowsePath, data: RoleData): BrowseTreeItemData = roleItem.copy(
     text = data.title,
-    path = BrowsePath(s"$rolesPath/${data.id.get}")
+    path = BrowsePath(s"$path/${data.id.get}")
   )
 }

@@ -52,12 +52,12 @@ class SystemGroupController(groupActions: SystemGroupActions, systemActions: Sys
     None
   )
 
-  def getApplicationsNode(appsPath: String): BrowseTreeNodeData = applicationsNode.copy(
-    path = BrowsePath(appsPath)
+  def getApplicationsNode(path: BrowsePath): BrowseTreeNodeData = applicationsNode.copy(
+    path = path
   )
 
-  def getEnvironmentNode(appsPath: String, data: SystemGroupData): BrowseTreeNodeData = environmentNode.copy(
+  def getEnvironmentNode(path: BrowsePath, data: SystemGroupData): BrowseTreeNodeData = environmentNode.copy(
     text = data.name,
-    path = BrowsePath(s"$appsPath/${data.id.get}")
+    path = BrowsePath(s"$path/${data.id.get}")
   )
 }

@@ -11,6 +11,7 @@ import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeNodeData
+import scommons.client.util.BrowsePath
 
 import scala.scalajs.js.annotation.JSExportAll
 
@@ -88,7 +89,7 @@ class SystemControllerSpec extends TestSpec {
     val apiActions = mock[SystemActions]
     val controller = new SystemController(apiActions)
     val parentId = 1
-    val parentPath = s"/apps/$parentId"
+    val parentPath = BrowsePath(s"/apps/$parentId")
     val data = SystemData(
       id = Some(11),
       name = "app_1",

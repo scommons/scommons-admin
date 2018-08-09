@@ -27,7 +27,7 @@ class CompanyController(apiActions: CompanyActions)
     Some(apply())
   )
 
-  def getCompaniesItem(companiesPath: String): BrowseTreeItemData = companiesItem.copy(
-    path = BrowsePath(companiesPath)
+  def getCompaniesItem(path: BrowsePath): BrowseTreeItemData = companiesItem.copy(
+    path = path
   )
 }

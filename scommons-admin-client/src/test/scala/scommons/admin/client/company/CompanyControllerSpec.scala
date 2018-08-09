@@ -7,6 +7,7 @@ import scommons.admin.client.company.CompanyActions._
 import scommons.client.test.TestSpec
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.ui.tree.BrowseTreeItemData
+import scommons.client.util.BrowsePath
 
 class CompanyControllerSpec extends TestSpec {
 
@@ -48,7 +49,7 @@ class CompanyControllerSpec extends TestSpec {
     val expectedActions = Map(
       Buttons.REFRESH.command -> companyListFetchAction
     )
-    val companiesPath = "some-path"
+    val companiesPath = BrowsePath("some-path")
     val dispatch = mockFunction[Any, Any]
 
     (apiActions.companyListFetch _).expects(dispatch, None, None)
@@ -69,7 +70,7 @@ class CompanyControllerSpec extends TestSpec {
       reactClass
       ) =>
         text shouldBe "Companies"
-        path.value shouldBe companiesPath
+        path shouldBe companiesPath
         image shouldBe Some(ButtonImagesCss.folder)
         reactClass should not be None
         actions.enabledCommands shouldBe expectedActions.keySet

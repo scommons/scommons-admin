@@ -38,10 +38,10 @@ class SystemController(apiActions: SystemActions)
     None
   )
 
-  def getApplicationNode(parentPath: String, data: SystemData): BrowseTreeNodeData = {
+  def getApplicationNode(path: BrowsePath, data: SystemData): BrowseTreeNodeData = {
     applicationNode.copy(
       text = data.name,
-      path = BrowsePath(s"$parentPath/${data.id.get}")
+      path = BrowsePath(s"$path/${data.id.get}")
     )
   }
 }

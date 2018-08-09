@@ -11,6 +11,7 @@ import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
+import scommons.client.util.BrowsePath
 
 import scala.scalajs.js.annotation.JSExportAll
 
@@ -58,7 +59,7 @@ class RoleControllerSpec extends TestSpec {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)
-    val rolesPath = "/some-path"
+    val rolesPath = BrowsePath("/some-path")
     val roleListFetchAction = mock[RoleListFetchAction]
     val roleCreateRequestAction = RoleCreateRequestAction(create = true)
     val expectedActions = Map(
@@ -86,7 +87,7 @@ class RoleControllerSpec extends TestSpec {
       _
       ) =>
         text shouldBe "Roles"
-        path.value shouldBe rolesPath
+        path shouldBe rolesPath
         image shouldBe Some(AdminImagesCss.role)
         reactClass shouldBe None
         actions.enabledCommands shouldBe expectedActions.keySet
@@ -100,7 +101,7 @@ class RoleControllerSpec extends TestSpec {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)
-    val rolesPath = "/some-path"
+    val rolesPath = BrowsePath("/some-path")
     val data = RoleData(
       id = Some(111),
       systemId = 11,

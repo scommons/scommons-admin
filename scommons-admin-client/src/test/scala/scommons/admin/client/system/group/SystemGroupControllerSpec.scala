@@ -13,6 +13,7 @@ import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
+import scommons.client.util.BrowsePath
 
 import scala.scalajs.js.annotation.JSExportAll
 
@@ -68,7 +69,7 @@ class SystemGroupControllerSpec extends TestSpec {
       Buttons.REFRESH.command -> systemGroupListFetchAction,
       Buttons.ADD.command -> systemGroupCreateRequestAction
     )
-    val appsPath = "some-path"
+    val appsPath = BrowsePath("some-path")
     val dispatch = mockFunction[Any, Any]
 
     (groupActions.systemGroupListFetch _).expects(dispatch)
@@ -90,7 +91,7 @@ class SystemGroupControllerSpec extends TestSpec {
       _
       ) =>
         text shouldBe "Applications"
-        path.value shouldBe appsPath
+        path shouldBe appsPath
         image shouldBe Some(AdminImagesCss.computer)
         reactClass shouldBe None
         actions.enabledCommands shouldBe expectedActions.keySet
@@ -114,7 +115,7 @@ class SystemGroupControllerSpec extends TestSpec {
       Buttons.ADD.command -> systemCreateRequestAction,
       Buttons.EDIT.command -> systemGroupUpdateRequestAction
     )
-    val appsPath = "some-path"
+    val appsPath = BrowsePath("some-path")
     val dispatch = mockFunction[Any, Any]
 
     (systemActions.systemListFetch _).expects(dispatch)

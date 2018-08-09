@@ -63,22 +63,22 @@ class AdminRouteControllerSpec extends TestSpec {
     val applicationNode = BrowseTreeNodeData("Test App", BrowsePath("/2"))
     val rolesNode = BrowseTreeNodeData("Test Roles", BrowsePath("/roles"))
     val roleItem = BrowseTreeItemData("Test Role", BrowsePath("/3"))
-    (companyController.getCompaniesItem _).expects(companiesItem.path.value)
+    (companyController.getCompaniesItem _).expects(companiesItem.path)
       .returning(companiesItem)
-    (systemGroupController.getApplicationsNode _).expects("/apps")
+    (systemGroupController.getApplicationsNode _).expects(BrowsePath("/apps"))
       .returning(applicationsNode)
     systemGroups.foreach { group =>
-      (systemGroupController.getEnvironmentNode _).expects(applicationsNode.path.value, group)
+      (systemGroupController.getEnvironmentNode _).expects(applicationsNode.path, group)
         .returning(environmentNode)
     }
     systems.foreach { system =>
-      (systemController.getApplicationNode _).expects(environmentNode.path.value, system)
+      (systemController.getApplicationNode _).expects(environmentNode.path, system)
         .returning(applicationNode)
-      (roleController.getRolesNode _).expects(s"${applicationNode.path}/roles")
+      (roleController.getRolesNode _).expects(BrowsePath(s"${applicationNode.path}/roles"))
         .returning(rolesNode)
     }
     roles.foreach { role =>
-      (roleController.getRoleItem _).expects(rolesNode.path.value, role)
+      (roleController.getRoleItem _).expects(rolesNode.path, role)
         .returning(roleItem)
     }
     val expectedTreeRoots = List(

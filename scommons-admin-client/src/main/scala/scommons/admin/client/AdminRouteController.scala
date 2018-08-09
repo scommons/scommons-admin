@@ -11,7 +11,7 @@ import scommons.client.app._
 import scommons.client.controller.BaseStateController
 import scommons.client.ui.tree._
 import scommons.client.ui.{Buttons, UiComponent}
-import scommons.client.util.PathParamsExtractors
+import scommons.client.util.{BrowsePath, PathParamsExtractors}
 
 class AdminRouteController(companyController: CompanyController,
                            systemGroupController: SystemGroupController,
@@ -41,17 +41,17 @@ class AdminRouteController(companyController: CompanyController,
       companyController.getCompaniesItem(companiesPath),
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
-          val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path.value, group)
+          val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path, group)
           val systems = systemState.getSystems(group.id.get)
           groupNode.copy(
             children = systems.map { system =>
-              val systemNode = systemController.getApplicationNode(groupNode.path.value, system)
+              val systemNode = systemController.getApplicationNode(groupNode.path, system)
               val roles = roleState.getRoles(system.id.get)
-              val rolesNode = roleController.getRolesNode(s"${systemNode.path}$rolesPath")
+              val rolesNode = roleController.getRolesNode(BrowsePath(s"${systemNode.path}$rolesPath"))
               systemNode.copy(
                 children = List(
                   rolesNode.copy(
-                    children = roles.map(roleController.getRoleItem(rolesNode.path.value, _))
+                    children = roles.map(roleController.getRoleItem(rolesNode.path, _))
                   )
                 )
               )
@@ -65,9 +65,9 @@ class AdminRouteController(companyController: CompanyController,
 
 object AdminRouteController {
 
-  private val companiesPath = "/companies"
-  private val appsPath = "/apps"
-  private val rolesPath = "/roles"
+  private val companiesPath = BrowsePath("/companies")
+  private val appsPath = BrowsePath("/apps")
+  private val rolesPath = BrowsePath("/roles")
 
   private val groupIdRegex = s"$appsPath/(\\d+)".r
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
