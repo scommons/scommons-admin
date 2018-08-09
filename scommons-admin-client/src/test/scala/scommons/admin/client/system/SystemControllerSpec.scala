@@ -4,7 +4,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.RouteParams
+import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeNodeData
@@ -29,9 +29,9 @@ class SystemControllerSpec extends TestSpec {
     val systemState = mock[SystemState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
-    val path = BrowsePath("/apps/123/456")
+    val pathParams = PathParams("/apps/123/456")
     
-    (routeParams.path _).expects().returning(path)
+    (routeParams.pathParams _).expects().returning(pathParams)
     (state.systemState _).expects().returning(systemState)
 
     //when
@@ -55,9 +55,9 @@ class SystemControllerSpec extends TestSpec {
     val systemState = mock[SystemState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
-    val path = BrowsePath("/apps/123/456/not-exact")
+    val pathParams = PathParams("/apps/123/456/not-exact")
     
-    (routeParams.path _).expects().returning(path)
+    (routeParams.pathParams _).expects().returning(pathParams)
     (state.systemState _).expects().returning(systemState)
 
     //when

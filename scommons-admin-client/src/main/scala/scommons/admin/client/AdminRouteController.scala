@@ -8,10 +8,10 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
-import scommons.client.controller.BaseStateController
+import scommons.client.controller.{BaseStateController, PathParams}
 import scommons.client.ui.tree._
 import scommons.client.ui.{Buttons, UiComponent}
-import scommons.client.util.{BrowsePath, PathParamsExtractors}
+import scommons.client.util.BrowsePath
 
 class AdminRouteController(companyController: CompanyController,
                            systemGroupController: SystemGroupController,
@@ -73,15 +73,12 @@ object AdminRouteController {
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
   private val roleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
 
-  def extractGroupId(path: BrowsePath): Option[Int] = {
-    PathParamsExtractors.extractId(groupIdRegex, path.value)
-  }
-
-  def extractSystemId(path: BrowsePath, exact: Boolean = false): Option[Int] = {
-    PathParamsExtractors.extractId(systemIdRegex, path.value, exact)
-  }
+  def extractGroupId(params: PathParams): Option[Int] =
+    params.extractInt(groupIdRegex)
   
-  def extractRoleId(path: BrowsePath): Option[Int] = {
-    PathParamsExtractors.extractId(roleIdRegex, path.value)
-  }
+  def extractSystemId(params: PathParams, exact: Boolean = false): Option[Int] =
+    params.extractInt(systemIdRegex, exact)
+  
+  def extractRoleId(params: PathParams): Option[Int] =
+    params.extractInt(roleIdRegex)
 }

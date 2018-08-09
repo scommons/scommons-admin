@@ -6,7 +6,7 @@ import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.RouteParams
+import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.test.TestSpec
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
@@ -33,9 +33,9 @@ class SystemGroupControllerSpec extends TestSpec {
     val systemGroupState = mock[SystemGroupState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
-    val path = BrowsePath("/apps/123")
+    val pathParams = PathParams("/apps/123")
     
-    (routeParams.path _).expects().returning(path)
+    (routeParams.pathParams _).expects().returning(pathParams)
     (state.systemGroupState _).expects().returning(systemGroupState)
 
     //when

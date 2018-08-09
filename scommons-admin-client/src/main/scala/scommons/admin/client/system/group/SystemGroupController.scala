@@ -21,9 +21,9 @@ class SystemGroupController(groupActions: SystemGroupActions, systemActions: Sys
                               state: AdminStateDef,
                               routeParams: RouteParams): SystemGroupPanelProps = {
 
-    val path = routeParams.path
+    val pathParams = routeParams.pathParams
     
-    SystemGroupPanelProps(dispatch, groupActions, state.systemGroupState, extractGroupId(path))
+    SystemGroupPanelProps(dispatch, groupActions, state.systemGroupState, extractGroupId(pathParams))
   }
 
   private lazy val applicationsNode = BrowseTreeNodeData(

@@ -4,7 +4,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.RouteParams
+import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
@@ -29,9 +29,9 @@ class RoleControllerSpec extends TestSpec {
     val roleState = mock[RoleState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
-    val path = BrowsePath("/apps/1/2/roles/3")
+    val pathParams = PathParams("/apps/1/2/roles/3")
     
-    (routeParams.path _).expects().returning(path)
+    (routeParams.pathParams _).expects().returning(pathParams)
     (state.roleState _).expects().returning(roleState)
 
     //when
