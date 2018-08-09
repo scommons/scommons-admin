@@ -45,28 +45,6 @@ class RoleApiIntegrationSpec extends BaseAdminIntegrationSpec {
     callRoleCreate(data, RoleAlreadyExists) shouldBe None
   }
 
-  it should "fail if role bit_index limit is reached" in {
-    //given
-    val group = createRandomSystemGroup()
-    val system = createRandomSystem(group.id.get)
-    for (_ <- 1 to 64) {
-      createRandomRole(system.id.get)
-    }
-    val data = RoleData(
-      id = None,
-      systemId = system.id.get,
-      title = s"  ${System.nanoTime()}  "
-    )
-
-    //when
-    val status = uiApiClient.createRole(data).futureValue.status
-    
-    //then
-    status.code shouldBe 500
-    status.error.get shouldBe "Error while processing request"
-    status.details.get should include("Reached role bit_index limit(63)")
-  }
-
   it should "create fresh new Role" in {
     //given
     val group = createRandomSystemGroup()

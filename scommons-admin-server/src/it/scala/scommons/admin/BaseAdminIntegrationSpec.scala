@@ -14,7 +14,7 @@ import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.domain.dao._
 import scommons.api.ApiStatus
-import services.CompanyService
+import services.{CompanyService, RoleService}
 
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
@@ -41,7 +41,10 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val systemGroupDao: SystemGroupDao = inject[SystemGroupDao]
   protected lazy val systemDao: SystemDao = inject[SystemDao]
   protected lazy val roleDao: RoleDao = inject[RoleDao]
-  
+  protected lazy val roleService: RoleService = inject[RoleService]
+
+  protected lazy val superUserId: Int = 1
+
   protected lazy val uiApiClient: AdminUiApiClient = inject[AdminUiApiClient]
 
   ////////////////////////////////////////////////////////////////////////////////////////
