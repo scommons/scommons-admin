@@ -1,19 +1,14 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.router.Location
-import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
-import scommons.admin.client.system.SystemControllerSpec.LocationMock
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
+import scommons.client.controller.RouteParams
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.util.BrowsePath
-
-import scala.scalajs.js.annotation.JSExportAll
 
 class SystemControllerSpec extends TestSpec {
 
@@ -33,17 +28,14 @@ class SystemControllerSpec extends TestSpec {
     val dispatch = mock[Dispatch]
     val systemState = mock[SystemState]
     val state = mock[AdminStateDef]
-    val props = mock[Props[Unit]]
-    val routerProps = mock[RouterProps]
-    val location = mock[LocationMock]
-    val pathname = "/apps/123/456"
+    val routeParams = mock[RouteParams]
+    val path = BrowsePath("/apps/123/456")
     
-    (routerProps.location _).expects().returning(location.asInstanceOf[Location])
-    (location.pathname _).expects().returning(pathname)
+    (routeParams.path _).expects().returning(path)
     (state.systemState _).expects().returning(systemState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, props, routerProps)
+    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
 
     //then
     inside(result) { case SystemPanelProps(disp, actions, compState, selectedParentId, selectedId) =>
@@ -62,17 +54,14 @@ class SystemControllerSpec extends TestSpec {
     val dispatch = mock[Dispatch]
     val systemState = mock[SystemState]
     val state = mock[AdminStateDef]
-    val props = mock[Props[Unit]]
-    val routerProps = mock[RouterProps]
-    val location = mock[LocationMock]
-    val pathname = "/apps/123/456/not-exact"
+    val routeParams = mock[RouteParams]
+    val path = BrowsePath("/apps/123/456/not-exact")
     
-    (routerProps.location _).expects().returning(location.asInstanceOf[Location])
-    (location.pathname _).expects().returning(pathname)
+    (routeParams.path _).expects().returning(path)
     (state.systemState _).expects().returning(systemState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, props, routerProps)
+    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
 
     //then
     inside(result) { case SystemPanelProps(disp, actions, compState, selectedParentId, selectedId) =>
@@ -128,14 +117,5 @@ class SystemControllerSpec extends TestSpec {
           actions.onCommand(dispatch)(cmd) shouldBe action
         }
     }
-  }
-}
-
-object SystemControllerSpec {
-
-  @JSExportAll
-  trait LocationMock {
-
-    def pathname: String
   }
 }

@@ -1,15 +1,13 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.SystemActions.SystemCreateRequestAction
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.BaseStateAndRouteController
+import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}
@@ -21,10 +19,9 @@ class SystemGroupController(groupActions: SystemGroupActions, systemActions: Sys
 
   def mapStateAndRouteToProps(dispatch: Dispatch,
                               state: AdminStateDef,
-                              props: Props[Unit],
-                              routerProps: RouterProps): SystemGroupPanelProps = {
+                              routeParams: RouteParams): SystemGroupPanelProps = {
 
-    val path = routerProps.location.pathname
+    val path = routeParams.path
     
     SystemGroupPanelProps(dispatch, groupActions, state.systemGroupState, extractGroupId(path))
   }

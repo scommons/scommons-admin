@@ -1,21 +1,16 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.router.Location
-import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
-import scommons.admin.client.system.group.SystemGroupControllerSpec.LocationMock
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
+import scommons.client.controller.RouteParams
 import scommons.client.test.TestSpec
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.BrowsePath
-
-import scala.scalajs.js.annotation.JSExportAll
 
 class SystemGroupControllerSpec extends TestSpec {
 
@@ -37,17 +32,14 @@ class SystemGroupControllerSpec extends TestSpec {
     val dispatch = mock[Dispatch]
     val systemGroupState = mock[SystemGroupState]
     val state = mock[AdminStateDef]
-    val props = mock[Props[Unit]]
-    val routerProps = mock[RouterProps]
-    val location = mock[LocationMock]
-    val pathname = "/apps/123"
+    val routeParams = mock[RouteParams]
+    val path = BrowsePath("/apps/123")
     
-    (routerProps.location _).expects().returning(location.asInstanceOf[Location])
-    (location.pathname _).expects().returning(pathname)
+    (routeParams.path _).expects().returning(path)
     (state.systemGroupState _).expects().returning(systemGroupState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, props, routerProps)
+    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
 
     //then
     inside(result) { case SystemGroupPanelProps(disp, actions, compState, selectedId) =>
@@ -146,14 +138,5 @@ class SystemGroupControllerSpec extends TestSpec {
           actions.onCommand(dispatch)(cmd) shouldBe action
         }
     }
-  }
-}
-
-object SystemGroupControllerSpec {
-
-  @JSExportAll
-  trait LocationMock {
-
-    def pathname: String
   }
 }

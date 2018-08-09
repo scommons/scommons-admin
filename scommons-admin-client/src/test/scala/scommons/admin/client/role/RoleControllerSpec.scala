@@ -1,19 +1,14 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.router.Location
-import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
-import scommons.admin.client.role.RoleControllerSpec.LocationMock
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
+import scommons.client.controller.RouteParams
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
-
-import scala.scalajs.js.annotation.JSExportAll
 
 class RoleControllerSpec extends TestSpec {
 
@@ -33,17 +28,14 @@ class RoleControllerSpec extends TestSpec {
     val dispatch = mock[Dispatch]
     val roleState = mock[RoleState]
     val state = mock[AdminStateDef]
-    val props = mock[Props[Unit]]
-    val routerProps = mock[RouterProps]
-    val location = mock[LocationMock]
-    val pathname = "/apps/1/2/roles/3"
+    val routeParams = mock[RouteParams]
+    val path = BrowsePath("/apps/1/2/roles/3")
     
-    (routerProps.location _).expects().returning(location.asInstanceOf[Location])
-    (location.pathname _).expects().returning(pathname)
+    (routeParams.path _).expects().returning(path)
     (state.roleState _).expects().returning(roleState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, props, routerProps)
+    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
 
     //then
     inside(result) { case RolePanelProps(disp, actions, compState, selectedSystemId, selectedId) =>
@@ -136,14 +128,5 @@ class RoleControllerSpec extends TestSpec {
           actions.onCommand(dispatch)(cmd) shouldBe action
         }
     }
-  }
-}
-
-object RoleControllerSpec {
-
-  @JSExportAll
-  trait LocationMock {
-
-    def pathname: String
   }
 }

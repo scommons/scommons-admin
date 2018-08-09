@@ -1,13 +1,11 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.BaseStateAndRouteController
+import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}
@@ -19,10 +17,9 @@ class RoleController(apiActions: RoleActions)
 
   def mapStateAndRouteToProps(dispatch: Dispatch,
                               state: AdminStateDef,
-                              props: Props[Unit],
-                              routerProps: RouterProps): RolePanelProps = {
+                              routeParams: RouteParams): RolePanelProps = {
 
-    val path = routerProps.location.pathname
+    val path = routeParams.path
 
     RolePanelProps(dispatch, apiActions, state.roleState,
       extractSystemId(path), extractRoleId(path))

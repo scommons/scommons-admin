@@ -73,15 +73,15 @@ object AdminRouteController {
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
   private val roleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
 
-  def extractGroupId(path: String): Option[Int] = {
-    PathParamsExtractors.extractId(groupIdRegex, path)
+  def extractGroupId(path: BrowsePath): Option[Int] = {
+    PathParamsExtractors.extractId(groupIdRegex, path.value)
   }
 
-  def extractSystemId(path: String, exact: Boolean = false): Option[Int] = {
-    PathParamsExtractors.extractId(systemIdRegex, path, exact)
+  def extractSystemId(path: BrowsePath, exact: Boolean = false): Option[Int] = {
+    PathParamsExtractors.extractId(systemIdRegex, path.value, exact)
   }
   
-  def extractRoleId(path: String): Option[Int] = {
-    PathParamsExtractors.extractId(roleIdRegex, path)
+  def extractRoleId(path: BrowsePath): Option[Int] = {
+    PathParamsExtractors.extractId(roleIdRegex, path.value)
   }
 }
