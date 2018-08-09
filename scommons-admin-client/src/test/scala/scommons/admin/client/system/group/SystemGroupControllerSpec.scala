@@ -69,7 +69,7 @@ class SystemGroupControllerSpec extends TestSpec {
       Buttons.REFRESH.command -> systemGroupListFetchAction,
       Buttons.ADD.command -> systemGroupCreateRequestAction
     )
-    val appsPath = BrowsePath("some-path")
+    val appsPath = BrowsePath("/some-path")
     val dispatch = mockFunction[Any, Any]
 
     (groupActions.systemGroupListFetch _).expects(dispatch)
@@ -115,7 +115,7 @@ class SystemGroupControllerSpec extends TestSpec {
       Buttons.ADD.command -> systemCreateRequestAction,
       Buttons.EDIT.command -> systemGroupUpdateRequestAction
     )
-    val appsPath = BrowsePath("some-path")
+    val appsPath = BrowsePath("/some-path")
     val dispatch = mockFunction[Any, Any]
 
     (systemActions.systemListFetch _).expects(dispatch)

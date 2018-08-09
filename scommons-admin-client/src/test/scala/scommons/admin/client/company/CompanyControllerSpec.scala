@@ -49,7 +49,7 @@ class CompanyControllerSpec extends TestSpec {
     val expectedActions = Map(
       Buttons.REFRESH.command -> companyListFetchAction
     )
-    val companiesPath = BrowsePath("some-path")
+    val companiesPath = BrowsePath("/some-path")
     val dispatch = mockFunction[Any, Any]
 
     (apiActions.companyListFetch _).expects(dispatch, None, None)
