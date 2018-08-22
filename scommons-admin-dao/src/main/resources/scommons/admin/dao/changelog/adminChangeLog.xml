@@ -167,6 +167,22 @@
         </sql>
     </changeSet>
 
+    <!--======================== Changes #8 ========================-->
+    <changeSet id="8" author="viktorp">
+        <comment>Changed permissions.id type from long to int</comment>
+
+        <sql splitStatements="false">
+            ALTER TABLE permissions
+                ALTER COLUMN id SET DATA TYPE integer,
+                ALTER COLUMN parent_id SET DATA TYPE integer;
+            ALTER TABLE roles_permissions ALTER COLUMN permission_id SET DATA TYPE integer;
+
+            CREATE SEQUENCE permissions_id_seq OWNED BY permissions.id;
+            SELECT setval('permissions_id_seq', coalesce(max(id), 0) + 1) FROM permissions;
+            ALTER TABLE permissions ALTER COLUMN id SET DEFAULT nextval('permissions_id_seq');
+        </sql>
+    </changeSet>
+
 
     <!--===== This changeset MUST always be at the end of the file !!! =====-->
     <changeSet id="0" author="viktorp" runAlways="true">

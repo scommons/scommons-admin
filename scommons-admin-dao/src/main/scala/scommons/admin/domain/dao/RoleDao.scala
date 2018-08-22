@@ -50,8 +50,4 @@ class RoleDao(val ctx: AdminDBContext)
       .update(lift(entity))
     ))
   }
-
-  def deleteAll()(implicit ec: ExecutionContext): Future[Unit] = {
-    ctx.run(roles.delete).map(_ => ())
-  }
 }

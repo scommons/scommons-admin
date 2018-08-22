@@ -34,3 +34,7 @@ GET     /scommons-admin/ui/roles/:id                controllers.ui.RoleControlle
 GET     /scommons-admin/ui/roles                    controllers.ui.RoleController.list
 POST    /scommons-admin/ui/roles                    controllers.ui.RoleController.create
 PUT     /scommons-admin/ui/roles                    controllers.ui.RoleController.update
+
+GET     /scommons-admin/ui/roles/:id/permissions    controllers.ui.RolePermissionController.list(id: Int)
+POST    /scommons-admin/ui/roles/:id/permissions    controllers.ui.RolePermissionController.add(id: Int)
+PUT     /scommons-admin/ui/roles/:id/permissions    controllers.ui.RolePermissionController.remove(id: Int)

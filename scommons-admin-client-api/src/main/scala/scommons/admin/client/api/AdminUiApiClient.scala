@@ -2,6 +2,7 @@ package scommons.admin.client.api
 
 import scommons.admin.client.api.company._
 import scommons.admin.client.api.role._
+import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system._
 import scommons.admin.client.api.system.group._
 import scommons.api.http.ApiHttpClient
@@ -12,7 +13,8 @@ class AdminUiApiClient(client: ApiHttpClient)
   extends CompanyApi
     with SystemGroupApi
     with SystemApi
-    with RoleApi {
+    with RoleApi
+    with RolePermissionApi {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // companies
@@ -95,6 +97,21 @@ class AdminUiApiClient(client: ApiHttpClient)
 
   def updateRole(data: RoleData): Future[RoleResp] = {
     client.execPut[RoleData, RoleResp]("/roles", data)
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // roles/permissions
+
+  def listRolePermissions(roleId: Int): Future[RolePermissionResp] = {
+    client.execGet[RolePermissionResp](s"/roles/$roleId/permissions")
+  }
+
+  def addRolePermissions(roleId: Int, data: RolePermissionUpdateReq): Future[RolePermissionResp] = {
+    client.execPost[RolePermissionUpdateReq, RolePermissionResp](s"/roles/$roleId/permissions", data)
+  }
+
+  def removeRolePermissions(roleId: Int, data: RolePermissionUpdateReq): Future[RolePermissionResp] = {
+    client.execPut[RolePermissionUpdateReq, RolePermissionResp](s"/roles/$roleId/permissions", data)
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

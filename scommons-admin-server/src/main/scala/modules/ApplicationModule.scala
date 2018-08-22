@@ -8,7 +8,8 @@ class ApplicationModule extends Module
   with CompanyModule
   with SystemGroupModule
   with SystemModule
-  with RoleModule {
+  with RoleModule
+  with RolePermissionModule {
 
   bind[AdminDBContext] to new AdminDBContext(
     inject[Configuration].get[Configuration]("quill.db").underlying

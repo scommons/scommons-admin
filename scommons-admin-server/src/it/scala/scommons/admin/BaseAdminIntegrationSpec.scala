@@ -10,9 +10,11 @@ import org.scalatestplus.play.ConfiguredServer
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.api.company.CompanyData
 import scommons.admin.client.api.role.RoleData
+import scommons.admin.client.api.role.permission.{RolePermissionData, RolePermissionRespData, RolePermissionUpdateReq}
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.domain.dao._
+import scommons.admin.domain.{Permission, RolePermission}
 import scommons.api.ApiStatus
 import services.{CompanyService, RoleService}
 
@@ -41,6 +43,8 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val systemGroupDao: SystemGroupDao = inject[SystemGroupDao]
   protected lazy val systemDao: SystemDao = inject[SystemDao]
   protected lazy val roleDao: RoleDao = inject[RoleDao]
+  protected lazy val permissionDao: PermissionDao = inject[PermissionDao]
+  protected lazy val rolePermissionDao: RolePermissionDao = inject[RolePermissionDao]
   protected lazy val roleService: RoleService = inject[RoleService]
 
   protected lazy val superUserId: Int = 1
@@ -228,17 +232,6 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   ////////////////////////////////////////////////////////////////////////////////////////
   // roles
 
-  def removeAllRoles(): Unit = {
-    val futureResult = for {
-      _ <- roleDao.deleteAll()
-    } yield {
-      ()
-    }
-
-    // wait for operation to complete
-    futureResult.futureValue
-  }
-
   def createRandomRole(systemId: Int): RoleData = {
     callRoleCreate(RoleData(
       id = None,
@@ -279,6 +272,84 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   def callRoleUpdate(data: RoleData, expectedStatus: ApiStatus): Option[RoleData] = {
     val resp = uiApiClient.updateRole(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // roles/permissions
+
+  def createRandomPermission(systemId: Int,
+                             isNode: Boolean = false,
+                             parentId: Option[Int] = None,
+                             enabledForRoleId: Option[Int] = None): RolePermissionData = {
+    
+    val name = s"${System.nanoTime()}-name"
+    val permission = Permission(
+      id = -1,
+      systemId = systemId,
+      name = name,
+      title = s"$name Title",
+      isNode = isNode,
+      parentId = parentId
+    )
+    
+    permissionDao.insert(Set(permission)).futureValue
+    
+    val created = permissionDao.list(systemId, None).map { permissions =>
+      permissions.collectFirst {
+        case (p, _) if p.name == name => RolePermissionData(
+          id = p.id,
+          parentId = p.parentId,
+          isNode = p.isNode,
+          title = p.title,
+          isEnabled = false
+        )
+      }.getOrElse(
+        throw new IllegalStateException(s"Can't find created permission with name: $name")
+      )
+    }.futureValue
+
+    enabledForRoleId match {
+      case None => created
+      case Some(roleId) =>
+        rolePermissionDao.insert(Set(RolePermission(roleId, created.id))).futureValue
+        created.copy(isEnabled = true)
+    }
+  }
+
+  def callRolePermissionList(roleId: Int): RolePermissionRespData = {
+    callRolePermissionList(roleId, ApiStatus.Ok).get
+  }
+  
+  def callRolePermissionList(roleId: Int, expectedStatus: ApiStatus): Option[RolePermissionRespData] = {
+    val resp = uiApiClient.listRolePermissions(roleId).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callRolePermissionAdd(roleId: Int, data: RolePermissionUpdateReq): RolePermissionRespData = {
+    callRolePermissionAdd(roleId, data, ApiStatus.Ok).get
+  }
+
+  def callRolePermissionAdd(roleId: Int,
+                            data: RolePermissionUpdateReq,
+                            expectedStatus: ApiStatus): Option[RolePermissionRespData] = {
+
+    val resp = uiApiClient.addRolePermissions(roleId, data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callRolePermissionRemove(roleId: Int, data: RolePermissionUpdateReq): RolePermissionRespData = {
+    callRolePermissionRemove(roleId, data, ApiStatus.Ok).get
+  }
+
+  def callRolePermissionRemove(roleId: Int,
+                               data: RolePermissionUpdateReq,
+                               expectedStatus: ApiStatus): Option[RolePermissionRespData] = {
+
+    val resp = uiApiClient.removeRolePermissions(roleId, data).futureValue
     resp.status shouldBe expectedStatus
     resp.data
   }

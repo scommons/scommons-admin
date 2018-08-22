@@ -20,7 +20,7 @@ class RoleApiIntegrationSpec extends BaseAdminIntegrationSpec {
     val system2 = createRandomSystem(group.id.get)
     //removeAllRoles()
     
-    val systems = List(
+    val roles = List(
       createRandomRole(system1.id.get),
       createRandomRole(system2.id.get),
       createRandomRole(system2.id.get),
@@ -28,7 +28,7 @@ class RoleApiIntegrationSpec extends BaseAdminIntegrationSpec {
     ).sortBy(_.title)
     
     //when & then
-    callRoleList().filterNot(_.id.contains(1)) shouldBe systems
+    callRoleList() shouldBe roles
   }
 
   "createRole" should "fail if Role with such name already exists" in {
