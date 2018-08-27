@@ -4,6 +4,7 @@ import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.company.CompanyActions._
 import scommons.admin.client.company.CompanyState
 import scommons.admin.client.role.RoleState
+import scommons.admin.client.role.permission.RolePermissionState
 import scommons.admin.client.system.SystemState
 import scommons.admin.client.system.group.SystemGroupState
 import scommons.client.task.FutureTask
@@ -24,13 +25,15 @@ class AdminStateReducerSpec extends TestSpec {
       companyState,
       systemGroupState,
       systemState,
-      roleState
+      roleState,
+      rolePermissionState
       ) =>
         currentTask shouldBe None
         companyState shouldBe CompanyState()
         systemGroupState shouldBe SystemGroupState()
         systemState shouldBe SystemState()
         roleState shouldBe RoleState()
+        rolePermissionState shouldBe RolePermissionState()
     }
   }
   

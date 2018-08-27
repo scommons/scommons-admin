@@ -5,6 +5,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleController
+import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
@@ -16,7 +17,8 @@ import scommons.client.util.BrowsePath
 class AdminRouteController(companyController: CompanyController,
                            systemGroupController: SystemGroupController,
                            systemController: SystemController,
-                           roleController: RoleController
+                           roleController: RoleController,
+                           rolePermissionController: RolePermissionController
                           ) extends BaseStateController[AdminStateDef, AppBrowseControllerProps] {
 
   lazy val uiComponent: UiComponent[AppBrowseControllerProps] = AppBrowseController
@@ -51,7 +53,7 @@ class AdminRouteController(companyController: CompanyController,
               systemNode.copy(
                 children = List(
                   rolesNode.copy(
-                    children = roles.map(roleController.getRoleItem(rolesNode.path, _))
+                    children = roles.map(roleController.getRoleItem(rolesNode.path, _, rolePermissionController))
                   )
                 )
               )

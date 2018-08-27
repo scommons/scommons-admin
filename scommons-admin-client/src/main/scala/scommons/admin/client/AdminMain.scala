@@ -9,6 +9,7 @@ import io.github.shogowada.scalajs.reactjs.router.dom.RouterDOM._
 import org.scalajs.dom
 import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleController
+import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
 import scommons.client.app._
@@ -37,11 +38,13 @@ object AdminMain {
     val envController = new SystemGroupController(apiActions, apiActions)
     val appController = new SystemController(apiActions)
     val roleController = new RoleController(apiActions)
+    val rolePermissionController = new RolePermissionController(apiActions)
     val routeController = new AdminRouteController(
       companyController,
       envController,
       appController,
-      roleController
+      roleController,
+      rolePermissionController
     )
 
     ReactDOM.render(

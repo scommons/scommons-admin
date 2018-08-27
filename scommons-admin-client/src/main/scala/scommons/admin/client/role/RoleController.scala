@@ -4,6 +4,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
+import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
@@ -50,8 +51,14 @@ class RoleController(apiActions: RoleActions)
     path = path
   )
 
-  def getRoleItem(path: BrowsePath, data: RoleData): BrowseTreeItemData = roleItem.copy(
-    text = data.title,
-    path = BrowsePath(s"$path/${data.id.get}")
-  )
+  def getRoleItem(path: BrowsePath,
+                  data: RoleData,
+                  rolePermissionController: RolePermissionController): BrowseTreeItemData = {
+    
+    roleItem.copy(
+      text = data.title,
+      path = BrowsePath(s"$path/${data.id.get}"),
+      reactClass = Some(rolePermissionController())
+    )
+  }
 }

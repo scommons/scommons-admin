@@ -4,14 +4,16 @@ import org.scalajs.dom
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.role.RoleActions
+import scommons.admin.client.role.permission.RolePermissionActions
 import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.group.SystemGroupActions
 import scommons.api.http.js.JsApiHttpClient
 
-trait AdminActions extends CompanyActions
+object AdminActions extends CompanyActions
   with SystemGroupActions
   with SystemActions
-  with RoleActions {
+  with RoleActions
+  with RolePermissionActions {
   
   private val baseUrl = {
     val loc = dom.window.location
@@ -22,5 +24,3 @@ trait AdminActions extends CompanyActions
     new AdminUiApiClient(new JsApiHttpClient(baseUrl))
   }
 }
-
-object AdminActions extends AdminActions

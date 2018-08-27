@@ -6,6 +6,7 @@ import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.company.CompanyController
+import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
 import scommons.admin.client.system.{SystemController, SystemState}
@@ -23,8 +24,10 @@ class AdminRouteControllerSpec extends TestSpec {
     val systemGroupController = mock[SystemGroupController]
     val systemController = mock[SystemController]
     val roleController = mock[RoleController]
+    val rolePermissionController = mock[RolePermissionController]
     val controller = new AdminRouteController(
-      companyController, systemGroupController, systemController, roleController
+      companyController, systemGroupController, systemController,
+      roleController, rolePermissionController
     )
 
     //when & then
@@ -37,8 +40,10 @@ class AdminRouteControllerSpec extends TestSpec {
     val systemGroupController = mock[SystemGroupController]
     val systemController = mock[SystemController]
     val roleController = mock[RoleController]
+    val rolePermissionController = mock[RolePermissionController]
     val controller = new AdminRouteController(
-      companyController, systemGroupController, systemController, roleController
+      companyController, systemGroupController, systemController,
+      roleController, rolePermissionController
     )
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
@@ -78,7 +83,7 @@ class AdminRouteControllerSpec extends TestSpec {
         .returning(rolesNode)
     }
     roles.foreach { role =>
-      (roleController.getRoleItem _).expects(rolesNode.path, role)
+      (roleController.getRoleItem _).expects(rolesNode.path, role, rolePermissionController)
         .returning(roleItem)
     }
     val expectedTreeRoots = List(

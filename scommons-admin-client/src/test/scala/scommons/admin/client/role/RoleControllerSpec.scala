@@ -1,8 +1,11 @@
 package scommons.admin.client.role
 
+import io.github.shogowada.scalajs.reactjs.React
+import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
+import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.test.TestSpec
@@ -103,12 +106,18 @@ class RoleControllerSpec extends TestSpec {
     val expectedActions = Map(
       Buttons.EDIT.command -> roleUpdateRequestAction
     )
+    val roleControllerReactClass = React.createClass[Unit, Unit]({ _ =>
+      <.div()("test")
+    })
+    val rolePermissionController = mock[RolePermissionController]
+    (rolePermissionController.apply _).expects()
+      .returning(roleControllerReactClass)
+    
     val dispatch = mockFunction[Any, Any]
-
     dispatch.expects(roleUpdateRequestAction).returning(*)
 
     //when
-    val result = controller.getRoleItem(rolesPath, data)
+    val result = controller.getRoleItem(rolesPath, data, rolePermissionController)
 
     //then
     inside(result) {
@@ -122,7 +131,7 @@ class RoleControllerSpec extends TestSpec {
         text shouldBe data.title
         path.value shouldBe s"$rolesPath/${data.id.get}"
         image shouldBe Some(AdminImagesCss.role)
-        reactClass shouldBe None
+        reactClass shouldBe Some(roleControllerReactClass)
         actions.enabledCommands shouldBe expectedActions.keySet
         expectedActions.foreach { case (cmd, action) =>
           actions.onCommand(dispatch)(cmd) shouldBe action
