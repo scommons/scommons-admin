@@ -5,12 +5,7 @@ import scommons.admin.client.api.role.permission.RolePermissionData
 import scommons.admin.client.role.permission.RolePermissionActions._
 
 case class RolePermissionState(permissionsByParentId: Map[Option[Int], List[RolePermissionData]] = Map.empty,
-                               role: Option[RoleData] = None) {
-
-  def getPermissions(parentId: Option[Int]): List[RolePermissionData] = {
-    permissionsByParentId.getOrElse(parentId, Nil)
-  }
-}
+                               role: Option[RoleData] = None)
 
 object RolePermissionStateReducer {
 

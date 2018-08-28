@@ -84,24 +84,13 @@ object RolePermissionPanel extends UiComponent[RolePermissionPanelProps] {
   
   private def buildTree(permissions: Map[Option[Int], List[RolePermissionData]]): List[CheckBoxTreeData] = {
 
-    def calcValue(children: List[CheckBoxTreeData], defaultValue: TriState): TriState = {
-      val values = children.map(_.value).toSet
-      if (values.size > 1) TriState.Indeterminate
-      else {
-        values.headOption match {
-          case None => defaultValue
-          case Some(v) => v
-        }
-      }
-    }
-
     def loop(dataList: List[RolePermissionData]): List[CheckBoxTreeData] = dataList.map { p =>
       val key = p.id.toString
       val value = if (p.isEnabled) TriState.Selected else TriState.Deselected
       val text = p.title
       if (p.isNode) {
         val children = loop(permissions.getOrElse(Some(p.id), Nil))
-        CheckBoxTreeNodeData(key, calcValue(children, value), text, None, children)
+        CheckBoxTreeNodeData(key, CheckBoxTreeData.calcNodeValue(children, value), text, None, children)
       }
       else CheckBoxTreeItemData(key, value, text, Some(AdminImagesCss.keySmall))
     }
