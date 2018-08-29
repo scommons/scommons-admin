@@ -65,8 +65,8 @@ object RolePermissionPanel extends UiComponent[RolePermissionPanelProps] {
     }
   )
 
-  private def getAllDescendantIds(id: Int,
-                                  permissions: Map[Option[Int], List[RolePermissionData]]): Set[Int] = {
+  private[permission] def getAllDescendantIds(id: Int,
+                                              permissions: Map[Option[Int], List[RolePermissionData]]): Set[Int] = {
 
     def loop(dataList: List[RolePermissionData], ids: Set[Int]): Set[Int] = dataList match {
       case Nil => ids
@@ -82,7 +82,7 @@ object RolePermissionPanel extends UiComponent[RolePermissionPanelProps] {
     loop(permissions.getOrElse(Some(id), Nil), Set(id))
   }
   
-  private def buildTree(permissions: Map[Option[Int], List[RolePermissionData]]): List[CheckBoxTreeData] = {
+  private[permission] def buildTree(permissions: Map[Option[Int], List[RolePermissionData]]): List[CheckBoxTreeData] = {
 
     def loop(dataList: List[RolePermissionData]): List[CheckBoxTreeData] = dataList.map { p =>
       val key = p.id.toString
