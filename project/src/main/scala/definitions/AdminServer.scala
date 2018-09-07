@@ -1,6 +1,6 @@
 package definitions
 
-import common.{Libs, TestLibs}
+import common.Libs
 import sbt._
 import scommons.sbtplugin.project.CommonPlayModule
 import webscalajs.WebScalaJS.autoImport._
@@ -34,9 +34,7 @@ object AdminServer extends AdminModule with CommonPlayModule {
 
   override def testDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {
     super.testDependencies.value ++ Seq[ModuleID](
-      TestLibs.scommonsApiPlayWs.value,
-      TestLibs.dockerTestkitScalatest.value,
-      TestLibs.dockerTestkitImpl.value
+      // your dependencies here
     ).map(_ % "it,test")
   }
 }

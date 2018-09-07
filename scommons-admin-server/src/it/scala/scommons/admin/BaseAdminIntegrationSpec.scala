@@ -30,8 +30,8 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   with BeforeAndAfterEach {
 
   implicit val defaultPatience: PatienceConfig = PatienceConfig(
-    timeout = Span(5, Seconds),
-    interval = Span(100, Millis)
+    timeout = Span(10, Seconds),
+    interval = Span(50, Millis)
   )
 
   private def inject[T: ClassTag]: T = app.injector.instanceOf[T]

@@ -11,6 +11,7 @@ trait AdminModule extends CommonModule {
 
   val scommonsServiceVersion: String = Libs.scommonsServiceVersion
   val scommonsClientVersion: String = Libs.scommonsClientVersion
+  val scommonsApiVersion: String = Libs.scommonsApiVersion
   
   override def definition: Project = {
     super.definition
