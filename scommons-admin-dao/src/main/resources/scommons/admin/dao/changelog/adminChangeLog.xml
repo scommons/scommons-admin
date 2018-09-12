@@ -183,6 +183,97 @@
         </sql>
     </changeSet>
 
+    <!--======================== Changes #9 ========================-->
+    <changeSet id="9" author="viktorp">
+        <comment>Create users_profiles table with data from contacts</comment>
+
+        <sql splitStatements="false">
+            CREATE TABLE users_profiles (
+                user_id integer NOT NULL,
+                email character varying(255) NOT NULL,
+                first_name character varying(32) NOT NULL,
+                last_name character varying(32) NOT NULL,
+                phone character varying(24),
+                updated_by integer NOT NULL,
+                version integer NOT NULL DEFAULT 1,
+                created_at timestamp without time zone NOT NULL DEFAULT now(),
+                updated_at timestamp without time zone NOT NULL DEFAULT now(),
+                CONSTRAINT users_profiles_pkey PRIMARY KEY (user_id),
+                CONSTRAINT users_profiles_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+                CONSTRAINT users_profiles_updated_by FOREIGN KEY (updated_by) REFERENCES users (id),
+                CONSTRAINT users_profiles_email_key UNIQUE (email)
+            );
+
+            CREATE FUNCTION users_profiles_before_save() RETURNS trigger AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    NEW.version := 1;
+                    NEW.created_at := now();
+                ELSE
+                    NEW.version := OLD.version + 1;
+                    NEW.created_at := OLD.created_at;
+                END IF;
+    
+                NEW.updated_at := now();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER users_profiles_before_save BEFORE INSERT OR UPDATE ON users_profiles
+                FOR EACH ROW EXECUTE PROCEDURE users_profiles_before_save();
+            
+            INSERT INTO users_profiles (user_id, email, first_name, last_name, phone, updated_by)
+                SELECT u.id, c.email, c.firstname, c.secondname, text(c.phone), coalesce(u.modifiedby_id, 1)
+                FROM users AS u, contacts AS c
+                WHERE u.contact_id = c.id;
+
+            ALTER TABLE users DROP COLUMN contact_id;
+            DROP TABLE contacts;
+        </sql>
+    </changeSet>
+
+    <!--======================== Changes #10 ========================-->
+    <changeSet id="10" author="viktorp">
+        <comment>Added version, created_at, updated_at to users</comment>
+
+        <sql splitStatements="false">
+            ALTER TABLE users RENAME COLUMN created TO created_at;
+            ALTER TABLE users RENAME COLUMN modified_date TO updated_at;
+            ALTER TABLE users RENAME COLUMN modifiedby_id TO updated_by;
+
+            UPDATE users SET updated_at = created_at WHERE updated_at IS NULL;
+            
+            ALTER TABLE users
+                DROP COLUMN ldap_domain,
+                ADD COLUMN version integer NOT NULL DEFAULT 1,
+                ALTER COLUMN created_at SET DEFAULT now(),
+                ALTER COLUMN updated_at SET DEFAULT now(),
+                ALTER COLUMN updated_at SET NOT NULL,
+                ALTER COLUMN passhash SET NOT NULL;
+
+            CREATE FUNCTION users_before_save() RETURNS trigger AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    NEW.version := 1;
+                    NEW.created_at := now();
+                ELSE
+                    NEW.version := OLD.version + 1;
+                    NEW.created_at := OLD.created_at;
+                END IF;
+    
+                NEW.updated_at := now();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER users_before_save BEFORE INSERT OR UPDATE ON users
+                FOR EACH ROW EXECUTE PROCEDURE users_before_save();
+
+            SELECT setval('users_id_seq', coalesce(max(id), 0) + 1) FROM users;
+            ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('users_id_seq');
+        </sql>
+    </changeSet>
+
 
     <!--===== This changeset MUST always be at the end of the file !!! =====-->
     <changeSet id="0" author="viktorp" runAlways="true">

@@ -30,4 +30,12 @@ object AdminUiApiStatuses {
   val RoleNotFound = ApiStatus(1031, "Role not found")
   val RoleAlreadyExists = ApiStatus(1032, "Role with such title already exists")
   val RoleAlreadyUpdated = ApiStatus(1033, "Role was already updated by another user, try refresh")
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // users
+
+  val UserNotFound = ApiStatus(1041, "User not found")
+  val UserLoginAlreadyExists = ApiStatus(1042, "User with such login already exists")
+  val UserEmailAlreadyExists = ApiStatus(1043, "User with such email already exists")
+  val UserAlreadyUpdated = ApiStatus(1044, "User was already updated by another user, try refresh")
 }

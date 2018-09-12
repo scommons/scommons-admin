@@ -38,3 +38,8 @@ PUT     /scommons-admin/ui/roles                    controllers.ui.RoleControlle
 GET     /scommons-admin/ui/roles/:id/permissions    controllers.ui.RolePermissionController.list(id: Int)
 POST    /scommons-admin/ui/roles/:id/permissions    controllers.ui.RolePermissionController.add(id: Int)
 PUT     /scommons-admin/ui/roles/:id/permissions    controllers.ui.RolePermissionController.remove(id: Int)
+
+GET     /scommons-admin/ui/users/:id                controllers.ui.UserController.getById(id: Int)
+GET     /scommons-admin/ui/users                    controllers.ui.UserController.list(offset: Option[Int], limit: Option[Int], symbols: Option[String])
+POST    /scommons-admin/ui/users                    controllers.ui.UserController.create
+PUT     /scommons-admin/ui/users                    controllers.ui.UserController.update

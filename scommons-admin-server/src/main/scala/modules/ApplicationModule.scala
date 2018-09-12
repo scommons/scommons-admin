@@ -9,7 +9,8 @@ class ApplicationModule extends Module
   with SystemGroupModule
   with SystemModule
   with RoleModule
-  with RolePermissionModule {
+  with RolePermissionModule
+  with UserModule {
 
   bind[AdminDBContext] to new AdminDBContext(
     inject[Configuration].get[Configuration]("quill.db").underlying

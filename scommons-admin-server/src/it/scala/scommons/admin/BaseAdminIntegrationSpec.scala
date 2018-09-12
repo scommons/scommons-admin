@@ -10,9 +10,10 @@ import org.scalatestplus.play.ConfiguredServer
 import scommons.admin.client.api.AdminUiApiClient
 import scommons.admin.client.api.company.CompanyData
 import scommons.admin.client.api.role.RoleData
-import scommons.admin.client.api.role.permission.{RolePermissionData, RolePermissionRespData, RolePermissionUpdateReq}
+import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
+import scommons.admin.client.api.user._
 import scommons.admin.domain.dao._
 import scommons.admin.domain.{Permission, RolePermission}
 import scommons.api.ApiStatus
@@ -46,6 +47,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val permissionDao: PermissionDao = inject[PermissionDao]
   protected lazy val rolePermissionDao: RolePermissionDao = inject[RolePermissionDao]
   protected lazy val roleService: RoleService = inject[RoleService]
+  protected lazy val userDao: UserDao = inject[UserDao]
 
   protected lazy val superUserId: Int = 1
 
@@ -350,6 +352,68 @@ trait BaseAdminIntegrationSpec extends FlatSpec
                                expectedStatus: ApiStatus): Option[RolePermissionRespData] = {
 
     val resp = uiApiClient.removeRolePermissions(roleId, data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // users
+
+  def createRandomUser(company: CompanyData, partOfLogin: Option[String] = None): UserDetailsData = {
+    callUserCreate(UserDetailsData(
+      user = UserData(
+        id = None,
+        company = UserCompanyData(company.id.get, company.name),
+        login =
+          if (partOfLogin.isDefined) s"${System.nanoTime()}-${partOfLogin.get}-rnd"
+          else s"${System.nanoTime()}_rnd _login",
+        password = s"${System.nanoTime()}_rnd _password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = s"${System.nanoTime()}_rnd@test.com",
+        firstName = s"${System.nanoTime()} First Name",
+        lastName = s"${System.nanoTime()} Last Name",
+        phone = Some(s"${System.nanoTime()}".take(24))
+      )
+    ))
+  }
+
+  def callUserGetById(id: Int): UserDetailsData = {
+    callUserGetById(id, ApiStatus.Ok).get
+  }
+
+  def callUserGetById(id: Int, expectedStatus: ApiStatus): Option[UserDetailsData] = {
+    val resp = uiApiClient.getUserById(id).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callUserList(offset: Option[Int] = None,
+                   limit: Option[Int] = None,
+                   symbols: Option[String] = None): (List[UserData], Option[Int]) = {
+
+    val resp = uiApiClient.listUsers(offset, limit, symbols).futureValue
+    resp.status shouldBe ApiStatus.Ok
+    (resp.dataList.get, resp.totalCount)
+  }
+
+  def callUserCreate(data: UserDetailsData): UserDetailsData = {
+    callUserCreate(data, ApiStatus.Ok).get
+  }
+
+  def callUserCreate(data: UserDetailsData, expectedStatus: ApiStatus): Option[UserDetailsData] = {
+    val resp = uiApiClient.createUser(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callUserUpdate(data: UserDetailsData): UserDetailsData = {
+    callUserUpdate(data, ApiStatus.Ok).get
+  }
+
+  def callUserUpdate(data: UserDetailsData, expectedStatus: ApiStatus): Option[UserDetailsData] = {
+    val resp = uiApiClient.updateUser(data).futureValue
     resp.status shouldBe expectedStatus
     resp.data
   }

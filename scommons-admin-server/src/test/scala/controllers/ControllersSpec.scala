@@ -40,6 +40,7 @@ class ControllersSpec extends Suites(
       bind[SystemController] to new SystemController(null)
       bind[RoleController] to new RoleController(null)
       bind[RolePermissionController] to new RolePermissionController(null)
+      bind[UserController] to new UserController(null)
     })
   ).build()
 }
