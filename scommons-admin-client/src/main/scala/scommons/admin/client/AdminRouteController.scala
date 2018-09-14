@@ -8,6 +8,7 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
+import scommons.admin.client.user.UserController
 import scommons.client.app._
 import scommons.client.controller.{BaseStateController, PathParams}
 import scommons.client.ui.tree._
@@ -15,6 +16,7 @@ import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.BrowsePath
 
 class AdminRouteController(companyController: CompanyController,
+                           userController: UserController,
                            systemGroupController: SystemGroupController,
                            systemController: SystemController,
                            roleController: RoleController,
@@ -41,6 +43,7 @@ class AdminRouteController(companyController: CompanyController,
     
     List(
       companyController.getCompaniesItem(companiesPath),
+      userController.getUsersItem(usersPath),
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
           val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path, group)
@@ -68,6 +71,7 @@ class AdminRouteController(companyController: CompanyController,
 object AdminRouteController {
 
   private val companiesPath = BrowsePath("/companies")
+  private val usersPath = BrowsePath("/users")
   private val appsPath = BrowsePath("/apps")
   private val rolesPath = BrowsePath("/roles")
 

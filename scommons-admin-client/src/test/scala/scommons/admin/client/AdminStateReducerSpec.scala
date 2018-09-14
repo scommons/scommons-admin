@@ -7,6 +7,7 @@ import scommons.admin.client.role.RoleState
 import scommons.admin.client.role.permission.RolePermissionState
 import scommons.admin.client.system.SystemState
 import scommons.admin.client.system.group.SystemGroupState
+import scommons.admin.client.user.UserState
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 
@@ -23,6 +24,7 @@ class AdminStateReducerSpec extends TestSpec {
       case AdminState(
       currentTask,
       companyState,
+      userState,
       systemGroupState,
       systemState,
       roleState,
@@ -30,6 +32,7 @@ class AdminStateReducerSpec extends TestSpec {
       ) =>
         currentTask shouldBe None
         companyState shouldBe CompanyState()
+        userState shouldBe UserState()
         systemGroupState shouldBe SystemGroupState()
         systemState shouldBe SystemState()
         roleState shouldBe RoleState()

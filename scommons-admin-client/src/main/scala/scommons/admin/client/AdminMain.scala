@@ -12,6 +12,7 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
+import scommons.admin.client.user.UserController
 import scommons.client.app._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
@@ -35,12 +36,14 @@ object AdminMain {
 
     val apiActions = AdminActions
     val companyController = new CompanyController(apiActions)
+    val userController = new UserController(apiActions)
     val envController = new SystemGroupController(apiActions, apiActions)
     val appController = new SystemController(apiActions)
     val roleController = new RoleController(apiActions)
     val rolePermissionController = new RolePermissionController(apiActions)
     val routeController = new AdminRouteController(
       companyController,
+      userController,
       envController,
       appController,
       roleController,

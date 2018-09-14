@@ -10,6 +10,7 @@ import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
 import scommons.admin.client.system.{SystemController, SystemState}
+import scommons.admin.client.user.UserController
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
@@ -21,12 +22,13 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "return component" in {
     //given
     val companyController = mock[CompanyController]
+    val userController = mock[UserController]
     val systemGroupController = mock[SystemGroupController]
     val systemController = mock[SystemController]
     val roleController = mock[RoleController]
     val rolePermissionController = mock[RolePermissionController]
     val controller = new AdminRouteController(
-      companyController, systemGroupController, systemController,
+      companyController, userController, systemGroupController, systemController,
       roleController, rolePermissionController
     )
 
@@ -37,12 +39,13 @@ class AdminRouteControllerSpec extends TestSpec {
   it should "map state to props" in {
     //given
     val companyController = mock[CompanyController]
+    val userController = mock[UserController]
     val systemGroupController = mock[SystemGroupController]
     val systemController = mock[SystemController]
     val roleController = mock[RoleController]
     val rolePermissionController = mock[RolePermissionController]
     val controller = new AdminRouteController(
-      companyController, systemGroupController, systemController,
+      companyController, userController, systemGroupController, systemController,
       roleController, rolePermissionController
     )
     val props = mock[Props[Unit]]
@@ -63,6 +66,7 @@ class AdminRouteControllerSpec extends TestSpec {
     )
     val roleState = RoleState(roles.groupBy(_.systemId))
     val companiesItem = BrowseTreeItemData("Test Companies", BrowsePath("/companies"))
+    val usersItem = BrowseTreeItemData("Test Users", BrowsePath("/users"))
     val applicationsNode = BrowseTreeNodeData("Test Applications", BrowsePath("/apps"))
     val environmentNode = BrowseTreeNodeData("Test Env", BrowsePath("/1"))
     val applicationNode = BrowseTreeNodeData("Test App", BrowsePath("/2"))
@@ -70,6 +74,8 @@ class AdminRouteControllerSpec extends TestSpec {
     val roleItem = BrowseTreeItemData("Test Role", BrowsePath("/3"))
     (companyController.getCompaniesItem _).expects(companiesItem.path)
       .returning(companiesItem)
+    (userController.getUsersItem _).expects(usersItem.path)
+      .returning(usersItem)
     (systemGroupController.getApplicationsNode _).expects(BrowsePath("/apps"))
       .returning(applicationsNode)
     systemGroups.foreach { group =>
@@ -88,6 +94,7 @@ class AdminRouteControllerSpec extends TestSpec {
     }
     val expectedTreeRoots = List(
       companiesItem,
+      usersItem,
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
           val groupNode = environmentNode
