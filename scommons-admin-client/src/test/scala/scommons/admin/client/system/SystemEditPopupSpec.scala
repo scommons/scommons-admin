@@ -4,8 +4,8 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import scommons.admin.client.api.system.SystemData
 import scommons.client.test.TestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.ui.Buttons
 import scommons.client.ui.popup.{Modal, ModalProps}
+import scommons.client.ui.{ButtonImagesCss, Buttons}
 
 class SystemEditPopupSpec extends TestSpec {
 
@@ -190,7 +190,11 @@ class SystemEditPopupSpec extends TestSpec {
       inside(modalProps) { case ModalProps(show, header, buttons, actions, _, onClose, closable, _) =>
         show shouldBe props.show
         header shouldBe Some(props.title)
-        buttons shouldBe List(Buttons.SAVE.copy(primary = true), Buttons.CANCEL)
+        buttons shouldBe List(Buttons.SAVE.copy(
+          image = ButtonImagesCss.dbSave,
+          disabledImage = ButtonImagesCss.dbSaveDisabled,
+          primary = true
+        ), Buttons.CANCEL)
         actions.enabledCommands shouldBe actionCommands
         onClose shouldBe props.onCancel
         closable shouldBe true

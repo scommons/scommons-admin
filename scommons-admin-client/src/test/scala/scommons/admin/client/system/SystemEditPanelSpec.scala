@@ -92,9 +92,21 @@ class SystemEditPanelSpec extends TestSpec {
     fieldProps.onEnter()
   }
 
-  it should "render the component" in {
+  it should "render component" in {
     //given
     val props = getSystemEditPanelProps()
+    val component = <(SystemEditPanel())(^.wrapped := props)()
+
+    //when
+    val result = shallowRender(component)
+
+    //then
+    assertSystemEditPanel(result, props)
+  }
+
+  it should "render component and requestFocus on first input field" in {
+    //given
+    val props = getSystemEditPanelProps(requestFocus = true)
     val component = <(SystemEditPanel())(^.wrapped := props)()
 
     //when

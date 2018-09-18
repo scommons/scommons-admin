@@ -1,33 +1,33 @@
-package scommons.admin.client.system
+package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
-import scommons.admin.client.api.system.SystemData
-import scommons.client.ui.popup.{Modal, ModalProps}
+import scommons.admin.client.api.user.UserDetailsData
 import scommons.client.ui._
+import scommons.client.ui.popup.{Modal, ModalProps}
 import scommons.client.util.ActionsData
 
-case class SystemEditPopupProps(show: Boolean,
-                                title: String,
-                                onSave: SystemData => Unit,
-                                onCancel: () => Unit,
-                                initialData: SystemData)
+case class UserEditPopupProps(show: Boolean,
+                              title: String,
+                              onSave: UserDetailsData => Unit,
+                              onCancel: () => Unit,
+                              initialData: UserDetailsData)
 
-object SystemEditPopup extends UiComponent[SystemEditPopupProps] {
+object UserEditPopup extends UiComponent[UserEditPopupProps] {
 
-  private case class SystemEditPopupState(data: SystemData,
-                                          actionCommands: Set[String],
-                                          opened: Boolean = false)
+  private case class UserEditPopupState(data: UserDetailsData,
+                                        actionCommands: Set[String],
+                                        opened: Boolean = false)
 
   def apply(): ReactClass = reactClass
   lazy val reactClass: ReactClass = createComp
 
-  private def createComp = React.createClass[PropsType, SystemEditPopupState](
+  private def createComp = React.createClass[PropsType, UserEditPopupState](
     getInitialState = { self =>
       val props = self.props.wrapped
 
-      SystemEditPopupState(props.initialData, getActionCommands(props.initialData))
+      UserEditPopupState(props.initialData, getActionCommands(props.initialData))
     },
     componentWillReceiveProps = { (self, nextProps) =>
       val props = nextProps.wrapped
@@ -64,8 +64,7 @@ object SystemEditPopup extends UiComponent[SystemEditPopupProps] {
           self.setState(_.copy(opened = true))
         }
       ))(
-        <(SystemEditPanel())(^.wrapped := SystemEditPanelProps(
-          readOnly = false,
+        <(UserEditPanel())(^.wrapped := UserEditPanelProps(
           initialData = self.state.data,
           requestFocus = self.state.opened,
           onChange = { data =>
@@ -80,11 +79,13 @@ object SystemEditPopup extends UiComponent[SystemEditPopupProps] {
   private val enabledActions = Set(Buttons.SAVE.command, Buttons.CANCEL.command)
   private val disabledActions = Set(Buttons.CANCEL.command)
 
-  private def getActionCommands(data: SystemData): Set[String] = {
-    if (data.name.trim.nonEmpty
-      && data.password.nonEmpty
-      && data.title.trim.nonEmpty
-      && data.url.trim.nonEmpty) {
+  private def getActionCommands(data: UserDetailsData): Set[String] = {
+    if (data.user.login.trim.nonEmpty
+      && data.user.password.nonEmpty
+      && data.profile.firstName.trim.nonEmpty
+      && data.profile.lastName.trim.nonEmpty
+      && data.profile.email.trim.nonEmpty
+      && data.profile.phone.forall(_.trim.nonEmpty)) {
       enabledActions
     }
     else disabledActions
