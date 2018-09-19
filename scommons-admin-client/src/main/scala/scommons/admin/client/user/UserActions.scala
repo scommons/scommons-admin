@@ -26,6 +26,15 @@ trait UserActions {
     UserListFetchAction(FutureTask("Fetching Users", future), offset)
   }
 
+  def userFetch(dispatch: Dispatch, id: Int): UserFetchAction = {
+    val future = client.getUserById(id).andThen {
+      case Success(UserDetailsResp(Ok, Some(respData))) =>
+        dispatch(UserFetchedAction(respData))
+    }
+
+    UserFetchAction(FutureTask("Fetching User", future))
+  }
+
   def userCreate(dispatch: Dispatch, data: UserDetailsData): UserCreateAction = {
     val future = client.createUser(data).andThen {
       case Success(UserDetailsResp(Ok, Some(respData))) =>
@@ -59,7 +68,8 @@ object UserActions {
   case class UserListFetchedAction(dataList: List[UserData],
                                    totalCount: Option[Int]) extends Action
 
-  case class UserSelectedAction(id: Int) extends Action
+  case class UserFetchAction(task: FutureTask[UserDetailsResp]) extends TaskAction
+  case class UserFetchedAction(data: UserDetailsData) extends Action
 
   case class UserUpdateAction(task: FutureTask[UserDetailsResp]) extends TaskAction
   case class UserUpdatedAction(data: UserDetailsData) extends Action

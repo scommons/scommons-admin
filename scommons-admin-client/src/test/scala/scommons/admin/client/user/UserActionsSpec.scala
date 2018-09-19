@@ -17,13 +17,7 @@ class UserActionsSpec extends AsyncTestSpec {
     val dispatch = mockFunction[Any, Any]
     val offset = Some(12)
     val symbols = Some("test")
-    val dataList = List(UserData(
-      id = None,
-      company = UserCompanyData(1, "Test Company"),
-      login = "test_login",
-      password = "test",
-      active = true
-    ))
+    val dataList = List(mock[UserData])
     val totalCount = Some(12345)
     val expectedResp = UserListResp(dataList, totalCount)
 
@@ -43,27 +37,38 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
+  it should "dispatch UserFetchedAction when userFetch" in {
+    //given
+    val api = mock[UserApi]
+    val actions = new UserActionsTest(api)
+    val dispatch = mockFunction[Any, Any]
+    val id = 1
+    val respData = mock[UserDetailsData]
+    val expectedResp = UserDetailsResp(respData)
+
+    (api.getUserById _).expects(id)
+      .returning(Future.successful(expectedResp))
+    dispatch.expects(UserFetchedAction(respData))
+    
+    //when
+    val UserFetchAction(FutureTask(message, future)) =
+      actions.userFetch(dispatch, id)
+    
+    //then
+    message shouldBe "Fetching User"
+    future.map { resp =>
+      resp shouldBe expectedResp
+    }
+  }
+  
   it should "dispatch UserCreatedAction when userCreate" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
     val dispatch = mockFunction[Any, Any]
-    val data = UserDetailsData(
-      user = UserData(
-        id = None,
-        company = UserCompanyData(1, "Test Company"),
-        login = "test_login",
-        password = "test",
-        active = true
-      ),
-      profile = UserProfileData(
-        email = "test@email.com",
-        firstName = "Firstname",
-        lastName = "Lastname",
-        phone = Some("0123 456 789")
-      )
-    )
-    val expectedResp = UserDetailsResp(data.copy(user = data.user.copy(id = Some(1))))
+    val data = mock[UserDetailsData]
+    val respData = mock[UserDetailsData]
+    val expectedResp = UserDetailsResp(respData)
 
     (api.createUser _).expects(data)
       .returning(Future.successful(expectedResp))
@@ -85,22 +90,8 @@ class UserActionsSpec extends AsyncTestSpec {
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
     val dispatch = mockFunction[Any, Any]
-    val data = UserDetailsData(
-      user = UserData(
-        id = Some(1),
-        company = UserCompanyData(1, "Test Company"),
-        login = "test_login",
-        password = "test",
-        active = true
-      ),
-      profile = UserProfileData(
-        email = "test@email.com",
-        firstName = "Firstname",
-        lastName = "Lastname",
-        phone = Some("0123 456 789")
-      )
-    )
-    val respData = data.copy(user = data.user.copy(login = "updated_login"))
+    val data = mock[UserDetailsData]
+    val respData = mock[UserDetailsData]
     val expectedResp = UserDetailsResp(respData)
 
     (api.updateUser _).expects(data)

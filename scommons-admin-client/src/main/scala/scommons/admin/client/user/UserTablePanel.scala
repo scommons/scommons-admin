@@ -4,7 +4,6 @@ import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.user.UserActions.UserSelectedAction
 import scommons.client.ui._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
@@ -55,9 +54,9 @@ object UserTablePanel extends UiComponent[UserTablePanelProps] {
         <(TablePanel())(^.wrapped := TablePanelProps(
           header,
           rows,
-          props.data.selectedId.map(_.toString).toSet,
+          props.data.selected.flatMap(_.user.id).map(_.toString).toSet,
           onSelect = { row =>
-            props.dispatch(UserSelectedAction(row.id.toInt))
+            props.dispatch(props.actions.userFetch(props.dispatch, row.id.toInt))
           }
         ))(),
   

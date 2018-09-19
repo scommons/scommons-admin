@@ -20,8 +20,7 @@ object UserPanel extends UiComponent[UserPanelProps] {
 
   private def createComp = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
-    
-    val selectedData = props.data.dataList.find(_.id == props.data.selectedId)
+    val selectedData = props.data.selected
 
     <.div()(
       <(ButtonsPanel())(^.wrapped := ButtonsPanelProps(
@@ -60,31 +59,31 @@ object UserPanel extends UiComponent[UserPanelProps] {
             phone = None
           )
         )
-      ))()
+      ))(),
       
-//      selectedData.toList.flatMap { data =>
-//        List(
+      selectedData.toList.flatMap { data =>
+        List(
 //          <(UserEditPanel())(^.wrapped := UserEditPanelProps(
 //            initialData = data,
 //            requestFocus = false,
 //            onChange = _ => (),
 //            onEnter = () => ()
 //          ))(),
-//
-//          <(UserEditPopup())(^.wrapped := UserEditPopupProps(
-//            show = props.state.showEditPopup,
-//            title = "Edit User",
-//            onSave = { updatedData =>
-//              props.dispatch(UserUpdateRequestAction(update = false))
-//              props.dispatch(props.actions.userUpdate(props.dispatch, updatedData))
-//            },
-//            onCancel = { () =>
-//              props.dispatch(UserUpdateRequestAction(update = false))
-//            },
-//            initialData = data
-//          ))()
-//        )
-//      }
+
+          <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+            show = props.data.showEditPopup,
+            title = "Edit User",
+            onSave = { updatedData =>
+              props.dispatch(UserUpdateRequestAction(update = false))
+              props.dispatch(props.actions.userUpdate(props.dispatch, updatedData))
+            },
+            onCancel = { () =>
+              props.dispatch(UserUpdateRequestAction(update = false))
+            },
+            initialData = data
+          ))()
+        )
+      }
     )
   }
 }

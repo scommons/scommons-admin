@@ -36,14 +36,48 @@ class UserStateReducerSpec extends TestSpec {
     }
   }
   
-  it should "set selectedId when UserSelectedAction" in {
+  it should "set selected and update dataList when UserFetchedAction" in {
     //given
-    val selectedId = 123
+    val dataList = List(
+      UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "test_login",
+        password = "test",
+        active = true
+      ),
+      UserData(
+        id = Some(12),
+        company = UserCompanyData(1, "Test Company"),
+        login = "test_login2",
+        password = "test2",
+        active = true
+      )
+    )
+    val data = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    )
     
     //when & then
-    reduce(Some(UserState()), UserSelectedAction(selectedId)) shouldBe {
-      UserState(selectedId = Some(selectedId))
-    }
+    reduce(Some(UserState(dataList = dataList)), UserFetchedAction(data)) shouldBe UserState(
+      dataList = dataList.map {
+        case curr if curr.id == data.user.id => data.user
+        case curr => curr
+      },
+      selected = Some(data)
+    )
   }
   
   it should "set offset when UserListFetchAction" in {
@@ -52,12 +86,12 @@ class UserStateReducerSpec extends TestSpec {
     val offset = Some(123)
     
     //when & then
-    reduce(Some(UserState()), UserListFetchAction(task, offset)) shouldBe {
-      UserState(offset = offset)
-    }
+    reduce(Some(UserState()), UserListFetchAction(task, offset)) shouldBe UserState(
+      offset = offset
+    )
   }
   
-  it should "set dataList and totalCount when UserListFetchedAction" in {
+  it should "set dataList, totalCount and reset selected when UserListFetchedAction" in {
     //given
     val dataList = List(UserData(
       id = Some(11),
@@ -67,23 +101,40 @@ class UserStateReducerSpec extends TestSpec {
       active = true
     ))
     val totalCount = Some(123)
+    val selected = Some(UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    ))
     
     //when & then
-    reduce(Some(UserState()), UserListFetchedAction(dataList, totalCount)) shouldBe {
-      UserState(
-        dataList = dataList,
-        totalCount = totalCount
-      )
-    }
-    reduce(Some(UserState(totalCount = totalCount)), UserListFetchedAction(dataList, None)) shouldBe {
-      UserState(
-        dataList = dataList,
-        totalCount = totalCount
-      )
-    }
+    reduce(Some(UserState()), UserListFetchedAction(dataList, totalCount)) shouldBe UserState(
+      dataList = dataList,
+      totalCount = totalCount
+    )
+
+    //when & then
+    reduce(Some(UserState(
+      totalCount = totalCount,
+      selected = selected
+    )), UserListFetchedAction(dataList, None)) shouldBe UserState(
+      dataList = dataList,
+      totalCount = totalCount,
+      selected = None
+    )
   }
 
-  it should "append new data to the dataList when UserCreatedAction" in {
+  it should "append new data to the dataList and set selected when UserCreatedAction" in {
     //given
     val dataList = List(UserData(
       id = Some(11),
@@ -109,14 +160,13 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList = dataList)), UserCreatedAction(data)) shouldBe {
-      UserState(
-        dataList = dataList :+ data.user
-      )
-    }
+    reduce(Some(UserState(dataList = dataList)), UserCreatedAction(data)) shouldBe UserState(
+      dataList = dataList :+ data.user,
+      selected = Some(data)
+    )
   }
   
-  it should "update dataList when UserUpdatedAction" in {
+  it should "update dataList and selected when UserUpdatedAction" in {
     //given
     val existingData = UserData(
       id = Some(12),
@@ -152,13 +202,9 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList = dataList)), UserUpdatedAction(data)) shouldBe {
-      UserState(
-        dataList = List(
-          data.user,
-          existingData
-        )
-      )
-    }
+    reduce(Some(UserState(dataList = dataList)), UserUpdatedAction(data)) shouldBe UserState(
+      dataList = List(data.user, existingData),
+      selected = Some(data)
+    )
   }
 }

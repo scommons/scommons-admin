@@ -2,8 +2,8 @@ package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.api.user.{UserCompanyData, UserData, UserListResp}
-import scommons.admin.client.user.UserActions.{UserListFetchAction, UserSelectedAction}
+import scommons.admin.client.api.user._
+import scommons.admin.client.user.UserActions.{UserFetchAction, UserListFetchAction}
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance
@@ -15,18 +15,25 @@ import scala.concurrent.Future
 
 class UserTablePanelSpec extends TestSpec {
 
-  it should "dispatch UserSelectedAction when select row" in {
+  it should "dispatch UserFetchAction when select row" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserActions]
+    val respData = mock[UserDetailsData]
     val state = UserState()
     val props = UserTablePanelProps(dispatch, actions, state)
     val comp = shallowRender(<(UserTablePanel())(^.wrapped := props)())
     val tpProps = findComponentProps(comp, TablePanel)
-    val row = TableRowData("1", List("1", "test user 1"))
+    val id = 1
+    val row = TableRowData(id.toString, List("1", "test user 1"))
+    val action = UserFetchAction(
+      FutureTask("Fetching", Future.successful(UserDetailsResp(respData)))
+    )
+    (actions.userFetch _).expects(dispatch, id)
+      .returning(action)
 
     //then
-    dispatch.expects(UserSelectedAction(row.id.toInt))
+    dispatch.expects(action)
     
     //when
     tpProps.onSelect(row)
@@ -125,7 +132,21 @@ class UserTablePanelSpec extends TestSpec {
         UserData(Some(1), company, "test user 1", "test", active = true),
         UserData(Some(2), company, "test user 2", "test", active = true)
       ),
-      selectedId = Some(1)
+      selected = Some(UserDetailsData(
+        user = UserData(
+          id = Some(1),
+          company = UserCompanyData(1, "Test Company"),
+          login = "test_login",
+          password = "test",
+          active = true
+        ),
+        profile = UserProfileData(
+          email = "test@email.com",
+          firstName = "Firstname",
+          lastName = "Lastname",
+          phone = Some("0123 456 789")
+        )
+      ))
     )
     val props = UserTablePanelProps(dispatch, actions, state)
     val component = <(UserTablePanel())(^.wrapped := props)()
@@ -188,7 +209,7 @@ class UserTablePanelSpec extends TestSpec {
         inside(tpProps) { case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader
           rows shouldBe tableRows
-          selectedIds shouldBe props.data.selectedId.map(_.toString).toSet
+          selectedIds shouldBe props.data.selected.flatMap(_.user.id).map(_.toString).toSet
         }
       })
       assertComponent(paginationPanel, PaginationPanel(), { ppProps: PaginationPanelProps =>
