@@ -4,9 +4,11 @@ import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
 import scommons.admin.client.user.UserActions._
 import scommons.client.ui._
+import scommons.client.ui.tab.{TabItemData, TabPanel, TabPanelProps}
 import scommons.client.util.ActionsData
 
 case class UserPanelProps(dispatch: Dispatch,
@@ -62,13 +64,14 @@ object UserPanel extends UiComponent[UserPanelProps] {
       ))(),
       
       selectedData.toList.flatMap { data =>
+        val tabItems = List(
+          TabItemData("Profile", image = Some(AdminImagesCss.vcard), render = Some { _ =>
+            <(UserProfilePanel())(^.wrapped := UserProfilePanelProps(data.profile))()
+          })
+        )
+        
         List(
-//          <(UserEditPanel())(^.wrapped := UserEditPanelProps(
-//            initialData = data,
-//            requestFocus = false,
-//            onChange = _ => (),
-//            onEnter = () => ()
-//          ))(),
+          <(TabPanel())(^.wrapped := TabPanelProps(tabItems))(),
 
           <(UserEditPopup())(^.wrapped := UserEditPopupProps(
             show = props.data.showEditPopup,

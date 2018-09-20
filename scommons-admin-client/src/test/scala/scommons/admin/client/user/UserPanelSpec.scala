@@ -1,14 +1,18 @@
 package scommons.admin.client.user
 
+import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
+import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
+import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
 import scommons.admin.client.user.UserActions._
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.ui.{Buttons, ButtonsPanel, ButtonsPanelProps}
+import scommons.client.ui._
+import scommons.client.ui.tab._
 
 import scala.concurrent.Future
 
@@ -183,10 +187,26 @@ class UserPanelSpec extends TestSpec {
 
   private def assertUserPanel(result: ComponentInstance, props: UserPanelProps): Unit = {
     val selectedData = props.data.selected
+    
+    def assertUserProfilePanel(component: ReactElement, data: UserProfileData): Assertion = {
+      val wrapped = React.createClass[Unit, Unit] { _ =>
+        <.div()(component)
+      }
+      val result = shallowRender(<(wrapped)()())
+
+      assertDOMComponent(result, <.div()(), { case List(comp) =>
+        assertComponent(comp, UserProfilePanel(), { cProps: UserProfilePanelProps =>
+          inside(cProps) { case UserProfilePanelProps(resultData) =>
+            resultData shouldBe data
+          }
+        })
+      })
+    }
 
     def assertComponents(buttonsPanel: ComponentInstance,
                          tablePanel: ComponentInstance,
                          createPopup: ComponentInstance,
+                         tabPanel: Option[ComponentInstance],
                          editPopup: Option[ComponentInstance]): Assertion = {
 
       assertComponent(buttonsPanel, ButtonsPanel(), { bpProps: ButtonsPanelProps =>
@@ -229,6 +249,26 @@ class UserPanelSpec extends TestSpec {
         }
       })
       
+      tabPanel.isEmpty shouldBe selectedData.isEmpty
+      selectedData.foreach { data =>
+        assertComponent(tabPanel.get, TabPanel(), { ppProps: TabPanelProps =>
+          inside(ppProps) { case TabPanelProps(items, selectedIndex, _, direction) =>
+            selectedIndex shouldBe 0
+            direction shouldBe TabDirection.Top
+
+            items.size shouldBe 1
+            inside(items.head) { case TabItemData(title, image, component, render) =>
+              title shouldBe "Profile"
+              image shouldBe Some(AdminImagesCss.vcard)
+              component shouldBe None
+              render should not be None
+
+              assertUserProfilePanel(render.get.apply(null), data.profile)
+            }
+          }
+        })
+      }
+      
       editPopup.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
         assertComponent(editPopup.get, UserEditPopup(), { ppProps: UserEditPopupProps =>
@@ -243,8 +283,10 @@ class UserPanelSpec extends TestSpec {
     }
     
     assertDOMComponent(result, <.div()(), {
-      case List(bp, tp, createPopup) => assertComponents(bp, tp, createPopup, None)
-      case List(bp, tp, createPopup, editPopup) => assertComponents(bp, tp, createPopup, Some(editPopup))
+      case List(bp, tp, createPopup) =>
+        assertComponents(bp, tp, createPopup, None, None)
+      case List(bp, tp, createPopup, tab, editPopup) =>
+        assertComponents(bp, tp, createPopup, Some(tab), Some(editPopup))
     })
   }
 }
