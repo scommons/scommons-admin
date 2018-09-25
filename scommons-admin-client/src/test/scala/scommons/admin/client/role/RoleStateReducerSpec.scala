@@ -54,7 +54,7 @@ class RoleStateReducerSpec extends TestSpec {
     val data = RoleData(Some(2), 3, "test title 2")
 
     //when & then
-    reduce(Some(RoleState(dataList.groupBy(_.systemId))), RoleCreatedAction(data)) shouldBe {
+    reduce(Some(RoleState(dataList.groupBy(_.systemId), showCreatePopup = true)), RoleCreatedAction(data)) shouldBe {
       RoleState((dataList :+ data).groupBy(_.systemId))
     }
   }
@@ -69,7 +69,7 @@ class RoleStateReducerSpec extends TestSpec {
     val data = RoleData(Some(1), 3, "updated test title")
 
     //when & then
-    reduce(Some(RoleState(dataList.groupBy(_.systemId))), RoleUpdatedAction(data)) shouldBe {
+    reduce(Some(RoleState(dataList.groupBy(_.systemId), showEditPopup = true)), RoleUpdatedAction(data)) shouldBe {
       RoleState(List(
         data,
         existingData

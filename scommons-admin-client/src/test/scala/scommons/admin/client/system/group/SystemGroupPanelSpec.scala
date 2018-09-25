@@ -30,7 +30,6 @@ class SystemGroupPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(SystemGroupCreateRequestAction(create = false))
     dispatch.expects(action)
     
     //when
@@ -73,7 +72,6 @@ class SystemGroupPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(SystemGroupUpdateRequestAction(update = false))
     dispatch.expects(action)
     
     //when

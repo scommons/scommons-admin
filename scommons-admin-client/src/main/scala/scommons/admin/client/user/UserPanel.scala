@@ -40,7 +40,6 @@ object UserPanel extends UiComponent[UserPanelProps] {
         show = props.data.showCreatePopup,
         title = "New User",
         onSave = { data =>
-          props.dispatch(UserCreateRequestAction(create = false))
           props.dispatch(props.actions.userCreate(props.dispatch, data))
         },
         onCancel = { () =>
@@ -77,7 +76,6 @@ object UserPanel extends UiComponent[UserPanelProps] {
             show = props.data.showEditPopup,
             title = "Edit User",
             onSave = { updatedData =>
-              props.dispatch(UserUpdateRequestAction(update = false))
               props.dispatch(props.actions.userUpdate(props.dispatch, updatedData))
             },
             onCancel = { () =>

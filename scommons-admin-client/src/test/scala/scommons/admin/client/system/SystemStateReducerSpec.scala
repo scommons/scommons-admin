@@ -93,7 +93,10 @@ class SystemStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(SystemState(dataList.groupBy(_.parentId))), SystemCreatedAction(data)) shouldBe {
+    reduce(Some(SystemState(
+      dataList.groupBy(_.parentId),
+      showCreatePopup = true
+    )), SystemCreatedAction(data)) shouldBe {
       SystemState((dataList :+ data).groupBy(_.parentId))
     }
   }
@@ -129,7 +132,10 @@ class SystemStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(SystemState(dataList.groupBy(_.parentId))), SystemUpdatedAction(data)) shouldBe {
+    reduce(Some(SystemState(
+      dataList.groupBy(_.parentId),
+      showEditPopup = true
+    )), SystemUpdatedAction(data)) shouldBe {
       SystemState(List(
         data,
         existingData

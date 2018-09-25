@@ -160,7 +160,7 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList = dataList)), UserCreatedAction(data)) shouldBe UserState(
+    reduce(Some(UserState(dataList, showCreatePopup = true)), UserCreatedAction(data)) shouldBe UserState(
       dataList = dataList :+ data.user,
       selected = Some(data)
     )
@@ -202,7 +202,7 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList = dataList)), UserUpdatedAction(data)) shouldBe UserState(
+    reduce(Some(UserState(dataList, showEditPopup = true)), UserUpdatedAction(data)) shouldBe UserState(
       dataList = List(data.user, existingData),
       selected = Some(data)
     )

@@ -76,7 +76,6 @@ object CompanyPanel extends UiComponent[CompanyPanelProps] {
           props.state.showCreatePopup,
           "Enter Company name:",
           onOk = { text =>
-            props.dispatch(CompanyCreateRequestAction(create = false))
             props.dispatch(props.actions.companyCreate(props.dispatch, text))
           },
           onCancel = { () =>
@@ -90,7 +89,6 @@ object CompanyPanel extends UiComponent[CompanyPanelProps] {
             props.state.showEditPopup,
             "Enter new Company name:",
             onOk = { text =>
-              props.dispatch(CompanyUpdateRequestAction(update = false))
               props.dispatch(props.actions.companyUpdate(props.dispatch, data.copy(name = text)))
             },
             onCancel = { () =>

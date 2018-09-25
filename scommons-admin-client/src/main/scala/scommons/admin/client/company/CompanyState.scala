@@ -25,11 +25,17 @@ object CompanyStateReducer {
       dataList = dataList,
       totalCount = totalCount.orElse(state.totalCount)
     )
-    case CompanyCreatedAction(data) => state.copy(dataList = state.dataList :+ data)
-    case CompanyUpdatedAction(data) => state.copy(dataList = state.dataList.map {
-      case curr if curr.id == data.id => data
-      case curr => curr
-    })
+    case CompanyCreatedAction(data) => state.copy(
+      dataList = state.dataList :+ data,
+      showCreatePopup = false
+    )
+    case CompanyUpdatedAction(data) => state.copy(
+      dataList = state.dataList.map {
+        case curr if curr.id == data.id => data
+        case curr => curr
+      },
+      showEditPopup = false
+    )
     case _ => state
   }
 }

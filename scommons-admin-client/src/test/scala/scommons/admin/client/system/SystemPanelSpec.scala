@@ -36,7 +36,6 @@ class SystemPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(SystemCreateRequestAction(create = false))
     dispatch.expects(action)
     
     //when
@@ -83,7 +82,6 @@ class SystemPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(SystemUpdateRequestAction(update = false))
     dispatch.expects(action)
     
     //when

@@ -83,7 +83,7 @@ class CompanyStateReducerSpec extends TestSpec {
     val data = CompanyData(Some(2), "test name 2")
 
     //when & then
-    reduce(Some(CompanyState(dataList = dataList)), CompanyCreatedAction(data)) shouldBe {
+    reduce(Some(CompanyState(dataList = dataList, showCreatePopup = true)), CompanyCreatedAction(data)) shouldBe {
       CompanyState(
         dataList = dataList :+ data
       )
@@ -100,7 +100,7 @@ class CompanyStateReducerSpec extends TestSpec {
     val data = CompanyData(Some(1), "updated test name")
 
     //when & then
-    reduce(Some(CompanyState(dataList = dataList)), CompanyUpdatedAction(data)) shouldBe {
+    reduce(Some(CompanyState(dataList = dataList, showEditPopup = true)), CompanyUpdatedAction(data)) shouldBe {
       CompanyState(
         dataList = List(
           data,

@@ -40,7 +40,6 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
             show = props.state.showCreatePopup,
             title = "New Application",
             onSave = { data =>
-              props.dispatch(SystemCreateRequestAction(create = false))
               props.dispatch(props.actions.systemCreate(props.dispatch, data))
             },
             onCancel = { () =>
@@ -70,7 +69,6 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
             show = props.state.showEditPopup,
             title = "Edit Application",
             onSave = { updatedData =>
-              props.dispatch(SystemUpdateRequestAction(update = false))
               props.dispatch(props.actions.systemUpdate(props.dispatch, updatedData))
             },
             onCancel = { () =>

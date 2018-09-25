@@ -107,7 +107,6 @@ class CompanyPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(CompanyCreateRequestAction(create = false))
     dispatch.expects(action)
     
     //when
@@ -153,7 +152,6 @@ class CompanyPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(CompanyUpdateRequestAction(update = false))
     dispatch.expects(action)
     
     //when

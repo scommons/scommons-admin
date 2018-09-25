@@ -30,7 +30,6 @@ class RolePanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(RoleCreateRequestAction(create = false))
     dispatch.expects(action)
     
     //when
@@ -72,7 +71,6 @@ class RolePanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(RoleUpdateRequestAction(update = false))
     dispatch.expects(action)
     
     //when

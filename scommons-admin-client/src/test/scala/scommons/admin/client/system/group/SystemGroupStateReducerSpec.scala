@@ -49,7 +49,7 @@ class SystemGroupStateReducerSpec extends TestSpec {
     val data = SystemGroupData(Some(2), "test name 2")
 
     //when & then
-    reduce(Some(SystemGroupState(dataList)), SystemGroupCreatedAction(data)) shouldBe {
+    reduce(Some(SystemGroupState(dataList, showCreatePopup = true)), SystemGroupCreatedAction(data)) shouldBe {
       SystemGroupState(dataList :+ data)
     }
   }
@@ -64,7 +64,7 @@ class SystemGroupStateReducerSpec extends TestSpec {
     val data = SystemGroupData(Some(1), "updated test name")
 
     //when & then
-    reduce(Some(SystemGroupState(dataList)), SystemGroupUpdatedAction(data)) shouldBe {
+    reduce(Some(SystemGroupState(dataList, showEditPopup = true)), SystemGroupUpdatedAction(data)) shouldBe {
       SystemGroupState(List(
         data,
         existingData

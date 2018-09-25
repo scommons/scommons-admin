@@ -34,7 +34,6 @@ class UserPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(UserCreateRequestAction(create = false))
     dispatch.expects(action)
     
     //when
@@ -75,7 +74,6 @@ class UserPanelSpec extends TestSpec {
       .returning(action)
 
     //then
-    dispatch.expects(UserUpdateRequestAction(update = false))
     dispatch.expects(action)
     
     //when

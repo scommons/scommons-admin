@@ -27,7 +27,8 @@ object RoleStateReducer {
     case RoleCreatedAction(data) =>
       val dataList = state.getRoles(data.systemId)
       state.copy(
-        rolesBySystemId = state.rolesBySystemId + (data.systemId -> (dataList :+ data))
+        rolesBySystemId = state.rolesBySystemId + (data.systemId -> (dataList :+ data)),
+        showCreatePopup = false
       )
     case RoleUpdatedAction(data) =>
       val dataList = state.getRoles(data.systemId).map {
@@ -35,7 +36,8 @@ object RoleStateReducer {
         case curr => curr
       }
       state.copy(
-        rolesBySystemId = state.rolesBySystemId + (data.systemId -> dataList)
+        rolesBySystemId = state.rolesBySystemId + (data.systemId -> dataList),
+        showEditPopup = false
       )
     case _ => state
   }

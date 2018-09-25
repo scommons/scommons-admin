@@ -35,7 +35,6 @@ object SystemGroupPanel extends UiComponent[SystemGroupPanelProps] {
           props.state.showCreatePopup,
           "Enter Environment name:",
           onOk = { text =>
-            props.dispatch(SystemGroupCreateRequestAction(create = false))
             props.dispatch(props.actions.systemGroupCreate(props.dispatch, text))
           },
           onCancel = { () =>
@@ -49,7 +48,6 @@ object SystemGroupPanel extends UiComponent[SystemGroupPanelProps] {
             props.state.showEditPopup,
             "Enter new Environment name:",
             onOk = { text =>
-              props.dispatch(SystemGroupUpdateRequestAction(update = false))
               props.dispatch(props.actions.systemGroupUpdate(props.dispatch, data.copy(name = text)))
             },
             onCancel = { () =>

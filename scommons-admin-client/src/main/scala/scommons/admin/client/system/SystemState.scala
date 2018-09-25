@@ -27,7 +27,8 @@ object SystemStateReducer {
     case SystemCreatedAction(data) =>
       val dataList = state.getSystems(data.parentId)
       state.copy(
-        systemsByParentId = state.systemsByParentId + (data.parentId -> (dataList :+ data))
+        systemsByParentId = state.systemsByParentId + (data.parentId -> (dataList :+ data)),
+        showCreatePopup = false
       )
     case SystemUpdatedAction(data) =>
       val dataList = state.getSystems(data.parentId).map {
@@ -35,7 +36,8 @@ object SystemStateReducer {
         case curr => curr
       }
       state.copy(
-        systemsByParentId = state.systemsByParentId + (data.parentId -> dataList)
+        systemsByParentId = state.systemsByParentId + (data.parentId -> dataList),
+        showEditPopup = false
       )
     case _ => state
   }

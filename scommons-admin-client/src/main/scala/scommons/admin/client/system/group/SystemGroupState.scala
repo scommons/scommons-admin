@@ -19,11 +19,17 @@ object SystemGroupStateReducer {
     case SystemGroupListFetchedAction(dataList) => state.copy(
       dataList = dataList
     )
-    case SystemGroupCreatedAction(data) => state.copy(dataList = state.dataList :+ data)
-    case SystemGroupUpdatedAction(data) => state.copy(dataList = state.dataList.map {
-      case curr if curr.id == data.id => data
-      case curr => curr
-    })
+    case SystemGroupCreatedAction(data) => state.copy(
+      dataList = state.dataList :+ data,
+      showCreatePopup = false
+    )
+    case SystemGroupUpdatedAction(data) => state.copy(
+      dataList = state.dataList.map {
+        case curr if curr.id == data.id => data
+        case curr => curr
+      },
+      showEditPopup = false
+    )
     case _ => state
   }
 }

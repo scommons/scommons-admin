@@ -41,7 +41,6 @@ object RolePanel extends UiComponent[RolePanelProps] {
             props.state.showCreatePopup,
             "Enter Role title:",
             onOk = { text =>
-              props.dispatch(RoleCreateRequestAction(create = false))
               props.dispatch(props.actions.roleCreate(props.dispatch, RoleData(
                 id = None,
                 systemId = systemId,
@@ -59,7 +58,6 @@ object RolePanel extends UiComponent[RolePanelProps] {
             props.state.showEditPopup,
             "Enter new Role title:",
             onOk = { text =>
-              props.dispatch(RoleUpdateRequestAction(update = false))
               props.dispatch(props.actions.roleUpdate(props.dispatch, data.copy(title = text)))
             },
             onCancel = { () =>
