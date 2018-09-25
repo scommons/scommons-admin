@@ -17,7 +17,7 @@ object UserProfilePanel extends UiComponent[UserProfilePanelProps] {
     val props = self.props.wrapped
     val onChange = (_: String) => ()
 
-      <.div(^.className := "form-horizontal")(
+    <.div(^.className := "form-horizontal")(
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("First Name"),
         <.div(^.className := "controls")(
