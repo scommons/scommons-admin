@@ -39,12 +39,6 @@ object UserPanel extends UiComponent[UserPanelProps] {
       <(UserEditPopup())(^.wrapped := UserEditPopupProps(
         show = props.data.showCreatePopup,
         title = "New User",
-        onSave = { data =>
-          props.dispatch(props.actions.userCreate(props.dispatch, data))
-        },
-        onCancel = { () =>
-          props.dispatch(UserCreateRequestAction(create = false))
-        },
         initialData = UserDetailsData(
           user = UserData(
             id = None,
@@ -59,7 +53,13 @@ object UserPanel extends UiComponent[UserPanelProps] {
             lastName = "",
             phone = None
           )
-        )
+        ),
+        onSave = { data =>
+          props.dispatch(props.actions.userCreate(props.dispatch, data))
+        },
+        onCancel = { () =>
+          props.dispatch(UserCreateRequestAction(create = false))
+        }
       ))(),
       
       selectedData.toList.flatMap { data =>
@@ -75,13 +75,13 @@ object UserPanel extends UiComponent[UserPanelProps] {
           <(UserEditPopup())(^.wrapped := UserEditPopupProps(
             show = props.data.showEditPopup,
             title = "Edit User",
+            initialData = data,
             onSave = { updatedData =>
               props.dispatch(props.actions.userUpdate(props.dispatch, updatedData))
             },
             onCancel = { () =>
               props.dispatch(UserUpdateRequestAction(update = false))
-            },
-            initialData = data
+            }
           ))()
         )
       }

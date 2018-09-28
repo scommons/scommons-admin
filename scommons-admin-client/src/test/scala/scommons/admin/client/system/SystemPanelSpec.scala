@@ -238,7 +238,7 @@ class SystemPanelSpec extends TestSpec {
       createPopup.isEmpty shouldBe props.selectedParentId.isEmpty
       props.selectedParentId.foreach { parentId =>
         assertComponent(createPopup.get, SystemEditPopup(), { ppProps: SystemEditPopupProps =>
-          inside(ppProps) { case SystemEditPopupProps(show, title, _, _, initialData) =>
+          inside(ppProps) { case SystemEditPopupProps(show, title, initialData, _, _) =>
             show shouldBe props.state.showCreatePopup
             title shouldBe "New Application"
             initialData shouldBe SystemData(
@@ -263,7 +263,7 @@ class SystemPanelSpec extends TestSpec {
           }
         })
         assertComponent(editPopup.get, SystemEditPopup(), { ppProps: SystemEditPopupProps =>
-          inside(ppProps) { case SystemEditPopupProps(show, title, _, _, initialData) =>
+          inside(ppProps) { case SystemEditPopupProps(show, title, initialData, _, _) =>
             show shouldBe props.state.showEditPopup
             title shouldBe "Edit Application"
             initialData shouldBe data

@@ -226,7 +226,7 @@ class UserPanelSpec extends TestSpec {
       })
 
       assertComponent(createPopup, UserEditPopup(), { ppProps: UserEditPopupProps =>
-        inside(ppProps) { case UserEditPopupProps(show, title, _, _, initialData) =>
+        inside(ppProps) { case UserEditPopupProps(show, title, initialData, _, _) =>
           show shouldBe props.data.showCreatePopup
           title shouldBe "New User"
           initialData shouldBe UserDetailsData(
@@ -270,7 +270,7 @@ class UserPanelSpec extends TestSpec {
       editPopup.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
         assertComponent(editPopup.get, UserEditPopup(), { ppProps: UserEditPopupProps =>
-          inside(ppProps) { case UserEditPopupProps(show, title, _, _, initialData) =>
+          inside(ppProps) { case UserEditPopupProps(show, title, initialData, _, _) =>
             show shouldBe props.data.showEditPopup
             title shouldBe "Edit User"
             initialData shouldBe data

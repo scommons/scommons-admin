@@ -1,93 +1,39 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
+import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import scommons.admin.client.api.user.UserDetailsData
-import scommons.client.ui._
-import scommons.client.ui.popup.{Modal, ModalProps}
-import scommons.client.util.ActionsData
+import scommons.client.ui.popup.{SaveCancelPopup, SaveCancelPopupProps}
 
 case class UserEditPopupProps(show: Boolean,
                               title: String,
+                              initialData: UserDetailsData,
                               onSave: UserDetailsData => Unit,
-                              onCancel: () => Unit,
-                              initialData: UserDetailsData)
+                              onCancel: () => Unit) extends SaveCancelPopupProps {
 
-object UserEditPopup extends UiComponent[UserEditPopupProps] {
+  type DataType = UserDetailsData
 
-  private case class UserEditPopupState(data: UserDetailsData,
-                                        actionCommands: Set[String],
-                                        opened: Boolean = false)
-
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, UserEditPopupState](
-    getInitialState = { self =>
-      val props = self.props.wrapped
-
-      UserEditPopupState(props.initialData, getActionCommands(props.initialData))
-    },
-    componentWillReceiveProps = { (self, nextProps) =>
-      val props = nextProps.wrapped
-      if (self.props.wrapped != props) {
-        self.setState(_.copy(
-          data = props.initialData,
-          actionCommands = getActionCommands(props.initialData),
-          opened = false
-        ))
-      }
-    },
-    render = { self =>
-      val props = self.props.wrapped
-
-      val onSave = { () =>
-        if (self.state.actionCommands.contains(Buttons.SAVE.command)) {
-          props.onSave(self.state.data)
-        }
-      }
-
-      <(Modal())(^.wrapped := ModalProps(props.show,
-        header = Some(props.title),
-        buttons = List(Buttons.SAVE.copy(
-          image = ButtonImagesCss.dbSave,
-          disabledImage = ButtonImagesCss.dbSaveDisabled,
-          primary = true
-        ), Buttons.CANCEL),
-        actions = ActionsData(self.state.actionCommands, _ => {
-          case Buttons.SAVE.command => onSave()
-          case _ => props.onCancel()
-        }),
-        onClose = props.onCancel,
-        onOpen = { () =>
-          self.setState(_.copy(opened = true))
-        }
-      ))(
-        <(UserEditPanel())(^.wrapped := UserEditPanelProps(
-          initialData = self.state.data,
-          requestFocus = self.state.opened,
-          onChange = { data =>
-            self.setState(_.copy(data = data, actionCommands = getActionCommands(data)))
-          },
-          onEnter = onSave
-        ))()
-      )
-    }
-  )
-
-  private val enabledActions = Set(Buttons.SAVE.command, Buttons.CANCEL.command)
-  private val disabledActions = Set(Buttons.CANCEL.command)
-
-  private def getActionCommands(data: UserDetailsData): Set[String] = {
-    if (data.user.login.trim.nonEmpty
+  def isSaveEnabled(data: UserDetailsData): Boolean = {
+    (data.user.login.trim.nonEmpty
       && data.user.password.nonEmpty
       && data.profile.firstName.trim.nonEmpty
       && data.profile.lastName.trim.nonEmpty
       && data.profile.email.trim.nonEmpty
-      && data.profile.phone.forall(_.trim.nonEmpty)) {
-      enabledActions
-    }
-    else disabledActions
+      && data.profile.phone.forall(_.trim.nonEmpty))
+  }
+
+  def render(data: UserDetailsData,
+             requestFocus: Boolean,
+             onChange: UserDetailsData => Unit,
+             onSave: () => Unit): ReactElement = {
+    
+    <(UserEditPanel())(^.wrapped := UserEditPanelProps(
+      initialData = data,
+      requestFocus = requestFocus,
+      onChange = onChange,
+      onEnter = onSave
+    ))()
   }
 }
+
+object UserEditPopup extends SaveCancelPopup[UserEditPopupProps]

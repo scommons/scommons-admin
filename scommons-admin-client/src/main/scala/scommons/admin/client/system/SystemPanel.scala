@@ -39,12 +39,6 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
           <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
             show = props.state.showCreatePopup,
             title = "New Application",
-            onSave = { data =>
-              props.dispatch(props.actions.systemCreate(props.dispatch, data))
-            },
-            onCancel = { () =>
-              props.dispatch(SystemCreateRequestAction(create = false))
-            },
             initialData = SystemData(
               id = None,
               name = "",
@@ -52,7 +46,13 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
               title = "",
               url = "",
               parentId = parentId
-            )
+            ),
+            onSave = { data =>
+              props.dispatch(props.actions.systemCreate(props.dispatch, data))
+            },
+            onCancel = { () =>
+              props.dispatch(SystemCreateRequestAction(create = false))
+            }
           ))()
         },
         selectedData.map { data =>
@@ -68,13 +68,13 @@ object SystemPanel extends UiComponent[SystemPanelProps] {
           <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
             show = props.state.showEditPopup,
             title = "Edit Application",
+            initialData = data,
             onSave = { updatedData =>
               props.dispatch(props.actions.systemUpdate(props.dispatch, updatedData))
             },
             onCancel = { () =>
               props.dispatch(SystemUpdateRequestAction(update = false))
-            },
-            initialData = data
+            }
           ))()
         }
       )
