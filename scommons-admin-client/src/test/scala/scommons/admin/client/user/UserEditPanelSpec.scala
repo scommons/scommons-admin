@@ -1,10 +1,18 @@
 package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
+import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.api.user._
+import scommons.admin.client.company.CompanyActions
+import scommons.admin.client.company.CompanyActions.CompanyListFetchAction
+import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance
+import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
 import scommons.client.ui.{PasswordField, PasswordFieldProps, TextField, TextFieldProps}
+
+import scala.concurrent.Future
 
 class UserEditPanelSpec extends TestSpec {
   
@@ -52,6 +60,65 @@ class UserEditPanelSpec extends TestSpec {
     //when
     fieldProps.onChange(password)
     fieldProps.onEnter()
+  }
+
+  it should "call companyListFetch when onLoad in company field" in {
+    //given
+    val companyActions = mock[CompanyActions]
+    val props = getUserEditPanelProps(companyActions = companyActions)
+    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, SearchSelect)
+    val inputValue = "some input"
+    val action = CompanyListFetchAction(FutureTask("Fetching",
+      Future.successful(CompanyListResp(Nil))), Some(0))
+
+    //then
+    (companyActions.companyListFetch _).expects(props.dispatch, Some(0), Some(inputValue))
+      .returning(action)
+
+    //when
+    fieldProps.onLoad(inputValue)
+  }
+
+  it should "call onChange when onChange(Some) in company field" in {
+    //given
+    val onChange = mockFunction[UserDetailsData, Unit]
+    val companyActions = mock[CompanyActions]
+    val props = getUserEditPanelProps(companyActions = companyActions, onChange = onChange)
+    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, SearchSelect)
+    val value = SelectData("2", "Comp 2")
+    val data = props.initialData.copy(
+      user = props.initialData.user.copy(
+        company = UserCompanyData(2, "Comp 2")
+      )
+    )
+
+    //then
+    onChange.expects(data)
+
+    //when
+    fieldProps.onChange(Some(value))
+  }
+
+  it should "call onChange when onChange(None) in company field" in {
+    //given
+    val onChange = mockFunction[UserDetailsData, Unit]
+    val companyActions = mock[CompanyActions]
+    val props = getUserEditPanelProps(companyActions = companyActions, onChange = onChange)
+    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, SearchSelect)
+    val data = props.initialData.copy(
+      user = props.initialData.user.copy(
+        company = UserCompanyData(-1, "")
+      )
+    )
+
+    //then
+    onChange.expects(data)
+
+    //when
+    fieldProps.onChange(None)
   }
 
   it should "call onChange, onEnter when in firstName field" in {
@@ -170,7 +237,9 @@ class UserEditPanelSpec extends TestSpec {
     assertUserEditPanel(result, props)
   }
 
-  private def getUserEditPanelProps(initialData: UserDetailsData = UserDetailsData(
+  private def getUserEditPanelProps(dispatch: Dispatch = mock[Dispatch],
+                                    companyActions: CompanyActions = mock[CompanyActions],
+                                    initialData: UserDetailsData = UserDetailsData(
                                       user = UserData(
                                         id = Some(11),
                                         company = UserCompanyData(1, "Test Company"),
@@ -190,6 +259,8 @@ class UserEditPanelSpec extends TestSpec {
                                     onEnter: () => Unit = () => ()): UserEditPanelProps = {
 
     UserEditPanelProps(
+      dispatch = dispatch,
+      actions = companyActions,
       initialData = initialData,
       requestFocus = requestFocus,
       onChange = onChange,
@@ -204,11 +275,11 @@ class UserEditPanelSpec extends TestSpec {
       case List(
       loginComp,
       passwordComp,
+      companyComp,
       firstNameComp,
       lastNameComp,
       emailComp,
       phoneComp,
-      companyComp,
       noteComp
       ) =>
         assertDOMComponent(loginComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
@@ -238,6 +309,22 @@ class UserEditPanelSpec extends TestSpec {
                   requestSelect shouldBe false
                   className shouldBe None
                   placeholder shouldBe None
+                  readOnly shouldBe false
+              }
+            })
+          })
+        })
+        assertDOMComponent(companyComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Company"))
+          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+            assertComponent(fieldComp, SearchSelect(), { fieldProps: SearchSelectProps =>
+              inside(fieldProps) {
+                case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
+                  selected shouldBe {
+                    if (data.user.company.id == -1) None
+                    else Some(SelectData(data.user.company.id.toString, data.user.company.name))
+                  }
+                  isClearable shouldBe false
                   readOnly shouldBe false
               }
             })
@@ -303,22 +390,6 @@ class UserEditPanelSpec extends TestSpec {
                   className shouldBe None
                   placeholder shouldBe None
                   readOnly shouldBe false
-              }
-            })
-          })
-        })
-        assertDOMComponent(companyComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Company"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-              inside(fieldProps) {
-                case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  text shouldBe data.user.company.name
-                  requestFocus shouldBe false
-                  requestSelect shouldBe false
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe true
               }
             })
           })

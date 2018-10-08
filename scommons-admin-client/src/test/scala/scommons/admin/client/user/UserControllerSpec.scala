@@ -2,6 +2,7 @@ package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.test.TestSpec
@@ -13,8 +14,9 @@ class UserControllerSpec extends TestSpec {
 
   it should "return component" in {
     //given
-    val apiActions = mock[UserActions]
-    val controller = new UserController(apiActions)
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
+    val controller = new UserController(companyActions, userActions)
     
     //when & then
     controller.uiComponent shouldBe UserPanel
@@ -22,9 +24,10 @@ class UserControllerSpec extends TestSpec {
   
   it should "map state to props" in {
     //given
-    val apiActions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
+    val controller = new UserController(companyActions, userActions)
     val props = mock[Props[Unit]]
-    val controller = new UserController(apiActions)
     val dispatch = mock[Dispatch]
     val userState = mock[UserState]
     val state = mock[AdminStateDef]
@@ -34,17 +37,19 @@ class UserControllerSpec extends TestSpec {
     val result = controller.mapStateToProps(dispatch, state, props)
     
     //then
-    inside(result) { case UserPanelProps(disp, actions, resultState) =>
+    inside(result) { case UserPanelProps(disp, resCompActions, resUserActions, resultState) =>
       disp shouldBe dispatch
-      actions shouldBe apiActions
+      resCompActions shouldBe companyActions
+      resUserActions shouldBe userActions
       resultState shouldBe userState
     }
   }
 
   it should "setup users item" in {
     //given
-    val apiActions = mock[UserActions]
-    val controller = new UserController(apiActions)
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
+    val controller = new UserController(companyActions, userActions)
     val userListFetchAction = mock[UserListFetchAction]
     val expectedActions = Map(
       Buttons.REFRESH.command -> userListFetchAction
@@ -52,7 +57,7 @@ class UserControllerSpec extends TestSpec {
     val usersPath = BrowsePath("/some-path")
     val dispatch = mockFunction[Any, Any]
 
-    (apiActions.userListFetch _).expects(dispatch, None, None)
+    (userActions.userListFetch _).expects(dispatch, None, None)
       .returning(userListFetchAction)
     dispatch.expects(userListFetchAction)
       .returning(*)

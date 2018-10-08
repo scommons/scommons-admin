@@ -1,7 +1,9 @@
 package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.React
+import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
+import scommons.admin.client.company.CompanyActions
 import scommons.client.test.TestSpec
 
 class UserEditPopupSpec extends TestSpec {
@@ -38,7 +40,9 @@ class UserEditPopupSpec extends TestSpec {
 
     //then
     assertComponent(result, UserEditPanel(), { pProps: UserEditPanelProps =>
-      inside(pProps) { case UserEditPanelProps(initialData, requestFocus, pOnChange, pOnEnter) =>
+      inside(pProps) { case UserEditPanelProps(disp, act, initialData, requestFocus, pOnChange, pOnEnter) =>
+        disp shouldBe props.dispatch
+        act shouldBe props.actions
         initialData shouldBe props.initialData
         requestFocus shouldBe true
         pOnChange shouldBe onChange
@@ -47,7 +51,9 @@ class UserEditPopupSpec extends TestSpec {
     })
   }
 
-  private def getUserEditPopupProps(show: Boolean = true,
+  private def getUserEditPopupProps(dispatch: Dispatch = mock[Dispatch],
+                                    companyActions: CompanyActions = mock[CompanyActions],
+                                    show: Boolean = true,
                                     title: String = "test title",
                                     initialData: UserDetailsData = UserDetailsData(
                                       user = UserData(
@@ -68,6 +74,8 @@ class UserEditPopupSpec extends TestSpec {
                                     onCancel: () => Unit = () => ()): UserEditPopupProps = {
 
     UserEditPopupProps(
+      dispatch = dispatch,
+      actions = companyActions,
       show = show,
       title = title,
       initialData = initialData,

@@ -7,6 +7,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
+import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
@@ -21,16 +22,17 @@ class UserPanelSpec extends TestSpec {
   it should "dispatch UserCreateAction when onSave in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val state = UserState()
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, UserEditPopup)
     val data = mock[UserDetailsData]
     val action = UserCreateAction(
       FutureTask("Creating", Future.successful(UserDetailsResp(data)))
     )
-    (actions.userCreate _).expects(dispatch, data)
+    (userActions.userCreate _).expects(dispatch, data)
       .returning(action)
 
     //then
@@ -43,9 +45,10 @@ class UserPanelSpec extends TestSpec {
   it should "dispatch UserCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val state = UserState()
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, UserEditPopup)
 
@@ -59,18 +62,19 @@ class UserPanelSpec extends TestSpec {
   it should "dispatch UserUpdateAction when onSave in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val data = mock[UserDetailsData]
     val state = UserState(
       selected = Some(data)
     )
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val editPopupProps = findProps(comp, UserEditPopup)(1)
     val action = UserUpdateAction(
       FutureTask("Updating", Future.successful(UserDetailsResp(data)))
     )
-    (actions.userUpdate _).expects(dispatch, data)
+    (userActions.userUpdate _).expects(dispatch, data)
       .returning(action)
 
     //then
@@ -83,12 +87,13 @@ class UserPanelSpec extends TestSpec {
   it should "dispatch UserUpdateRequestAction(false) when onCancel in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val data = mock[UserDetailsData]
     val state = UserState(
       selected = Some(data)
     )
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val editPopupProps = findProps(comp, UserEditPopup)(1)
 
@@ -102,7 +107,8 @@ class UserPanelSpec extends TestSpec {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val state = UserState(List(UserData(
       id = Some(11),
       company = UserCompanyData(1, "Test Company"),
@@ -110,7 +116,7 @@ class UserPanelSpec extends TestSpec {
       password = "test",
       active = true
     )))
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
@@ -123,7 +129,8 @@ class UserPanelSpec extends TestSpec {
   it should "render component and show create popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val state = UserState(
       dataList = List(UserData(
         id = Some(11),
@@ -134,7 +141,7 @@ class UserPanelSpec extends TestSpec {
       )),
       showCreatePopup = true
     )
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
@@ -147,7 +154,8 @@ class UserPanelSpec extends TestSpec {
   it should "render component and show edit popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[UserActions]
+    val companyActions = mock[CompanyActions]
+    val userActions = mock[UserActions]
     val state = UserState(
       dataList = List(UserData(
         id = Some(11),
@@ -173,7 +181,7 @@ class UserPanelSpec extends TestSpec {
       )),
       showEditPopup = true
     )
-    val props = UserPanelProps(dispatch, actions, state)
+    val props = UserPanelProps(dispatch, companyActions, userActions, state)
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
@@ -220,19 +228,21 @@ class UserPanelSpec extends TestSpec {
       assertComponent(tablePanel, UserTablePanel(), { tpProps: UserTablePanelProps =>
         inside(tpProps) { case UserTablePanelProps(dispatch, actions, data) =>
           dispatch shouldBe props.dispatch
-          actions shouldBe props.actions
+          actions shouldBe props.userActions
           data shouldBe props.data
         }
       })
 
       assertComponent(createPopup, UserEditPopup(), { ppProps: UserEditPopupProps =>
-        inside(ppProps) { case UserEditPopupProps(show, title, initialData, _, _) =>
+        inside(ppProps) { case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
+          dispatch shouldBe props.dispatch
+          actions shouldBe props.companyActions
           show shouldBe props.data.showCreatePopup
           title shouldBe "New User"
           initialData shouldBe UserDetailsData(
             user = UserData(
               id = None,
-              company = UserCompanyData(1, "Test Company"),
+              company = UserCompanyData(-1, ""),
               login = "",
               password = "",
               active = true
@@ -270,7 +280,9 @@ class UserPanelSpec extends TestSpec {
       editPopup.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
         assertComponent(editPopup.get, UserEditPopup(), { ppProps: UserEditPopupProps =>
-          inside(ppProps) { case UserEditPopupProps(show, title, initialData, _, _) =>
+          inside(ppProps) { case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
+            dispatch shouldBe props.dispatch
+            actions shouldBe props.companyActions
             show shouldBe props.data.showEditPopup
             title shouldBe "Edit User"
             initialData shouldBe data

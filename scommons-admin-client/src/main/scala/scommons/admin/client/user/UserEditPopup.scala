@@ -2,10 +2,14 @@ package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
+import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user.UserDetailsData
+import scommons.admin.client.company.CompanyActions
 import scommons.client.ui.popup.{SaveCancelPopup, SaveCancelPopupProps}
 
-case class UserEditPopupProps(show: Boolean,
+case class UserEditPopupProps(dispatch: Dispatch,
+                              actions: CompanyActions,
+                              show: Boolean,
                               title: String,
                               initialData: UserDetailsData,
                               onSave: UserDetailsData => Unit,
@@ -28,6 +32,8 @@ case class UserEditPopupProps(show: Boolean,
              onSave: () => Unit): ReactElement = {
     
     <(UserEditPanel())(^.wrapped := UserEditPanelProps(
+      dispatch = dispatch,
+      actions = actions,
       initialData = data,
       requestFocus = requestFocus,
       onChange = onChange,

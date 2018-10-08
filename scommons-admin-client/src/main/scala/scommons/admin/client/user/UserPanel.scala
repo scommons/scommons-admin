@@ -6,13 +6,15 @@ import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
+import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.client.ui._
 import scommons.client.ui.tab.{TabItemData, TabPanel, TabPanelProps}
 import scommons.client.util.ActionsData
 
 case class UserPanelProps(dispatch: Dispatch,
-                          actions: UserActions,
+                          companyActions: CompanyActions,
+                          userActions: UserActions,
                           data: UserState)
 
 object UserPanel extends UiComponent[UserPanelProps] {
@@ -34,15 +36,17 @@ object UserPanel extends UiComponent[UserPanelProps] {
         props.dispatch
       ))(),
       
-      <(UserTablePanel())(^.wrapped := UserTablePanelProps(props.dispatch, props.actions, props.data))(),
+      <(UserTablePanel())(^.wrapped := UserTablePanelProps(props.dispatch, props.userActions, props.data))(),
 
       <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+        dispatch = props.dispatch,
+        actions = props.companyActions,
         show = props.data.showCreatePopup,
         title = "New User",
         initialData = UserDetailsData(
           user = UserData(
             id = None,
-            company = UserCompanyData(1, "Test Company"),
+            company = UserCompanyData(-1, ""),
             login = "",
             password = "",
             active = true
@@ -55,7 +59,7 @@ object UserPanel extends UiComponent[UserPanelProps] {
           )
         ),
         onSave = { data =>
-          props.dispatch(props.actions.userCreate(props.dispatch, data))
+          props.dispatch(props.userActions.userCreate(props.dispatch, data))
         },
         onCancel = { () =>
           props.dispatch(UserCreateRequestAction(create = false))
@@ -73,11 +77,13 @@ object UserPanel extends UiComponent[UserPanelProps] {
           <(TabPanel())(^.wrapped := TabPanelProps(tabItems))(),
 
           <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+            dispatch = props.dispatch,
+            actions = props.companyActions,
             show = props.data.showEditPopup,
             title = "Edit User",
             initialData = data,
             onSave = { updatedData =>
-              props.dispatch(props.actions.userUpdate(props.dispatch, updatedData))
+              props.dispatch(props.userActions.userUpdate(props.dispatch, updatedData))
             },
             onCancel = { () =>
               props.dispatch(UserUpdateRequestAction(update = false))

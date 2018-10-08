@@ -3,10 +3,17 @@ package scommons.admin.client.user
 import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
+import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user.{UserCompanyData, UserDetailsData}
+import scommons.admin.client.company.CompanyActions
 import scommons.client.ui._
+import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
 
-case class UserEditPanelProps(initialData: UserDetailsData,
+import scala.concurrent.ExecutionContext.Implicits.global
+
+case class UserEditPanelProps(dispatch: Dispatch,
+                              actions: CompanyActions,
+                              initialData: UserDetailsData,
                               requestFocus: Boolean,
                               onChange: UserDetailsData => Unit,
                               onEnter: () => Unit)
@@ -44,6 +51,31 @@ object UserEditPanel extends UiComponent[UserEditPanelProps] {
               props.onChange(data.copy(user = data.user.copy(password = value)))
             },
             onEnter = props.onEnter
+          ))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*Company"),
+        <.div(^.className := "controls")(
+          <(SearchSelect())(^.wrapped := SearchSelectProps(
+            selected =
+              if (data.user.company.id == -1) None
+              else Some(SelectData(data.user.company.id.toString, data.user.company.name)),
+            onChange = { value =>
+              val v = value.getOrElse(SelectData("-1", ""))
+              props.onChange(data.copy(user = data.user.copy(
+                company = UserCompanyData(v.value.toInt, v.label)
+              )))
+            },
+            onLoad = { inputValue =>
+              props.actions.companyListFetch(props.dispatch, Some(0), Some(inputValue)).task.future.map { resp =>
+                resp.dataList.toList.flatMap { list =>
+                  list.map { data =>
+                    SelectData(data.id.get.toString, data.name)
+                  }
+                }
+              }
+            }
           ))()
         )
       ),
@@ -94,21 +126,6 @@ object UserEditPanel extends UiComponent[UserEditPanelProps] {
               )))
             },
             onEnter = props.onEnter
-          ))()
-        )
-      ),
-      <.div(^.className := "control-group")(
-        <.label(^.className := "control-label")("*Company"),
-        <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
-            text = data.user.company.name,
-            onChange = { value =>
-              props.onChange(data.copy(user = data.user.copy(
-                company = UserCompanyData(1, value) //TODO: select company
-              )))
-            },
-            onEnter = props.onEnter,
-            readOnly = true
           ))()
         )
       ),
