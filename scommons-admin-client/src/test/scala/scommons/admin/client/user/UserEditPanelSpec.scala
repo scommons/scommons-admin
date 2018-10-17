@@ -285,113 +285,99 @@ class UserEditPanelSpec extends TestSpec {
         assertDOMComponent(loginComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Login"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-              inside(fieldProps) {
-                case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  text shouldBe data.user.login
-                  requestFocus shouldBe props.requestFocus
-                  requestSelect shouldBe props.requestFocus
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, TextField) {
+              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+                text shouldBe data.user.login
+                requestFocus shouldBe props.requestFocus
+                requestSelect shouldBe props.requestFocus
+                className shouldBe None
+                placeholder shouldBe None
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(passwordComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Password"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, PasswordField(), { fieldProps: PasswordFieldProps =>
-              inside(fieldProps) {
-                case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  password shouldBe data.user.password
-                  requestFocus shouldBe false
-                  requestSelect shouldBe false
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, PasswordField) {
+              case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+                password shouldBe data.user.password
+                requestFocus shouldBe false
+                requestSelect shouldBe false
+                className shouldBe None
+                placeholder shouldBe None
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(companyComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Company"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, SearchSelect(), { fieldProps: SearchSelectProps =>
-              inside(fieldProps) {
-                case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
-                  selected shouldBe {
-                    if (data.user.company.id == -1) None
-                    else Some(SelectData(data.user.company.id.toString, data.user.company.name))
-                  }
-                  isClearable shouldBe false
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, SearchSelect) {
+              case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
+                selected shouldBe {
+                  if (data.user.company.id == -1) None
+                  else Some(SelectData(data.user.company.id.toString, data.user.company.name))
+                }
+                isClearable shouldBe false
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("*First Name"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-              inside(fieldProps) {
-                case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  text shouldBe data.profile.firstName
-                  requestFocus shouldBe false
-                  requestSelect shouldBe false
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, TextField) {
+              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+                text shouldBe data.profile.firstName
+                requestFocus shouldBe false
+                requestSelect shouldBe false
+                className shouldBe None
+                placeholder shouldBe None
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Last Name"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-              inside(fieldProps) {
-                case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  text shouldBe data.profile.lastName
-                  requestFocus shouldBe false
-                  requestSelect shouldBe false
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, TextField) {
+              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+                text shouldBe data.profile.lastName
+                requestFocus shouldBe false
+                requestSelect shouldBe false
+                className shouldBe None
+                placeholder shouldBe None
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("*E-mail"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-              inside(fieldProps) {
-                case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  text shouldBe data.profile.email
-                  requestFocus shouldBe false
-                  requestSelect shouldBe false
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, TextField) {
+              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+                text shouldBe data.profile.email
+                requestFocus shouldBe false
+                requestSelect shouldBe false
+                className shouldBe None
+                placeholder shouldBe None
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertDOMComponent(labelComp, <.label(^.className := "control-label")("Phone"))
           assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-              inside(fieldProps) {
-                case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                  text shouldBe data.profile.phone.getOrElse("")
-                  requestFocus shouldBe false
-                  requestSelect shouldBe false
-                  className shouldBe None
-                  placeholder shouldBe None
-                  readOnly shouldBe false
-              }
-            })
+            assertComponent(fieldComp, TextField) {
+              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+                text shouldBe data.profile.phone.getOrElse("")
+                requestFocus shouldBe false
+                requestSelect shouldBe false
+                className shouldBe None
+                placeholder shouldBe None
+                readOnly shouldBe false
+            }
           })
         })
         assertDOMComponent(noteComp, <.p()(<.small()("(*) Indicates required fields")))

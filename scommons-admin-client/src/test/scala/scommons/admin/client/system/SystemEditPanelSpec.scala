@@ -144,59 +144,51 @@ class SystemEditPanelSpec extends TestSpec {
     assertDOMComponent(result, <.div()(), { case List(nameComp, passwordComp, titleComp, urlComp) =>
       assertDOMComponent(nameComp, <.div()(), { case List(labelComp, fieldComp) =>
         assertDOMComponent(labelComp, <.label()("Name"))
-        assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-          inside(fieldProps) {
-            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-              text shouldBe data.name
-              requestFocus shouldBe props.requestFocus
-              requestSelect shouldBe props.requestFocus
-              className shouldBe Some("input-xlarge")
-              placeholder shouldBe None
-              readOnly shouldBe props.readOnly
-          }
-        })
+        assertComponent(fieldComp, TextField) {
+          case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+            text shouldBe data.name
+            requestFocus shouldBe props.requestFocus
+            requestSelect shouldBe props.requestFocus
+            className shouldBe Some("input-xlarge")
+            placeholder shouldBe None
+            readOnly shouldBe props.readOnly
+        }
       })
       assertDOMComponent(passwordComp, <.div()(), { case List(labelComp, fieldComp) =>
         assertDOMComponent(labelComp, <.label()("Password"))
-        assertComponent(fieldComp, PasswordField(), { fieldProps: PasswordFieldProps =>
-          inside(fieldProps) {
-            case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-              password shouldBe data.password
-              requestFocus shouldBe false
-              requestSelect shouldBe false
-              className shouldBe Some("input-xlarge")
-              placeholder shouldBe None
-              readOnly shouldBe props.readOnly
-          }
-        })
+        assertComponent(fieldComp, PasswordField) {
+          case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+            password shouldBe data.password
+            requestFocus shouldBe false
+            requestSelect shouldBe false
+            className shouldBe Some("input-xlarge")
+            placeholder shouldBe None
+            readOnly shouldBe props.readOnly
+        }
       })
       assertDOMComponent(titleComp, <.div()(), { case List(labelComp, fieldComp) =>
         assertDOMComponent(labelComp, <.label()("Title"))
-        assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-          inside(fieldProps) {
-            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-              text shouldBe data.title
-              requestFocus shouldBe false
-              requestSelect shouldBe false
-              className shouldBe Some("input-xlarge")
-              placeholder shouldBe None
-              readOnly shouldBe props.readOnly
-          }
-        })
+        assertComponent(fieldComp, TextField) {
+          case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+            text shouldBe data.title
+            requestFocus shouldBe false
+            requestSelect shouldBe false
+            className shouldBe Some("input-xlarge")
+            placeholder shouldBe None
+            readOnly shouldBe props.readOnly
+        }
       })
       assertDOMComponent(urlComp, <.div()(), { case List(labelComp, fieldComp) =>
         assertDOMComponent(labelComp, <.label()("URL"))
-        assertComponent(fieldComp, TextField(), { fieldProps: TextFieldProps =>
-          inside(fieldProps) {
-            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-              text shouldBe data.url
-              requestFocus shouldBe false
-              requestSelect shouldBe false
-              className shouldBe Some("input-xlarge")
-              placeholder shouldBe None
-              readOnly shouldBe props.readOnly
-          }
-        })
+        assertComponent(fieldComp, TextField) {
+          case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+            text shouldBe data.url
+            requestFocus shouldBe false
+            requestSelect shouldBe false
+            className shouldBe Some("input-xlarge")
+            placeholder shouldBe None
+            readOnly shouldBe props.readOnly
+        }
       })
     })
   }

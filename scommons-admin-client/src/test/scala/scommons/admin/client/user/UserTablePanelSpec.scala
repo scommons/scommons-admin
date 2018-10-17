@@ -205,20 +205,18 @@ class UserTablePanelSpec extends TestSpec {
     val expectedSelectedPage = math.min(expectedTotalPages, toPage(props.data.offset.getOrElse(0), limit))
 
     assertDOMComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
-      assertComponent(tablePanel, TablePanel(), { tpProps: TablePanelProps =>
-        inside(tpProps) { case TablePanelProps(header, rows, selectedIds, _) =>
+      assertComponent(tablePanel, TablePanel) {
+        case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader
           rows shouldBe tableRows
           selectedIds shouldBe props.data.selected.flatMap(_.user.id).map(_.toString).toSet
-        }
-      })
-      assertComponent(paginationPanel, PaginationPanel(), { ppProps: PaginationPanelProps =>
-        inside(ppProps) { case PaginationPanelProps(totalPages, selectedPage, _, alignment) =>
+      }
+      assertComponent(paginationPanel, PaginationPanel) {
+        case PaginationPanelProps(totalPages, selectedPage, _, alignment) =>
           totalPages shouldBe expectedTotalPages
           selectedPage shouldBe expectedSelectedPage
           alignment shouldBe PaginationAlignment.Centered
-        }
-      })
+      }
     })
   }
 }

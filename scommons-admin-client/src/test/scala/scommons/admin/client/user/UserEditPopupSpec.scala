@@ -39,16 +39,15 @@ class UserEditPopupSpec extends TestSpec {
     val result = shallowRender(component)
 
     //then
-    assertComponent(result, UserEditPanel(), { pProps: UserEditPanelProps =>
-      inside(pProps) { case UserEditPanelProps(disp, act, initialData, requestFocus, pOnChange, pOnEnter) =>
+    assertComponent(result, UserEditPanel) {
+      case UserEditPanelProps(disp, act, initialData, requestFocus, pOnChange, pOnEnter) =>
         disp shouldBe props.dispatch
         act shouldBe props.actions
         initialData shouldBe props.initialData
         requestFocus shouldBe true
         pOnChange shouldBe onChange
         pOnEnter shouldBe onSave
-      }
-    })
+    }
   }
 
   private def getUserEditPopupProps(dispatch: Dispatch = mock[Dispatch],

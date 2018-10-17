@@ -203,25 +203,23 @@ class RolePanelSpec extends TestSpec {
     def assertComponents(createPopup: ComponentInstance,
                          editPopup: Option[ComponentInstance]): Assertion = {
 
-      assertComponent(createPopup, InputPopup(), { ppProps: InputPopupProps =>
-        inside(ppProps) { case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
+      assertComponent(createPopup, InputPopup) {
+        case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
           show shouldBe props.state.showCreatePopup
           message shouldBe "Enter Role title:"
           placeholder shouldBe None
           initialValue shouldBe "NEW_ROLE"
-        }
-      })
+      }
       
       editPopup.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
-        assertComponent(editPopup.get, InputPopup(), { ppProps: InputPopupProps =>
-          inside(ppProps) { case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
+        assertComponent(editPopup.get, InputPopup) {
+          case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
             show shouldBe props.state.showEditPopup
             message shouldBe "Enter new Role title:"
             placeholder shouldBe None
             initialValue shouldBe data.title
-          }
-        })
+        }
       }
       Succeeded
     }

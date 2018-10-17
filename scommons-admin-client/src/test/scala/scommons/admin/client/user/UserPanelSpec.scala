@@ -201,11 +201,10 @@ class UserPanelSpec extends TestSpec {
       val result = shallowRender(<(wrapped)()())
 
       assertDOMComponent(result, <.div()(), { case List(comp) =>
-        assertComponent(comp, UserProfilePanel(), { cProps: UserProfilePanelProps =>
-          inside(cProps) { case UserProfilePanelProps(resultData) =>
+        assertComponent(comp, UserProfilePanel) {
+          case UserProfilePanelProps(resultData) =>
             resultData shouldBe data
-          }
-        })
+        }
       })
     }
 
@@ -215,26 +214,24 @@ class UserPanelSpec extends TestSpec {
                          tabPanel: Option[ComponentInstance],
                          editPopup: Option[ComponentInstance]): Assertion = {
 
-      assertComponent(buttonsPanel, ButtonsPanel(), { bpProps: ButtonsPanelProps =>
-        inside(bpProps) { case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>
+      assertComponent(buttonsPanel, ButtonsPanel) {
+        case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>
           buttons shouldBe List(Buttons.ADD, Buttons.EDIT)
           actions.enabledCommands shouldBe {
             Set(Buttons.ADD.command) ++ selectedData.map(_ => Buttons.EDIT.command)
           }
           dispatch shouldBe props.dispatch
           group shouldBe false
-        }
-      })
-      assertComponent(tablePanel, UserTablePanel(), { tpProps: UserTablePanelProps =>
-        inside(tpProps) { case UserTablePanelProps(dispatch, actions, data) =>
+      }
+      assertComponent(tablePanel, UserTablePanel) {
+        case UserTablePanelProps(dispatch, actions, data) =>
           dispatch shouldBe props.dispatch
           actions shouldBe props.userActions
           data shouldBe props.data
-        }
-      })
+      }
 
-      assertComponent(createPopup, UserEditPopup(), { ppProps: UserEditPopupProps =>
-        inside(ppProps) { case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
+      assertComponent(createPopup, UserEditPopup) {
+        case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
           dispatch shouldBe props.dispatch
           actions shouldBe props.companyActions
           show shouldBe props.data.showCreatePopup
@@ -254,13 +251,12 @@ class UserPanelSpec extends TestSpec {
               phone = None
             )
           )
-        }
-      })
+      }
       
       tabPanel.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
-        assertComponent(tabPanel.get, TabPanel(), { ppProps: TabPanelProps =>
-          inside(ppProps) { case TabPanelProps(items, selectedIndex, _, direction) =>
+        assertComponent(tabPanel.get, TabPanel) {
+          case TabPanelProps(items, selectedIndex, _, direction) =>
             selectedIndex shouldBe 0
             direction shouldBe TabDirection.Top
 
@@ -273,21 +269,19 @@ class UserPanelSpec extends TestSpec {
 
               assertUserProfilePanel(render.get.apply(null), data.profile)
             }
-          }
-        })
+        }
       }
       
       editPopup.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
-        assertComponent(editPopup.get, UserEditPopup(), { ppProps: UserEditPopupProps =>
-          inside(ppProps) { case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
+        assertComponent(editPopup.get, UserEditPopup) {
+          case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
             dispatch shouldBe props.dispatch
             actions shouldBe props.companyActions
             show shouldBe props.data.showEditPopup
             title shouldBe "Edit User"
             initialData shouldBe data
-          }
-        })
+        }
       }
       Succeeded
     }

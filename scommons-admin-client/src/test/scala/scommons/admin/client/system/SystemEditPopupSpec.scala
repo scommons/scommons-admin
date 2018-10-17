@@ -34,16 +34,14 @@ class SystemEditPopupSpec extends TestSpec {
     val result = shallowRender(component)
 
     //then
-    assertComponent(result, SystemEditPanel(), { panelProps: SystemEditPanelProps =>
-      inside(panelProps) {
-        case SystemEditPanelProps(readOnly, initialData, requestFocus, pOnChange, pOnEnter) =>
-          readOnly shouldBe false
-          initialData shouldBe props.initialData
-          requestFocus shouldBe true
-          pOnChange shouldBe onChange
-          pOnEnter shouldBe onSave
-      }
-    })
+    assertComponent(result, SystemEditPanel) {
+      case SystemEditPanelProps(readOnly, initialData, requestFocus, pOnChange, pOnEnter) =>
+        readOnly shouldBe false
+        initialData shouldBe props.initialData
+        requestFocus shouldBe true
+        pOnChange shouldBe onChange
+        pOnEnter shouldBe onSave
+    }
   }
 
   private def getSystemEditPopupProps(show: Boolean = true,

@@ -205,42 +205,38 @@ class CompanyPanelSpec extends TestSpec {
                          createPopup: ComponentInstance,
                          editPopup: Option[ComponentInstance]): Assertion = {
 
-      assertComponent(buttonsPanel, ButtonsPanel(), { bpProps: ButtonsPanelProps =>
-        inside(bpProps) { case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>
+      assertComponent(buttonsPanel, ButtonsPanel) {
+        case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>
           buttons shouldBe List(Buttons.ADD, Buttons.EDIT)
           actions.enabledCommands shouldBe {
             Set(Buttons.ADD.command) ++ selectedData.map(_ => Buttons.EDIT.command)
           }
           dispatch shouldBe props.dispatch
           group shouldBe false
-        }
-      })
-      assertComponent(tablePanel, CompanyTablePanel(), { tpProps: CompanyTablePanelProps =>
-        inside(tpProps) { case CompanyTablePanelProps(dispatch, actions, data) =>
+      }
+      assertComponent(tablePanel, CompanyTablePanel) {
+        case CompanyTablePanelProps(dispatch, actions, data) =>
           dispatch shouldBe props.dispatch
           actions shouldBe props.actions
           data shouldBe props.data
-        }
-      })
+      }
       
-      assertComponent(createPopup, InputPopup(), { ppProps: InputPopupProps =>
-        inside(ppProps) { case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
+      assertComponent(createPopup, InputPopup) {
+        case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
           show shouldBe props.data.showCreatePopup
           message shouldBe "Enter Company name:"
           placeholder shouldBe None
           initialValue shouldBe "New Company"
-        }
-      })
+      }
       editPopup.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
-        assertComponent(editPopup.get, InputPopup(), { ppProps: InputPopupProps =>
-          inside(ppProps) { case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
+        assertComponent(editPopup.get, InputPopup) {
+          case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
             show shouldBe props.data.showEditPopup
             message shouldBe "Enter new Company name:"
             placeholder shouldBe None
             initialValue shouldBe data.name
-          }
-        })
+        }
       }
       Succeeded
     }

@@ -270,13 +270,12 @@ class RolePermissionPanelSpec extends TestSpec {
   private def assertRolePermissionPanel(result: ComponentInstance, props: RolePermissionPanelProps): Unit = {
     val roots = buildTree(props.state.permissionsByParentId)
     
-    assertComponent(result, CheckBoxTree(), { resultProps: CheckBoxTreeProps =>
-      inside(resultProps) { case CheckBoxTreeProps(resultRoots, _, readOnly, openNodes, closeNodes) =>
+    assertComponent(result, CheckBoxTree) {
+      case CheckBoxTreeProps(resultRoots, _, readOnly, openNodes, closeNodes) =>
         resultRoots shouldBe roots
         readOnly shouldBe false
         openNodes shouldBe roots.map(_.key).toSet
         closeNodes shouldBe Set.empty[String]
-      }
-    })
+    }
   }
 }
