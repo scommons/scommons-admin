@@ -6,6 +6,7 @@ import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system._
 import scommons.admin.client.api.system.group._
 import scommons.admin.client.api.user._
+import scommons.admin.client.api.user.system._
 import scommons.api.http.ApiHttpClient
 
 import scala.concurrent.Future
@@ -16,7 +17,8 @@ class AdminUiApiClient(client: ApiHttpClient)
     with SystemApi
     with RoleApi
     with RolePermissionApi
-    with UserApi {
+    with UserApi
+    with UserSystemApi {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // companies
@@ -140,5 +142,20 @@ class AdminUiApiClient(client: ApiHttpClient)
 
   def updateUser(data: UserDetailsData): Future[UserDetailsResp] = {
     client.execPut[UserDetailsData, UserDetailsResp]("/users", data)
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // users/systems
+
+  def listUserSystems(userId: Int): Future[UserSystemResp] = {
+    client.execGet[UserSystemResp](s"/users/$userId/systems")
+  }
+
+  def addUserSystems(userId: Int, data: UserSystemUpdateReq): Future[UserSystemResp] = {
+    client.execPost[UserSystemUpdateReq, UserSystemResp](s"/users/$userId/systems", data)
+  }
+
+  def removeUserSystems(userId: Int, data: UserSystemUpdateReq): Future[UserSystemResp] = {
+    client.execPut[UserSystemUpdateReq, UserSystemResp](s"/users/$userId/systems", data)
   }
 }

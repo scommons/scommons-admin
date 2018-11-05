@@ -9,6 +9,7 @@ import scommons.admin.server.role.permission.RolePermissionModule
 import scommons.admin.server.system.SystemModule
 import scommons.admin.server.system.group.SystemGroupModule
 import scommons.admin.server.user.UserModule
+import scommons.admin.server.user.system.UserSystemModule
 
 class AdminModule extends Module
   with CompanyModule
@@ -16,7 +17,8 @@ class AdminModule extends Module
   with SystemModule
   with RoleModule
   with RolePermissionModule
-  with UserModule {
+  with UserModule
+  with UserSystemModule {
 
   bind[AdminDBContext] to new AdminDBContext(
     inject[Configuration].get[Configuration]("quill.db").underlying

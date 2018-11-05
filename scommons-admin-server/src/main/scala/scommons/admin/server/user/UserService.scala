@@ -10,12 +10,20 @@ class UserService(userDao: UserDao,
 
   import userDao.ctx
 
-  def getUserById(id: Int): Future[Option[UserDetails]] = {
-    userDao.getUserDetails(id)
+  def getUserById(id: Int): Future[Option[User]] = {
+    userDao.getById(id)
   }
 
   def getUserByLogin(login: String): Future[Option[User]] = {
     userDao.getByLogin(login)
+  }
+
+  def getUserWithCompany(id: Int): Future[Option[(User, Company)]] = {
+    userDao.getUserWithCompany(id)
+  }
+
+  def getUserDetailsById(id: Int): Future[Option[UserDetails]] = {
+    userDao.getUserDetails(id)
   }
 
   def getUserProfileByEmail(email: String): Future[Option[UserProfile]] = {

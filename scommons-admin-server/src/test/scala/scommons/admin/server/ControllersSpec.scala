@@ -15,6 +15,7 @@ import scommons.admin.server.role.permission.RolePermissionController
 import scommons.admin.server.system.SystemController
 import scommons.admin.server.system.group.SystemGroupController
 import scommons.admin.server.user.UserController
+import scommons.admin.server.user.system.UserSystemController
 
 import scala.concurrent.ExecutionContext
 
@@ -45,6 +46,7 @@ class ControllersSpec extends Suites(
       bind[RoleController] to new RoleController(null)
       bind[RolePermissionController] to new RolePermissionController(null)
       bind[UserController] to new UserController(null)
+      bind[UserSystemController] to new UserSystemController(null)
     })
   ).build()
 }

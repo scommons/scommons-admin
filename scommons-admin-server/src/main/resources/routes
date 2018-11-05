@@ -43,3 +43,7 @@ GET     /scommons-admin/ui/users/:id                scommons.admin.server.user.U
 GET     /scommons-admin/ui/users                    scommons.admin.server.user.UserController.list(offset: Option[Int], limit: Option[Int], symbols: Option[String])
 POST    /scommons-admin/ui/users                    scommons.admin.server.user.UserController.create
 PUT     /scommons-admin/ui/users                    scommons.admin.server.user.UserController.update
+
+GET     /scommons-admin/ui/users/:id/systems        scommons.admin.server.user.system.UserSystemController.list(id: Int)
+POST    /scommons-admin/ui/users/:id/systems        scommons.admin.server.user.system.UserSystemController.add(id: Int)
+PUT     /scommons-admin/ui/users/:id/systems        scommons.admin.server.user.system.UserSystemController.remove(id: Int)

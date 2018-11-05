@@ -25,6 +25,13 @@ class UserDao(val ctx: AdminDBContext)
     ))
   }
 
+  def getUserWithCompany(id: Int)(implicit ec: ExecutionContext): Future[Option[(User, Company)]] = {
+    getOne("getUserWithCompany", ctx.run(users
+      .filter(c => c.id == lift(id))
+      .join(companies).on { case (user, company) => user.companyId == company.id }
+    ))
+  }
+
   def getUserDetails(id: Int)(implicit ec: ExecutionContext): Future[Option[UserDetails]] = {
     getOne("getUserDetails", ctx.run(users
       .filter(c => c.id == lift(id))

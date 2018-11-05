@@ -16,7 +16,7 @@ class UserApiImpl(userService: UserService,
   private val defaultLimit = 10
 
   def getUserById(id: Int): Future[UserDetailsResp] = {
-    userService.getUserById(id).map {
+    userService.getUserDetailsById(id).map {
       case None => UserDetailsResp(UserNotFound)
       case Some((details)) => UserDetailsResp(convertToUserDetailsData(details))
     }
@@ -77,7 +77,7 @@ class UserApiImpl(userService: UserService,
     }
 
     def getById(data: UserDetailsData) = data.user.id match {
-      case Some(id) if update => userService.getUserById(id)
+      case Some(id) if update => userService.getUserDetailsById(id)
       case _ => Future.successful(None)
     }
 
