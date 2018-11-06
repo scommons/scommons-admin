@@ -21,7 +21,7 @@ class UserSystemService(userDao: UserDao,
         currSystems <- systemDao.listUserSystems(user.id)
         userSystems = currSystems.collect {
           case (s, false) if systemIds.contains(s.id) =>
-            SystemUser(s.id, user.id)
+            SystemUser(s.id, user.id, updatedBy = user.updatedBy.get)
         }
         updated <- userDao.update(user)
         _ <- systemUserDao.insert(userSystems)

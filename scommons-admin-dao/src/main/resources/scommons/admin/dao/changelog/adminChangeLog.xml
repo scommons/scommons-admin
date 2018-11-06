@@ -274,6 +274,50 @@
         </sql>
     </changeSet>
 
+    <!--======================== Changes #11 ========================-->
+    <changeSet id="11" author="viktorp">
+        <comment>Added version, created_at, updated_at to systems_users</comment>
+
+        <sql splitStatements="false">
+            ALTER TABLE systems_users RENAME COLUMN modified_date TO updated_at;
+            ALTER TABLE systems_users RENAME COLUMN modifiedby_id TO updated_by;
+
+            UPDATE systems_users SET updated_at = now() WHERE updated_at IS NULL;
+            UPDATE systems_users SET updated_by = 1 WHERE updated_by IS NULL;
+            UPDATE systems_users SET inherited_roles = 0 WHERE inherited_roles IS NULL;
+            UPDATE systems_users SET roles = 0 WHERE roles IS NULL;
+            
+            ALTER TABLE systems_users
+                ADD COLUMN version integer NOT NULL DEFAULT 1,
+                ADD COLUMN created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+                ALTER COLUMN updated_at SET DEFAULT now(),
+                ALTER COLUMN updated_at SET NOT NULL,
+                ALTER COLUMN updated_by SET NOT NULL,
+                ALTER COLUMN inherited_roles SET NOT NULL,
+                ALTER COLUMN roles SET NOT NULL;
+
+            UPDATE systems_users SET created_at = updated_at;
+
+            CREATE FUNCTION systems_users_before_save() RETURNS trigger AS $$
+            BEGIN
+                IF (TG_OP = 'INSERT') THEN
+                    NEW.version := 1;
+                    NEW.created_at := now();
+                ELSE
+                    NEW.version := OLD.version + 1;
+                    NEW.created_at := OLD.created_at;
+                END IF;
+    
+                NEW.updated_at := now();
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER systems_users_before_save BEFORE INSERT OR UPDATE ON systems_users
+                FOR EACH ROW EXECUTE PROCEDURE systems_users_before_save();
+        </sql>
+    </changeSet>
+
 
     <!--===== This changeset MUST always be at the end of the file !!! =====-->
     <changeSet id="0" author="viktorp" runAlways="true">

@@ -14,6 +14,7 @@ import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.api.user._
+import scommons.admin.client.api.user.system._
 import scommons.admin.domain.dao._
 import scommons.admin.domain.{Permission, RolePermission}
 import scommons.admin.server.company.CompanyService
@@ -415,6 +416,45 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   def callUserUpdate(data: UserDetailsData, expectedStatus: ApiStatus): Option[UserDetailsData] = {
     val resp = uiApiClient.updateUser(data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // users/systems
+
+  def callUserSystemList(userId: Int): UserSystemRespData = {
+    callUserSystemList(userId, ApiStatus.Ok).get
+  }
+
+  def callUserSystemList(userId: Int, expectedStatus: ApiStatus): Option[UserSystemRespData] = {
+    val resp = uiApiClient.listUserSystems(userId).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callUserSystemAdd(userId: Int, data: UserSystemUpdateReq): UserSystemRespData = {
+    callUserSystemAdd(userId, data, ApiStatus.Ok).get
+  }
+
+  def callUserSystemAdd(userId: Int,
+                        data: UserSystemUpdateReq,
+                        expectedStatus: ApiStatus): Option[UserSystemRespData] = {
+
+    val resp = uiApiClient.addUserSystems(userId, data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callUserSystemRemove(userId: Int, data: UserSystemUpdateReq): UserSystemRespData = {
+    callUserSystemRemove(userId, data, ApiStatus.Ok).get
+  }
+
+  def callUserSystemRemove(userId: Int,
+                           data: UserSystemUpdateReq,
+                           expectedStatus: ApiStatus): Option[UserSystemRespData] = {
+
+    val resp = uiApiClient.removeUserSystems(userId, data).futureValue
     resp.status shouldBe expectedStatus
     resp.data
   }

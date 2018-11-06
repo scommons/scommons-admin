@@ -23,12 +23,14 @@ class UserSystemApiImpl(userService: UserService,
   }
 
   def addUserSystems(userId: Int, data: UserSystemUpdateReq): Future[UserSystemResp] = {
+    val updatedBy = 1 //TODO: use current userId (from request)
+    
     userService.getUserWithCompany(userId).flatMap {
       case None => Future.successful(UserSystemResp(UserNotFound))
       case Some((user, company)) =>
         (for {
           systems <- userSystemService.addUserSystems(
-            user.copy(version = data.version),
+            user.copy(updatedBy = Some(updatedBy), version = data.version),
             data.systemIds
           )
           updatedUser <- userService.getUserById(userId)
@@ -43,12 +45,14 @@ class UserSystemApiImpl(userService: UserService,
   }
 
   def removeUserSystems(userId: Int, data: UserSystemUpdateReq): Future[UserSystemResp] = {
+    val updatedBy = 1 //TODO: use current userId (from request)
+    
     userService.getUserWithCompany(userId).flatMap {
       case None => Future.successful(UserSystemResp(UserNotFound))
       case Some((user, company)) =>
         (for {
           systems <- userSystemService.removeUserSystems(
-            user.copy(version = data.version),
+            user.copy(updatedBy = Some(updatedBy), version = data.version),
             data.systemIds
           )
           updatedUser <- userService.getUserById(userId)

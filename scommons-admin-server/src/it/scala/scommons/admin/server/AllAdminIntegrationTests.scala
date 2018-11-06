@@ -19,7 +19,8 @@ class AllAdminIntegrationTests extends Suites(
   new RoleApiIntegrationSpec,
   new RoleServiceIntegrationSpec,
   new RolePermissionApiIntegrationSpec,
-  new UserApiIntegrationSpec
+  new UserApiIntegrationSpec,
+  new UserSystemApiIntegrationSpec
 ) with TestSuite
   with MockitoSugar
   with GuiceOneServerPerSuite
