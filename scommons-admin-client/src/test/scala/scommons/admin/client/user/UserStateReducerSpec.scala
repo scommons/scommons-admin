@@ -1,9 +1,11 @@
 package scommons.admin.client.user
 
+import scommons.admin.client.AdminRouteController.buildUsersPath
 import scommons.admin.client.api.user._
 import scommons.admin.client.user.UserActions._
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
+import scommons.client.util.BrowsePath
 
 import scala.concurrent.Future
 
@@ -14,6 +16,13 @@ class UserStateReducerSpec extends TestSpec {
   it should "return default state when state is None" in {
     //when & then
     reduce(None, "") shouldBe UserState()
+  }
+  
+  it should "set usersPath when UsersPathChangedAction" in {
+    //when & then
+    reduce(Some(UserState()), UsersPathChangedAction(BrowsePath("/users/123"))) shouldBe {
+      UserState(usersPath = BrowsePath("/users/123"))
+    }
   }
   
   it should "set showCreatePopup when UserCreateRequestAction" in {
@@ -36,7 +45,7 @@ class UserStateReducerSpec extends TestSpec {
     }
   }
   
-  it should "set selected and update dataList when UserFetchedAction" in {
+  it should "set usersPath, userDetails and update dataList when UserFetchedAction" in {
     //given
     val dataList = List(
       UserData(
@@ -72,11 +81,12 @@ class UserStateReducerSpec extends TestSpec {
     
     //when & then
     reduce(Some(UserState(dataList = dataList)), UserFetchedAction(data)) shouldBe UserState(
+      usersPath = buildUsersPath(data.user.id),
       dataList = dataList.map {
         case curr if curr.id == data.user.id => data.user
         case curr => curr
       },
-      selected = Some(data)
+      userDetails = Some(data)
     )
   }
   
@@ -91,7 +101,7 @@ class UserStateReducerSpec extends TestSpec {
     )
   }
   
-  it should "set dataList, totalCount and reset selected when UserListFetchedAction" in {
+  it should "set dataList and totalCount when UserListFetchedAction" in {
     //given
     val dataList = List(UserData(
       id = Some(11),
@@ -101,21 +111,6 @@ class UserStateReducerSpec extends TestSpec {
       active = true
     ))
     val totalCount = Some(123)
-    val selected = Some(UserDetailsData(
-      user = UserData(
-        id = Some(11),
-        company = UserCompanyData(1, "Test Company"),
-        login = "updated_login",
-        password = "updated_password",
-        active = true
-      ),
-      profile = UserProfileData(
-        email = "test@email.com",
-        firstName = "Firstname",
-        lastName = "Lastname",
-        phone = Some("0123 456 789")
-      )
-    ))
     
     //when & then
     reduce(Some(UserState()), UserListFetchedAction(dataList, totalCount)) shouldBe UserState(
@@ -125,16 +120,14 @@ class UserStateReducerSpec extends TestSpec {
 
     //when & then
     reduce(Some(UserState(
-      totalCount = totalCount,
-      selected = selected
+      totalCount = totalCount
     )), UserListFetchedAction(dataList, None)) shouldBe UserState(
       dataList = dataList,
-      totalCount = totalCount,
-      selected = None
+      totalCount = totalCount
     )
   }
 
-  it should "append new data to the dataList and set selected when UserCreatedAction" in {
+  it should "append new data to the dataList and set userDetails when UserCreatedAction" in {
     //given
     val dataList = List(UserData(
       id = Some(11),
@@ -160,13 +153,13 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList, showCreatePopup = true)), UserCreatedAction(data)) shouldBe UserState(
+    reduce(Some(UserState(dataList = dataList, showCreatePopup = true)), UserCreatedAction(data)) shouldBe UserState(
       dataList = dataList :+ data.user,
-      selected = Some(data)
+      userDetails = Some(data)
     )
   }
   
-  it should "update dataList and selected when UserUpdatedAction" in {
+  it should "update dataList and userDetails when UserUpdatedAction" in {
     //given
     val existingData = UserData(
       id = Some(12),
@@ -202,9 +195,9 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList, showEditPopup = true)), UserUpdatedAction(data)) shouldBe UserState(
+    reduce(Some(UserState(dataList = dataList, showEditPopup = true)), UserUpdatedAction(data)) shouldBe UserState(
       dataList = List(data.user, existingData),
-      selected = Some(data)
+      userDetails = Some(data)
     )
   }
 }

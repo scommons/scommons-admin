@@ -8,9 +8,13 @@ import scommons.client.ui._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 case class UserTablePanelProps(dispatch: Dispatch,
                                actions: UserActions,
-                               data: UserState)
+                               data: UserState,
+                               selectedUserId: Option[Int],
+                               onChangeSelect: Option[Int] => Unit)
 
 object UserTablePanel extends UiComponent[UserTablePanelProps] {
 
@@ -22,6 +26,22 @@ object UserTablePanel extends UiComponent[UserTablePanelProps] {
       val props = self.props.wrapped
       if (props.data.dataList.isEmpty) {
         props.dispatch(props.actions.userListFetch(props.dispatch, None, None))
+      }
+      
+      props.selectedUserId.foreach { userId =>
+        if (!props.data.userDetails.flatMap(_.user.id).contains(userId)) {
+          props.dispatch(props.actions.userFetch(props.dispatch, userId))
+        }
+      }
+    },
+    componentDidUpdate = { (self, prevProps, _) =>
+      val props = self.props.wrapped
+      if (props.selectedUserId != prevProps.wrapped.selectedUserId) {
+        props.selectedUserId.foreach { userId =>
+          if (!props.data.userDetails.flatMap(_.user.id).contains(userId)) {
+            props.dispatch(props.actions.userFetch(props.dispatch, userId))
+          }
+        }
       }
     },
     render = { self =>
@@ -52,15 +72,21 @@ object UserTablePanel extends UiComponent[UserTablePanelProps] {
   
       <.div()(
         <(TablePanel())(^.wrapped := TablePanelProps(
-          header,
-          rows,
-          props.data.selected.flatMap(_.user.id).map(_.toString).toSet,
+          header = header,
+          rows = rows,
+          selectedIds = props.selectedUserId.map(_.toString).toSet,
           onSelect = { row =>
-            props.dispatch(props.actions.userFetch(props.dispatch, row.id.toInt))
+            val userId = row.id.toInt
+
+            val fetchAction = props.actions.userFetch(props.dispatch, userId)
+            fetchAction.task.future.map(_ => props.onChangeSelect(Some(userId)))
+            props.dispatch(fetchAction)
           }
         ))(),
   
         <(PaginationPanel())(^.wrapped := PaginationPanelProps(totalPages, selectedPage, onPage = { page =>
+          props.onChangeSelect(None)
+          
           props.dispatch(props.actions.userListFetch(props.dispatch,
             offset = Some(PaginationPanel.toOffset(page, limit)),
             symbols = None

@@ -37,13 +37,14 @@ class AdminRouteController(companyController: CompanyController,
   }
 
   private def getTreeRoots(state: AdminStateDef, applicationsNode: BrowseTreeNodeData): List[BrowseTreeData] = {
+    val userState = state.userState
     val systemGroupState = state.systemGroupState
     val systemState = state.systemState
     val roleState = state.roleState
     
     List(
       companyController.getCompaniesItem(companiesPath),
-      userController.getUsersItem(usersPath),
+      userController.getUsersItem(userState.usersPath),
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
           val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path, group)
@@ -71,14 +72,23 @@ class AdminRouteController(companyController: CompanyController,
 object AdminRouteController {
 
   private val companiesPath = BrowsePath("/companies")
-  private val usersPath = BrowsePath("/users")
+  private val usersPath = BrowsePath("/users", exact = false)
   private val appsPath = BrowsePath("/apps")
   private val rolesPath = BrowsePath("/roles")
 
+  private val userIdRegex = s"$usersPath/(\\d+)".r
   private val groupIdRegex = s"$appsPath/(\\d+)".r
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
   private val roleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
 
+  def buildUsersPath(userId: Option[Int]): BrowsePath = {
+    userId.map(id => usersPath.copy(value = s"$usersPath/$id"))
+      .getOrElse(usersPath)
+  }
+  
+  def extractUserId(params: PathParams): Option[Int] =
+    params.extractInt(userIdRegex)
+  
   def extractGroupId(params: PathParams): Option[Int] =
     params.extractInt(groupIdRegex)
   

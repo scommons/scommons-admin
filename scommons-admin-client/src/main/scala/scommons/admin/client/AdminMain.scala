@@ -54,7 +54,7 @@ object AdminMain {
       <.Provider(^.store := store)(
         <.HashRouter()(
           <(WithRouter(AppMainPanel()))(^.wrapped := appMainPanelProps)(
-            <(routeController())()(
+            <(WithRouter(routeController()))()(
               <(WithRouter(appController())).empty,
               <(WithRouter(roleController())).empty
             ),

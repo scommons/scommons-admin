@@ -10,7 +10,7 @@ import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
 import scommons.admin.client.system.{SystemController, SystemState}
-import scommons.admin.client.user.UserController
+import scommons.admin.client.user.{UserController, UserState}
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
@@ -50,6 +50,8 @@ class AdminRouteControllerSpec extends TestSpec {
     )
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
+    val usersPath = BrowsePath("/users/123/test")
+    val userState = UserState(usersPath)
     val systemGroups = List(
       SystemGroupData(Some(1), "env 1"),
       SystemGroupData(Some(2), "env 2")
@@ -66,7 +68,7 @@ class AdminRouteControllerSpec extends TestSpec {
     )
     val roleState = RoleState(roles.groupBy(_.systemId))
     val companiesItem = BrowseTreeItemData("Test Companies", BrowsePath("/companies"))
-    val usersItem = BrowseTreeItemData("Test Users", BrowsePath("/users"))
+    val usersItem = BrowseTreeItemData("Test Users", usersPath)
     val applicationsNode = BrowseTreeNodeData("Test Applications", BrowsePath("/apps"))
     val environmentNode = BrowseTreeNodeData("Test Env", BrowsePath("/1"))
     val applicationNode = BrowseTreeNodeData("Test App", BrowsePath("/2"))
@@ -116,6 +118,7 @@ class AdminRouteControllerSpec extends TestSpec {
       )
     )
     val state = mock[AdminStateDef]
+    (state.userState _).expects().returning(userState)
     (state.systemGroupState _).expects().returning(systemGroupState)
     (state.systemState _).expects().returning(systemState)
     (state.roleState _).expects().returning(roleState)

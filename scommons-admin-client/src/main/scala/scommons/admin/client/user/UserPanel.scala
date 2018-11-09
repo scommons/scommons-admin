@@ -15,7 +15,9 @@ import scommons.client.util.ActionsData
 case class UserPanelProps(dispatch: Dispatch,
                           companyActions: CompanyActions,
                           userActions: UserActions,
-                          data: UserState)
+                          data: UserState,
+                          selectedUserId: Option[Int],
+                          onChangeSelect: Option[Int] => Unit)
 
 object UserPanel extends UiComponent[UserPanelProps] {
 
@@ -24,19 +26,25 @@ object UserPanel extends UiComponent[UserPanelProps] {
 
   private def createComp = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
-    val selectedData = props.data.selected
+    val userDetailsData = props.data.userDetails.filter(d => props.selectedUserId == d.user.id)
 
     <.div()(
       <(ButtonsPanel())(^.wrapped := ButtonsPanelProps(
         List(Buttons.ADD, Buttons.EDIT),
-        ActionsData(Set(Buttons.ADD.command) ++ selectedData.map(_ => Buttons.EDIT.command), dispatch => {
+        ActionsData(Set(Buttons.ADD.command) ++ userDetailsData.map(_ => Buttons.EDIT.command), dispatch => {
           case Buttons.ADD.command => dispatch(UserCreateRequestAction(create = true))
           case Buttons.EDIT.command => dispatch(UserUpdateRequestAction(update = true))
         }),
         props.dispatch
       ))(),
       
-      <(UserTablePanel())(^.wrapped := UserTablePanelProps(props.dispatch, props.userActions, props.data))(),
+      <(UserTablePanel())(^.wrapped := UserTablePanelProps(
+        dispatch = props.dispatch,
+        actions = props.userActions,
+        data = props.data,
+        selectedUserId = props.selectedUserId,
+        onChangeSelect = props.onChangeSelect
+      ))(),
 
       <(UserEditPopup())(^.wrapped := UserEditPopupProps(
         dispatch = props.dispatch,
@@ -66,7 +74,7 @@ object UserPanel extends UiComponent[UserPanelProps] {
         }
       ))(),
       
-      selectedData.toList.flatMap { data =>
+      userDetailsData.toList.flatMap { data =>
         val tabItems = List(
           TabItemData("Profile", image = Some(AdminImagesCss.vcard), render = Some { _ =>
             <(UserProfilePanel())(^.wrapped := UserProfilePanelProps(data.profile))()

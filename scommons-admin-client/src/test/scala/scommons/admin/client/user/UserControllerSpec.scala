@@ -1,10 +1,10 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.AdminRouteController.buildUsersPath
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
+import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeItemData
@@ -27,21 +27,31 @@ class UserControllerSpec extends TestSpec {
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
     val controller = new UserController(companyActions, userActions)
-    val props = mock[Props[Unit]]
-    val dispatch = mock[Dispatch]
+    val dispatch = mockFunction[Any, Any]
     val userState = mock[UserState]
     val state = mock[AdminStateDef]
+    val routeParams = mock[RouteParams]
+    val pathParams = PathParams(s"/users/123/test")
+    val path = buildUsersPath(Some(456))
+
     (state.userState _).expects().returning(userState)
+    (routeParams.pathParams _).expects().returning(pathParams)
+    (routeParams.push _).expects(path.value)
+    dispatch.expects(UsersPathChangedAction(path))
 
     //when
-    val result = controller.mapStateToProps(dispatch, state, props)
+    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
     
     //then
-    inside(result) { case UserPanelProps(disp, resCompActions, resUserActions, resultState) =>
-      disp shouldBe dispatch
-      resCompActions shouldBe companyActions
-      resUserActions shouldBe userActions
-      resultState shouldBe userState
+    inside(result) {
+      case UserPanelProps(disp, resCompActions, resUserActions, resultState, selectedUserId, onChangeSelect) =>
+        disp shouldBe dispatch
+        resCompActions shouldBe companyActions
+        resUserActions shouldBe userActions
+        resultState shouldBe userState
+        selectedUserId shouldBe Some(123)
+
+        onChangeSelect(Some(456))
     }
   }
 

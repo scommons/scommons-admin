@@ -25,7 +25,7 @@ class UserPanelSpec extends TestSpec {
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
     val state = UserState()
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, UserEditPopup)
     val data = mock[UserDetailsData]
@@ -48,7 +48,7 @@ class UserPanelSpec extends TestSpec {
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
     val state = UserState()
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, UserEditPopup)
 
@@ -64,11 +64,25 @@ class UserPanelSpec extends TestSpec {
     val dispatch = mockFunction[Any, Any]
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
-    val data = mock[UserDetailsData]
-    val state = UserState(
-      selected = Some(data)
+    val data = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
     )
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val state = UserState(
+      userDetails = Some(data)
+    )
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state, selectedUserId = data.user.id)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val editPopupProps = findProps(comp, UserEditPopup)(1)
     val action = UserUpdateAction(
@@ -89,11 +103,25 @@ class UserPanelSpec extends TestSpec {
     val dispatch = mockFunction[Any, Any]
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
-    val data = mock[UserDetailsData]
-    val state = UserState(
-      selected = Some(data)
+    val data = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
     )
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val state = UserState(
+      userDetails = Some(data)
+    )
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state, selectedUserId = data.user.id)
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val editPopupProps = findProps(comp, UserEditPopup)(1)
 
@@ -109,14 +137,14 @@ class UserPanelSpec extends TestSpec {
     val dispatch = mock[Dispatch]
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
-    val state = UserState(List(UserData(
+    val state = UserState(dataList = List(UserData(
       id = Some(11),
       company = UserCompanyData(1, "Test Company"),
       login = "test_login",
       password = "test",
       active = true
     )))
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state)
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
@@ -141,7 +169,7 @@ class UserPanelSpec extends TestSpec {
       )),
       showCreatePopup = true
     )
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state)
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
@@ -164,7 +192,7 @@ class UserPanelSpec extends TestSpec {
         password = "test",
         active = true
       )),
-      selected = Some(UserDetailsData(
+      userDetails = Some(UserDetailsData(
         user = UserData(
           id = Some(11),
           company = UserCompanyData(1, "Test Company"),
@@ -181,7 +209,7 @@ class UserPanelSpec extends TestSpec {
       )),
       showEditPopup = true
     )
-    val props = UserPanelProps(dispatch, companyActions, userActions, state)
+    val props = getUserPanelProps(dispatch, companyActions, userActions, state, selectedUserId = Some(11))
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
@@ -190,9 +218,26 @@ class UserPanelSpec extends TestSpec {
     //then
     assertUserPanel(result, props)
   }
+  
+  private def getUserPanelProps(dispatch: Dispatch,
+                                companyActions: CompanyActions,
+                                userActions: UserActions,
+                                data: UserState,
+                                selectedUserId: Option[Int] = None,
+                                onChangeSelect: Option[Int] => Unit = _ => ()): UserPanelProps = {
+
+    UserPanelProps(
+      dispatch = dispatch,
+      companyActions = companyActions,
+      userActions = userActions,
+      data = data,
+      selectedUserId = selectedUserId,
+      onChangeSelect = onChangeSelect
+    )
+  }
 
   private def assertUserPanel(result: ComponentInstance, props: UserPanelProps): Unit = {
-    val selectedData = props.data.selected
+    val selectedData = props.data.userDetails
     
     def assertUserProfilePanel(component: ReactElement, data: UserProfileData): Assertion = {
       val wrapped = React.createClass[Unit, Unit] { _ =>
@@ -224,10 +269,12 @@ class UserPanelSpec extends TestSpec {
           group shouldBe false
       }
       assertComponent(tablePanel, UserTablePanel) {
-        case UserTablePanelProps(dispatch, actions, data) =>
+        case UserTablePanelProps(dispatch, actions, data, selectedUserId, onChangeSelect) =>
           dispatch shouldBe props.dispatch
           actions shouldBe props.userActions
           data shouldBe props.data
+          selectedUserId shouldBe props.selectedUserId
+          onChangeSelect shouldBe props.onChangeSelect
       }
 
       assertComponent(createPopup, UserEditPopup) {

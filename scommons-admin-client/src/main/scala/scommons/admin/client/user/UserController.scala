@@ -1,21 +1,33 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyActions
+import scommons.admin.client.user.UserActions.UsersPathChangedAction
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.BaseStateController
+import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}
 
 class UserController(companyActions: CompanyActions, userActions: UserActions)
-  extends BaseStateController[AdminStateDef, UserPanelProps] {
+  extends BaseStateAndRouteController[AdminStateDef, UserPanelProps] {
 
   lazy val uiComponent: UiComponent[UserPanelProps] = UserPanel
 
-  def mapStateToProps(dispatch: Dispatch, state: AdminStateDef, props: Props[Unit]): UserPanelProps = {
-    UserPanelProps(dispatch, companyActions, userActions, state.userState)
+  def mapStateAndRouteToProps(dispatch: Dispatch,
+                              state: AdminStateDef,
+                              routeParams: RouteParams): UserPanelProps = {
+
+    val pathParams = routeParams.pathParams
+    
+    UserPanelProps(dispatch, companyActions, userActions, state.userState, extractUserId(pathParams),
+      onChangeSelect = { maybeUserId =>
+        val path = buildUsersPath(maybeUserId)
+        routeParams.push(path.value)
+        dispatch(UsersPathChangedAction(path))
+      }
+    )
   }
 
   private lazy val usersItem = BrowseTreeItemData(
