@@ -10,6 +10,8 @@ import scommons.admin.client.user.UserActions._
 import scommons.client.ui._
 import scommons.client.util.ActionsData
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 case class UserPanelProps(dispatch: Dispatch,
                           companyActions: CompanyActions,
                           userActions: UserActions,
@@ -25,7 +27,14 @@ object UserPanel extends UiComponent[UserPanelProps] {
   private def createComp = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
-
+      if (props.data.dataList.isEmpty) {
+        props.dispatch(props.userActions.userListFetch(props.dispatch, None, None))
+      }
+      props.selectedParams.userId.foreach { userId =>
+        if (!props.data.userDetails.flatMap(_.user.id).contains(userId)) {
+          props.dispatch(props.userActions.userFetch(props.dispatch, userId))
+        }
+      }
       if (props.selectedParams != props.data.params) {
         props.onChangeParams(props.selectedParams)
       }
@@ -33,6 +42,11 @@ object UserPanel extends UiComponent[UserPanelProps] {
     componentDidUpdate = { (self, prevProps, _) =>
       val props = self.props.wrapped
       if (props.selectedParams != prevProps.wrapped.selectedParams) {
+        props.selectedParams.userId.foreach { userId =>
+          if (!props.data.userDetails.flatMap(_.user.id).contains(userId)) {
+            props.dispatch(props.userActions.userFetch(props.dispatch, userId))
+          }
+        }
         if (props.selectedParams != props.data.params) {
           props.onChangeParams(props.selectedParams)
         }
@@ -53,12 +67,18 @@ object UserPanel extends UiComponent[UserPanelProps] {
         ))(),
         
         <(UserTablePanel())(^.wrapped := UserTablePanelProps(
-          dispatch = props.dispatch,
-          actions = props.userActions,
           data = props.data,
           selectedUserId = props.selectedParams.userId,
           onChangeSelect = { userId =>
-            props.onChangeParams(props.selectedParams.copy(userId = userId))
+            val fetchAction = props.userActions.userFetch(props.dispatch, userId)
+            fetchAction.task.future.map { _ =>
+              props.onChangeParams(props.selectedParams.copy(userId = Some(userId)))
+            }
+            props.dispatch(fetchAction)
+          },
+          onLoadData = { (offset, symbols) =>
+            props.onChangeParams(props.selectedParams.copy(userId = None))
+            props.dispatch(props.userActions.userListFetch(props.dispatch, offset, symbols))
           }
         ))(),
   
