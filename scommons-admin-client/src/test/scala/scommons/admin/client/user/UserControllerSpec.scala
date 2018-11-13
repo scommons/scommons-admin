@@ -31,27 +31,34 @@ class UserControllerSpec extends TestSpec {
     val userState = mock[UserState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
-    val pathParams = PathParams(s"/users/123/test")
-    val path = buildUsersPath(Some(456))
+    val pathParams = PathParams(s"/users/123/profile")
+    val params = UserParams(Some(456), Some(UserDetailsTab.systems))
+    val path = buildUsersPath(params)
 
     (state.userState _).expects().returning(userState)
     (routeParams.pathParams _).expects().returning(pathParams)
     (routeParams.push _).expects(path.value)
-    dispatch.expects(UsersPathChangedAction(path))
+    dispatch.expects(UserParamsChangedAction(params))
 
     //when
     val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
     
     //then
     inside(result) {
-      case UserPanelProps(disp, resCompActions, resUserActions, resultState, selectedUserId, onChangeSelect) =>
+      case UserPanelProps(
+      disp,
+      resCompActions,
+      resUserActions,
+      resState,
+      selectedParams,
+      onChangeParams
+      ) =>
         disp shouldBe dispatch
         resCompActions shouldBe companyActions
         resUserActions shouldBe userActions
-        resultState shouldBe userState
-        selectedUserId shouldBe Some(123)
-
-        onChangeSelect(Some(456))
+        resState shouldBe userState
+        selectedParams shouldBe UserParams(Some(123), Some(UserDetailsTab.profile))
+        onChangeParams(params)
     }
   }
 

@@ -1,11 +1,9 @@
 package scommons.admin.client.user
 
-import scommons.admin.client.AdminRouteController.buildUsersPath
 import scommons.admin.client.api.user._
 import scommons.admin.client.user.UserActions._
 import scommons.client.task.FutureTask
 import scommons.client.test.TestSpec
-import scommons.client.util.BrowsePath
 
 import scala.concurrent.Future
 
@@ -18,10 +16,13 @@ class UserStateReducerSpec extends TestSpec {
     reduce(None, "") shouldBe UserState()
   }
   
-  it should "set usersPath when UsersPathChangedAction" in {
+  it should "set params when UserParamsChangedAction" in {
+    //given
+    val params = UserParams(Some(123), Some(UserDetailsTab.profile))
+    
     //when & then
-    reduce(Some(UserState()), UsersPathChangedAction(BrowsePath("/users/123"))) shouldBe {
-      UserState(usersPath = BrowsePath("/users/123"))
+    reduce(Some(UserState()), UserParamsChangedAction(params)) shouldBe {
+      UserState(params = params)
     }
   }
   
@@ -45,7 +46,7 @@ class UserStateReducerSpec extends TestSpec {
     }
   }
   
-  it should "set usersPath, userDetails and update dataList when UserFetchedAction" in {
+  it should "set userDetails and update dataList when UserFetchedAction" in {
     //given
     val dataList = List(
       UserData(
@@ -81,7 +82,6 @@ class UserStateReducerSpec extends TestSpec {
     
     //when & then
     reduce(Some(UserState(dataList = dataList)), UserFetchedAction(data)) shouldBe UserState(
-      usersPath = buildUsersPath(data.user.id),
       dataList = dataList.map {
         case curr if curr.id == data.user.id => data.user
         case curr => curr

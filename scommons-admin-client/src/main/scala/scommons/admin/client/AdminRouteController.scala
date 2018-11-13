@@ -8,7 +8,7 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
-import scommons.admin.client.user.UserController
+import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams}
 import scommons.client.app._
 import scommons.client.controller.{BaseStateController, PathParams}
 import scommons.client.ui.tree._
@@ -44,7 +44,7 @@ class AdminRouteController(companyController: CompanyController,
     
     List(
       companyController.getCompaniesItem(companiesPath),
-      userController.getUsersItem(userState.usersPath),
+      userController.getUsersItem(buildUsersPath(userState.params)),
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
           val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path, group)
@@ -77,17 +77,25 @@ object AdminRouteController {
   private val rolesPath = BrowsePath("/roles")
 
   private val userIdRegex = s"$usersPath/(\\d+)".r
+  private val userTabRegex = s"$usersPath/\\d+/(.+)".r
+  
   private val groupIdRegex = s"$appsPath/(\\d+)".r
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
   private val roleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
 
-  def buildUsersPath(userId: Option[Int]): BrowsePath = {
-    userId.map(id => usersPath.copy(value = s"$usersPath/$id"))
-      .getOrElse(usersPath)
+  def buildUsersPath(params: UserParams): BrowsePath = {
+    params.userId.map { id =>
+      val tabId = params.tab.map(t => s"/${t.id}").getOrElse("")
+
+      usersPath.copy(value = s"$usersPath/$id$tabId")
+    }.getOrElse(usersPath)
   }
   
   def extractUserId(params: PathParams): Option[Int] =
     params.extractInt(userIdRegex)
+  
+  def extractUserTab(params: PathParams): Option[UserDetailsTab] =
+    params.extract(userTabRegex).flatMap(UserDetailsTab.of)
   
   def extractGroupId(params: PathParams): Option[Int] =
     params.extractInt(groupIdRegex)

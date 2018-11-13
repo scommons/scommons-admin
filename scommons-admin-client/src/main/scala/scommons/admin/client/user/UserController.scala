@@ -3,7 +3,7 @@ package scommons.admin.client.user
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyActions
-import scommons.admin.client.user.UserActions.UsersPathChangedAction
+import scommons.admin.client.user.UserActions.UserParamsChangedAction
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeItemData
@@ -20,14 +20,15 @@ class UserController(companyActions: CompanyActions, userActions: UserActions)
                               routeParams: RouteParams): UserPanelProps = {
 
     val pathParams = routeParams.pathParams
+    val params = UserParams(extractUserId(pathParams), extractUserTab(pathParams))
     
-    UserPanelProps(dispatch, companyActions, userActions, state.userState, extractUserId(pathParams),
-      onChangeSelect = { maybeUserId =>
-        val path = buildUsersPath(maybeUserId)
+    UserPanelProps(dispatch, companyActions, userActions, state.userState, params, onChangeParams = { params =>
+      val path = buildUsersPath(params)
+      if (pathParams.path != path.value) {
         routeParams.push(path.value)
-        dispatch(UsersPathChangedAction(path))
       }
-    )
+      dispatch(UserParamsChangedAction(params))
+    })
   }
 
   private lazy val usersItem = BrowseTreeItemData(

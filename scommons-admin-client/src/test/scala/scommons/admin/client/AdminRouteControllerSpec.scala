@@ -10,7 +10,7 @@ import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
 import scommons.admin.client.system.{SystemController, SystemState}
-import scommons.admin.client.user.{UserController, UserState}
+import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams, UserState}
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
 import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
@@ -50,8 +50,9 @@ class AdminRouteControllerSpec extends TestSpec {
     )
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
-    val usersPath = BrowsePath("/users/123/test")
-    val userState = UserState(usersPath)
+    val params = UserParams(Some(123), Some(UserDetailsTab.profile))
+    val userState = UserState(params)
+    val usersPath = AdminRouteController.buildUsersPath(params)
     val systemGroups = List(
       SystemGroupData(Some(1), "env 1"),
       SystemGroupData(Some(2), "env 2")

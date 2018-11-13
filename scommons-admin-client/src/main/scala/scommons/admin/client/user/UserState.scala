@@ -1,11 +1,9 @@
 package scommons.admin.client.user
 
-import scommons.admin.client.AdminRouteController.buildUsersPath
 import scommons.admin.client.api.user.{UserData, UserDetailsData}
 import scommons.admin.client.user.UserActions._
-import scommons.client.util.BrowsePath
 
-case class UserState(usersPath: BrowsePath = buildUsersPath(None),
+case class UserState(params: UserParams = UserParams(),
                      dataList: List[UserData] = Nil,
                      offset: Option[Int] = None,
                      totalCount: Option[Int] = None,
@@ -20,11 +18,10 @@ object UserStateReducer {
   }
   
   private def reduce(state: UserState, action: Any): UserState = action match {
-    case a: UsersPathChangedAction => state.copy(usersPath = a.path)
+    case a: UserParamsChangedAction => state.copy(params = a.params)
     case a: UserCreateRequestAction => state.copy(showCreatePopup = a.create)
     case a: UserUpdateRequestAction => state.copy(showEditPopup = a.update)
     case UserFetchedAction(data) => state.copy(
-      usersPath = buildUsersPath(data.user.id),
       dataList = state.dataList.map {
         case curr if curr.id == data.user.id => data.user
         case curr => curr

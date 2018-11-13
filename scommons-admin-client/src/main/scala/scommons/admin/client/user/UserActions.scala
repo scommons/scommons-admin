@@ -6,7 +6,6 @@ import scommons.admin.client.api.user._
 import scommons.admin.client.user.UserActions._
 import scommons.api.ApiStatus.Ok
 import scommons.client.task.{FutureTask, TaskAction}
-import scommons.client.util.BrowsePath
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
@@ -59,7 +58,7 @@ object UserActions {
 
   val listLimit = 10
 
-  case class UsersPathChangedAction(path: BrowsePath) extends Action
+  case class UserParamsChangedAction(params: UserParams) extends Action
 
   case class UserCreateAction(task: FutureTask[UserDetailsResp]) extends TaskAction
   case class UserCreatedAction(data: UserDetailsData) extends Action
