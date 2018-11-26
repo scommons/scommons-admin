@@ -7,6 +7,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
+import scommons.admin.client.user.system.{UserSystemActions, UserSystemPanel, UserSystemPanelProps, UserSystemState}
 import scommons.client.ui._
 import scommons.client.util.ActionsData
 
@@ -15,7 +16,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 case class UserPanelProps(dispatch: Dispatch,
                           companyActions: CompanyActions,
                           userActions: UserActions,
+                          userSystemActions: UserSystemActions,
                           data: UserState,
+                          systemData: UserSystemState,
                           selectedParams: UserParams,
                           onChangeParams: UserParams => Unit)
 
@@ -54,7 +57,7 @@ object UserPanel extends UiComponent[UserPanelProps] {
     },
     render = { self =>
       val props = self.props.wrapped
-      val userDetailsData = props.data.userDetails.filter(d => props.selectedParams.userId == d.user.id)
+      val userDetailsData = props.data.userDetails.filter(_ => props.selectedParams.userId.isDefined)
   
       <.div()(
         <(ButtonsPanel())(^.wrapped := ButtonsPanelProps(
@@ -113,6 +116,17 @@ object UserPanel extends UiComponent[UserPanelProps] {
         userDetailsData.toList.flatMap { data =>
           List(
             <(UserDetailsPanel())(^.wrapped := UserDetailsPanelProps(
+              renderSystems = { _ =>
+                <(UserSystemPanel())(^.wrapped := UserSystemPanelProps(
+                  dispatch = props.dispatch,
+                  actions = props.userSystemActions,
+                  systemData = props.systemData,
+                  selectedUser = props.selectedParams.tab.getOrElse(UserDetailsTab.apps) match {
+                    case UserDetailsTab.apps => Some(data.user)
+                    case _ => None
+                  }
+                ))()
+              },
               profile = data.profile,
               selectedTab = props.selectedParams.tab,
               onChangeTab = { tab =>

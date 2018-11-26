@@ -3,6 +3,7 @@ package scommons.admin.client.user
 import scommons.admin.client.AdminRouteController.buildUsersPath
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
+import scommons.admin.client.user.system.{UserSystemActions, UserSystemState}
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.test.TestSpec
@@ -16,7 +17,8 @@ class UserControllerSpec extends TestSpec {
     //given
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
-    val controller = new UserController(companyActions, userActions)
+    val userSystemActions = mock[UserSystemActions]
+    val controller = new UserController(companyActions, userActions, userSystemActions)
     
     //when & then
     controller.uiComponent shouldBe UserPanel
@@ -26,16 +28,19 @@ class UserControllerSpec extends TestSpec {
     //given
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
-    val controller = new UserController(companyActions, userActions)
+    val userSystemActions = mock[UserSystemActions]
+    val controller = new UserController(companyActions, userActions, userSystemActions)
     val dispatch = mockFunction[Any, Any]
     val userState = mock[UserState]
+    val userSystemState = mock[UserSystemState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
     val pathParams = PathParams(s"/users/123/profile")
-    val params = UserParams(Some(456), Some(UserDetailsTab.systems))
+    val params = UserParams(Some(456), Some(UserDetailsTab.apps))
     val path = buildUsersPath(params)
 
     (state.userState _).expects().returning(userState)
+    (state.userSystemState _).expects().returning(userSystemState)
     (routeParams.pathParams _).expects().returning(pathParams)
     (routeParams.push _).expects(path.value)
     dispatch.expects(UserParamsChangedAction(params))
@@ -49,14 +54,18 @@ class UserControllerSpec extends TestSpec {
       disp,
       resCompActions,
       resUserActions,
+      resUserSystemActions,
       resState,
+      resSystemState,
       selectedParams,
       onChangeParams
       ) =>
         disp shouldBe dispatch
         resCompActions shouldBe companyActions
         resUserActions shouldBe userActions
+        resUserSystemActions shouldBe userSystemActions
         resState shouldBe userState
+        resSystemState shouldBe userSystemState
         selectedParams shouldBe UserParams(Some(123), Some(UserDetailsTab.profile))
         onChangeParams(params)
     }
@@ -66,7 +75,8 @@ class UserControllerSpec extends TestSpec {
     //given
     val companyActions = mock[CompanyActions]
     val userActions = mock[UserActions]
-    val controller = new UserController(companyActions, userActions)
+    val userSystemActions = mock[UserSystemActions]
+    val controller = new UserController(companyActions, userActions, userSystemActions)
     val userListFetchAction = mock[UserListFetchAction]
     val expectedActions = Map(
       Buttons.REFRESH.command -> userListFetchAction

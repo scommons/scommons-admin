@@ -159,7 +159,7 @@ class UserStateReducerSpec extends TestSpec {
     )
   }
   
-  it should "update dataList and userDetails when UserUpdatedAction" in {
+  it should "update dataList and userDetails when UserDetailsUpdatedAction" in {
     //given
     val existingData = UserData(
       id = Some(12),
@@ -195,9 +195,50 @@ class UserStateReducerSpec extends TestSpec {
     )
 
     //when & then
-    reduce(Some(UserState(dataList = dataList, showEditPopup = true)), UserUpdatedAction(data)) shouldBe UserState(
-      dataList = List(data.user, existingData),
-      userDetails = Some(data)
+    reduce(Some(UserState(dataList = dataList, showEditPopup = true)), UserDetailsUpdatedAction(data)) shouldBe {
+      UserState(
+        dataList = List(data.user, existingData),
+        userDetails = Some(data)
+      )
+    }
+  }
+
+  it should "update dataList and userDetails when UserUpdatedAction" in {
+    //given
+    val existingData = UserData(
+      id = Some(12),
+      company = UserCompanyData(1, "Test Company"),
+      login = "test_login2",
+      password = "test",
+      active = true
     )
+    val dataList = List(
+      UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "test_login",
+        password = "test",
+        active = true
+      ),
+      existingData
+    )
+    val details = UserDetailsData(
+      user = existingData,
+      profile = UserProfileData(
+        email = "test2@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    )
+    val data = existingData.copy(login = "new_login")
+
+    //when & then
+    reduce(Some(UserState(dataList = dataList, userDetails = Some(details))), UserUpdatedAction(data)) shouldBe {
+      UserState(
+        dataList = List(dataList.head, data),
+        userDetails = Some(details.copy(user = data))
+      )
+    }
   }
 }

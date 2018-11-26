@@ -4,14 +4,17 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions.UserParamsChangedAction
+import scommons.admin.client.user.system.UserSystemActions
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.ui.{Buttons, UiComponent}
 import scommons.client.util.{ActionsData, BrowsePath}
 
-class UserController(companyActions: CompanyActions, userActions: UserActions)
-  extends BaseStateAndRouteController[AdminStateDef, UserPanelProps] {
+class UserController(companyActions: CompanyActions,
+                     userActions: UserActions,
+                     userSystemActions: UserSystemActions
+                    ) extends BaseStateAndRouteController[AdminStateDef, UserPanelProps] {
 
   lazy val uiComponent: UiComponent[UserPanelProps] = UserPanel
 
@@ -22,13 +25,16 @@ class UserController(companyActions: CompanyActions, userActions: UserActions)
     val pathParams = routeParams.pathParams
     val params = UserParams(extractUserId(pathParams), extractUserTab(pathParams))
     
-    UserPanelProps(dispatch, companyActions, userActions, state.userState, params, onChangeParams = { params =>
-      val path = buildUsersPath(params)
-      if (pathParams.path != path.value) {
-        routeParams.push(path.value)
+    UserPanelProps(dispatch, companyActions, userActions, userSystemActions, state.userState, state.userSystemState,
+      params,
+      onChangeParams = { params =>
+        val path = buildUsersPath(params)
+        if (pathParams.path != path.value) {
+          routeParams.push(path.value)
+        }
+        dispatch(UserParamsChangedAction(params))
       }
-      dispatch(UserParamsChangedAction(params))
-    })
+    )
   }
 
   private lazy val usersItem = BrowseTreeItemData(

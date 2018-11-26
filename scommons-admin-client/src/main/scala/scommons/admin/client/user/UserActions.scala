@@ -47,7 +47,7 @@ trait UserActions {
   def userUpdate(dispatch: Dispatch, data: UserDetailsData): UserUpdateAction = {
     val future = client.updateUser(data).andThen {
       case Success(UserDetailsResp(Ok, Some(respData))) =>
-        dispatch(UserUpdatedAction(respData))
+        dispatch(UserDetailsUpdatedAction(respData))
     }
 
     UserUpdateAction(FutureTask("Updating User", future))
@@ -74,6 +74,7 @@ object UserActions {
   case class UserFetchedAction(data: UserDetailsData) extends Action
 
   case class UserUpdateAction(task: FutureTask[UserDetailsResp]) extends TaskAction
-  case class UserUpdatedAction(data: UserDetailsData) extends Action
+  case class UserDetailsUpdatedAction(data: UserDetailsData) extends Action
+  case class UserUpdatedAction(data: UserData) extends Action
   case class UserUpdateRequestAction(update: Boolean) extends Action
 }

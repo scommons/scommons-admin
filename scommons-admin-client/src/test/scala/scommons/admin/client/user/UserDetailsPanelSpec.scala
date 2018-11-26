@@ -1,6 +1,7 @@
 package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.React
+import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import org.scalatest._
@@ -39,9 +40,9 @@ class UserDetailsPanelSpec extends TestSpec {
     assertUserDetailsPanel(result, props)
   }
 
-  it should "render component with selected Systems tab" in {
+  it should "render component with selected Applications tab" in {
     //given
-    val props = getUserDetailsPanelProps(selectedTab = Some(UserDetailsTab.systems))
+    val props = getUserDetailsPanelProps(selectedTab = Some(UserDetailsTab.apps))
     val component = <(UserDetailsPanel())(^.wrapped := props)()
     
     //when
@@ -63,7 +64,8 @@ class UserDetailsPanelSpec extends TestSpec {
     assertUserDetailsPanel(result, props)
   }
 
-  private def getUserDetailsPanelProps(profile: UserProfileData = UserProfileData(
+  private def getUserDetailsPanelProps(renderSystems: Props[_] => ReactElement = _ => <.div.empty,
+                                       profile: UserProfileData = UserProfileData(
                                          email = "test@email.com",
                                          firstName = "Firstname",
                                          lastName = "Lastname",
@@ -74,6 +76,7 @@ class UserDetailsPanelSpec extends TestSpec {
                                       ): UserDetailsPanelProps = {
     
     UserDetailsPanelProps(
+      renderSystems = renderSystems,
       profile = profile,
       selectedTab = selectedTab,
       onChangeTab = onChangeTab
@@ -99,19 +102,16 @@ class UserDetailsPanelSpec extends TestSpec {
     assertComponent(result, TabPanel) {
       case TabPanelProps(List(systemsItem, profileItem), selectedIndex, _, direction) =>
         selectedIndex shouldBe props.selectedTab.map {
-          case UserDetailsTab.systems => 0
+          case UserDetailsTab.`apps` => 0
           case UserDetailsTab.profile => 1
         }.getOrElse(0)
         direction shouldBe TabDirection.Top
 
         inside(systemsItem) { case TabItemData(title, image, component, render) =>
-          title shouldBe "Systems"
+          title shouldBe "Applications"
           image shouldBe Some(AdminImagesCss.computer)
           component shouldBe None
-          render should not be None
-
-          //TODO
-          //assertUserSystemsPanel(render.get.apply(null), props.profile)
+          render shouldBe Some(props.renderSystems)
         }
         
         inside(profileItem) { case TabItemData(title, image, component, render) =>

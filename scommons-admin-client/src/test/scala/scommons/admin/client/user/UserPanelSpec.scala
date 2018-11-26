@@ -1,12 +1,15 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.ReactDOM
+import io.github.shogowada.scalajs.reactjs.{React, ReactDOM}
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
+import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.user._
+import scommons.admin.client.api.user.system.UserSystemData
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
+import scommons.admin.client.user.system._
 import scommons.client.task.FutureTask
 import scommons.client.test.AsyncTestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance
@@ -336,6 +339,7 @@ class UserPanelSpec extends AsyncTestSpec {
   private def getUserPanelProps(dispatch: Dispatch = mockFunction[Any, Any],
                                 companyActions: CompanyActions = mock[CompanyActions],
                                 userActions: UserActions = mock[UserActions],
+                                userSystemActions: UserSystemActions = mock[UserSystemActions],
                                 data: UserState = UserState(
                                   params = UserParams(Some(11)),
                                   dataList = List(UserData(
@@ -361,6 +365,10 @@ class UserPanelSpec extends AsyncTestSpec {
                                     )
                                   ))
                                 ),
+                                systemData: UserSystemState = UserSystemState(
+                                  systems = List(UserSystemData(1, "admin", isSelected = false)),
+                                  userId = Some(11)
+                                ),
                                 selectedParams: UserParams = UserParams(Some(11)),
                                 onChangeParams: UserParams => Unit = _ => ()): UserPanelProps = {
 
@@ -368,7 +376,9 @@ class UserPanelSpec extends AsyncTestSpec {
       dispatch = dispatch,
       companyActions = companyActions,
       userActions = userActions,
+      userSystemActions = userSystemActions,
       data = data,
+      systemData = systemData,
       selectedParams = selectedParams,
       onChangeParams = onChangeParams
     )
@@ -376,7 +386,27 @@ class UserPanelSpec extends AsyncTestSpec {
 
   private def assertUserPanel(result: ComponentInstance, props: UserPanelProps): Assertion = {
     val selectedData = props.data.userDetails
-    
+
+    def assertUserSystemPanel(component: ReactElement, data: UserDetailsData): Assertion = {
+      val wrapped = React.createClass[Unit, Unit] { _ =>
+        <.div()(component)
+      }
+      val result = shallowRender(<(wrapped)()())
+
+      assertDOMComponent(result, <.div()(), { case List(comp) =>
+        assertComponent(comp, UserSystemPanel) {
+          case UserSystemPanelProps(dispatch, actions, systemData, selectedUser) =>
+            dispatch shouldBe props.dispatch
+            actions shouldBe props.userSystemActions
+            systemData shouldBe props.systemData
+            selectedUser shouldBe (props.selectedParams.tab.getOrElse(UserDetailsTab.apps) match {
+              case UserDetailsTab.apps => Some(data.user)
+              case _ => None
+            })
+        }
+      })
+    }
+
     def assertComponents(buttonsPanel: ComponentInstance,
                          tablePanel: ComponentInstance,
                          createPopup: ComponentInstance,
@@ -424,9 +454,11 @@ class UserPanelSpec extends AsyncTestSpec {
       detailsPanel.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
         assertComponent(detailsPanel.get, UserDetailsPanel) {
-          case UserDetailsPanelProps(profile, selectedTab, _) =>
+          case UserDetailsPanelProps(renderSystems, profile, selectedTab, _) =>
             profile shouldBe data.profile
             selectedTab shouldBe props.selectedParams.tab
+
+            assertUserSystemPanel(renderSystems.apply(null), data)
         }
       }
       

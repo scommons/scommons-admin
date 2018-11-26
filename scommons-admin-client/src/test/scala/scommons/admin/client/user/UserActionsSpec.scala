@@ -85,7 +85,7 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  it should "dispatch UserUpdatedAction when userUpdate" in {
+  it should "dispatch UserDetailsUpdatedAction when userUpdate" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
@@ -96,7 +96,7 @@ class UserActionsSpec extends AsyncTestSpec {
 
     (api.updateUser _).expects(data)
       .returning(Future.successful(expectedResp))
-    dispatch.expects(UserUpdatedAction(respData))
+    dispatch.expects(UserDetailsUpdatedAction(respData))
     
     //when
     val UserUpdateAction(FutureTask(message, future)) =

@@ -38,13 +38,20 @@ object UserStateReducer {
       userDetails = Some(data),
       showCreatePopup = false
     )
-    case UserUpdatedAction(data) => state.copy(
+    case UserDetailsUpdatedAction(data) => state.copy(
       dataList = state.dataList.map {
         case curr if curr.id == data.user.id => data.user
         case curr => curr
       },
       userDetails = Some(data),
       showEditPopup = false
+    )
+    case UserUpdatedAction(data) => state.copy(
+      dataList = state.dataList.map {
+        case curr if curr.id == data.id => data
+        case curr => curr
+      },
+      userDetails = state.userDetails.map(_.copy(user = data))
     )
     case _ => state
   }

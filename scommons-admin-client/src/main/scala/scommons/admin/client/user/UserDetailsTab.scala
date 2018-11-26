@@ -19,6 +19,6 @@ object UserDetailsTab {
     tab
   }
   
-  val systems = UserDetailsTab("systems")
+  val apps = UserDetailsTab("apps")
   val profile = UserDetailsTab("profile")
 }

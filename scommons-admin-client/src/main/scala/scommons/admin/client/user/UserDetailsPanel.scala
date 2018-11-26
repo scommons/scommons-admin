@@ -1,14 +1,17 @@
 package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.React
+import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
+import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
 import scommons.client.ui._
-import scommons.client.ui.tab.{TabItemData, TabPanel, TabPanelProps}
+import scommons.client.ui.tab._
 
-case class UserDetailsPanelProps(profile: UserProfileData,
+case class UserDetailsPanelProps(renderSystems: Props[_] => ReactElement,
+                                 profile: UserProfileData,
                                  selectedTab: Option[UserDetailsTab],
                                  onChangeTab: Option[UserDetailsTab] => Unit)
 
@@ -21,9 +24,9 @@ object UserDetailsPanel extends UiComponent[UserDetailsPanelProps] {
     val props = self.props.wrapped
     
     val tabItems = List(
-      UserDetailsTab.systems -> TabItemData("Systems", image = Some(AdminImagesCss.computer), render = Some { _ =>
-        <.div()("User Systems")
-      }),
+      UserDetailsTab.apps -> TabItemData("Applications", image = Some(AdminImagesCss.computer), render = Some(
+        props.renderSystems
+      )),
       UserDetailsTab.profile -> TabItemData("Profile", image = Some(AdminImagesCss.vcard), render = Some { _ =>
         <(UserProfilePanel())(^.wrapped := UserProfilePanelProps(props.profile))()
       })
@@ -36,7 +39,6 @@ object UserDetailsPanel extends UiComponent[UserDetailsPanelProps] {
       }.getOrElse(0),
       onSelect = { (_, index) =>
         props.onChangeTab(Some(tabItems(index)._1))
-        true
       }
     ))()
   }

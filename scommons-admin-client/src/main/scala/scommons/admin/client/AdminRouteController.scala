@@ -85,7 +85,7 @@ object AdminRouteController {
 
   def buildUsersPath(params: UserParams): BrowsePath = {
     params.userId.map { id =>
-      val tabId = params.tab.map(t => s"/${t.id}").getOrElse("")
+      val tabId = params.tab.map(tab => s"/$tab").getOrElse("")
 
       usersPath.copy(value = s"$usersPath/$id$tabId")
     }.getOrElse(usersPath)

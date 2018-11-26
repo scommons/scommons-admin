@@ -8,6 +8,7 @@ import scommons.admin.client.role.permission.RolePermissionActions
 import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.group.SystemGroupActions
 import scommons.admin.client.user.UserActions
+import scommons.admin.client.user.system.UserSystemActions
 import scommons.api.http.js.JsApiHttpClient
 
 object AdminActions extends CompanyActions
@@ -15,7 +16,8 @@ object AdminActions extends CompanyActions
   with SystemActions
   with RoleActions
   with RolePermissionActions
-  with UserActions {
+  with UserActions
+  with UserSystemActions {
   
   private val baseUrl = {
     val loc = dom.window.location
