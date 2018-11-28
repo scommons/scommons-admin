@@ -57,15 +57,47 @@ class UserTablePanelSpec extends TestSpec {
     assertUserTablePanel(result, props)
   }
 
-  it should "render component with selected row" in {
+  it should "render component with selected user in the list" in {
     //given
     val state = getUserState
-    val props = getUserTablePanelProps(state, selectedUserId = Some(1))
+    val props = getUserTablePanelProps(state, selectedUserId = Some(state.dataList.head.id.get))
     val component = <(UserTablePanel())(^.wrapped := props)()
     
     //when
     val result = shallowRender(component)
     
+    //then
+    assertUserTablePanel(result, props)
+  }
+
+  it should "render component with selected user added to the list" in {
+    //given
+    val state = {
+      val state = getUserState
+      val details = state.userDetails.get
+      state.copy(userDetails = Some(details.copy(user = details.user.copy(id = Some(123)))))
+    }
+    val props = getUserTablePanelProps(state, selectedUserId = Some(123))
+    val component = <(UserTablePanel())(^.wrapped := props)()
+    
+    //when
+    val result = shallowRender(component)
+    
+    //then
+    assertUserTablePanel(result, props.copy(
+      data = state.copy(dataList = state.dataList :+ state.userDetails.get.user)
+    ))
+  }
+
+  it should "render component without selected user" in {
+    //given
+    val state = getUserState
+    val props = getUserTablePanelProps(state, selectedUserId = Some(123))
+    val component = <(UserTablePanel())(^.wrapped := props)()
+
+    //when
+    val result = shallowRender(component)
+
     //then
     assertUserTablePanel(result, props)
   }
@@ -150,7 +182,7 @@ class UserTablePanelSpec extends TestSpec {
         case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader
           rows shouldBe tableRows
-          selectedIds shouldBe props.data.userDetails.flatMap(_.user.id).map(_.toString).toSet
+          selectedIds shouldBe props.selectedUserId.map(_.toString).toSet
       }
       assertComponent(paginationPanel, PaginationPanel) {
         case PaginationPanelProps(totalPages, selectedPage, _, alignment) =>

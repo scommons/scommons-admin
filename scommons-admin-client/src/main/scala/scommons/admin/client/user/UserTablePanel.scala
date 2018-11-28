@@ -27,8 +27,19 @@ object UserTablePanel extends UiComponent[UserTablePanelProps] {
       TableColumnData("Company"),
       TableColumnData("Updated at")
     )
+    
+    val dataList = {
+      val list = props.data.dataList
+      
+      // make sure that selected user is added to the list
+      list.find(_.id == props.selectedUserId) match {
+        case None if props.data.userDetails.exists(_.user.id == props.selectedUserId) =>
+          list :+ props.data.userDetails.get.user
+        case _ => list
+      }
+    }
 
-    val rows = props.data.dataList.map { data =>
+    val rows = dataList.map { data =>
       val id = data.id.getOrElse(0).toString
       TableRowData(id, List(
         data.login,
