@@ -5,9 +5,11 @@ import scommons.admin.client.api.role._
 import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system._
 import scommons.admin.client.api.system.group._
+import scommons.admin.client.api.system.user._
 import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system._
 import scommons.api.http.ApiHttpClient
+import scommons.api.http.ApiHttpClient.queryParams
 
 import scala.concurrent.Future
 
@@ -15,6 +17,7 @@ class AdminUiApiClient(client: ApiHttpClient)
   extends CompanyApi
     with SystemGroupApi
     with SystemApi
+    with SystemUserApi
     with RoleApi
     with RolePermissionApi
     with UserApi
@@ -31,7 +34,7 @@ class AdminUiApiClient(client: ApiHttpClient)
                     limit: Option[Int] = None,
                     symbols: Option[String] = None): Future[CompanyListResp] = {
 
-    client.execGet[CompanyListResp]("/companies", params = ApiHttpClient.queryParams(
+    client.execGet[CompanyListResp]("/companies", params = queryParams(
       "offset" -> offset,
       "limit" -> limit,
       "symbols" -> symbols
@@ -85,6 +88,21 @@ class AdminUiApiClient(client: ApiHttpClient)
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
+  // systems/users
+
+  def listSystemUsers(systemId: Int,
+                      offset: Option[Int] = None,
+                      limit: Option[Int] = None,
+                      symbols: Option[String] = None): Future[SystemUserListResp] = {
+
+    client.execGet[SystemUserListResp](s"/systems/$systemId/users", params = queryParams(
+      "offset" -> offset,
+      "limit" -> limit,
+      "symbols" -> symbols
+    ))
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
   // roles
 
   def getRoleById(id: Int): Future[RoleResp] = {
@@ -129,7 +147,7 @@ class AdminUiApiClient(client: ApiHttpClient)
                 limit: Option[Int] = None,
                 symbols: Option[String] = None): Future[UserListResp] = {
 
-    client.execGet[UserListResp]("/users", params = ApiHttpClient.queryParams(
+    client.execGet[UserListResp]("/users", params = queryParams(
       "offset" -> offset,
       "limit" -> limit,
       "symbols" -> symbols

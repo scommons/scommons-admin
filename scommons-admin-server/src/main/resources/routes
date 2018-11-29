@@ -30,6 +30,8 @@ GET     /scommons-admin/ui/systems                  scommons.admin.server.system
 POST    /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.create
 PUT     /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.update
 
+GET     /scommons-admin/ui/systems/:id/users        scommons.admin.server.system.user.SystemUserController.list(id: Int, offset: Option[Int], limit: Option[Int], symbols: Option[String])
+
 GET     /scommons-admin/ui/roles/:id                scommons.admin.server.role.RoleController.getById(id: Int)
 GET     /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.list
 POST    /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.create

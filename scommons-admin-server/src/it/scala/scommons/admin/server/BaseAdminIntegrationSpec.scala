@@ -13,6 +13,7 @@ import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
+import scommons.admin.client.api.system.user.SystemUserData
 import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system._
 import scommons.admin.domain.dao._
@@ -50,6 +51,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   protected lazy val rolePermissionDao: RolePermissionDao = inject[RolePermissionDao]
   protected lazy val roleService: RoleService = inject[RoleService]
   protected lazy val userDao: UserDao = inject[UserDao]
+  protected lazy val systemUserDao: SystemUserDao = inject[SystemUserDao]
 
   protected lazy val superUserId: Int = 1
 
@@ -233,6 +235,20 @@ trait BaseAdminIntegrationSpec extends FlatSpec
     resp.data
   }
   
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // systems/users
+
+  def callSystemUserList(systemId: Int,
+                         offset: Option[Int] = None,
+                         limit: Option[Int] = None,
+                         symbols: Option[String] = None,
+                         expectedStatus: ApiStatus = ApiStatus.Ok): (List[SystemUserData], Option[Int]) = {
+
+    val resp = uiApiClient.listSystemUsers(systemId, offset, limit, symbols).futureValue
+    resp.status shouldBe expectedStatus
+    (resp.dataList.getOrElse(Nil), resp.totalCount)
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // roles
 

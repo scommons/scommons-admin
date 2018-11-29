@@ -14,6 +14,7 @@ import scommons.admin.server.role.RoleController
 import scommons.admin.server.role.permission.RolePermissionController
 import scommons.admin.server.system.SystemController
 import scommons.admin.server.system.group.SystemGroupController
+import scommons.admin.server.system.user.SystemUserController
 import scommons.admin.server.user.UserController
 import scommons.admin.server.user.system.UserSystemController
 
@@ -43,6 +44,7 @@ class ControllersSpec extends Suites(
       bind[CompanyController] to new CompanyController(null)
       bind[SystemGroupController] to new SystemGroupController(null)
       bind[SystemController] to new SystemController(null)
+      bind[SystemUserController] to new SystemUserController(null)
       bind[RoleController] to new RoleController(null)
       bind[RolePermissionController] to new RolePermissionController(null)
       bind[UserController] to new UserController(null)
