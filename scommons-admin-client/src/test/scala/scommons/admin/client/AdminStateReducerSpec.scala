@@ -7,6 +7,7 @@ import scommons.admin.client.role.RoleState
 import scommons.admin.client.role.permission.RolePermissionState
 import scommons.admin.client.system.SystemState
 import scommons.admin.client.system.group.SystemGroupState
+import scommons.admin.client.system.user.SystemUserState
 import scommons.admin.client.user.UserState
 import scommons.admin.client.user.system.UserSystemState
 import scommons.client.task.FutureTask
@@ -29,6 +30,7 @@ class AdminStateReducerSpec extends TestSpec {
       userSystemState,
       systemGroupState,
       systemState,
+      systemUserState,
       roleState,
       rolePermissionState
       ) =>
@@ -38,6 +40,7 @@ class AdminStateReducerSpec extends TestSpec {
         userSystemState shouldBe UserSystemState()
         systemGroupState shouldBe SystemGroupState()
         systemState shouldBe SystemState()
+        systemUserState shouldBe SystemUserState()
         roleState shouldBe RoleState()
         rolePermissionState shouldBe RolePermissionState()
     }

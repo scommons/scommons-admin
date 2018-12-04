@@ -9,6 +9,7 @@ import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
+import scommons.admin.client.system.user.SystemUserController
 import scommons.admin.client.system.{SystemController, SystemState}
 import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams, UserState}
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
@@ -25,10 +26,11 @@ class AdminRouteControllerSpec extends TestSpec {
     val userController = mock[UserController]
     val systemGroupController = mock[SystemGroupController]
     val systemController = mock[SystemController]
+    val systemUserController = mock[SystemUserController]
     val roleController = mock[RoleController]
     val rolePermissionController = mock[RolePermissionController]
     val controller = new AdminRouteController(
-      companyController, userController, systemGroupController, systemController,
+      companyController, userController, systemGroupController, systemController, systemUserController,
       roleController, rolePermissionController
     )
 
@@ -42,10 +44,11 @@ class AdminRouteControllerSpec extends TestSpec {
     val userController = mock[UserController]
     val systemGroupController = mock[SystemGroupController]
     val systemController = mock[SystemController]
+    val systemUserController = mock[SystemUserController]
     val roleController = mock[RoleController]
     val rolePermissionController = mock[RolePermissionController]
     val controller = new AdminRouteController(
-      companyController, userController, systemGroupController, systemController,
+      companyController, userController, systemGroupController, systemController, systemUserController,
       roleController, rolePermissionController
     )
     val props = mock[Props[Unit]]
@@ -73,6 +76,7 @@ class AdminRouteControllerSpec extends TestSpec {
     val applicationsNode = BrowseTreeNodeData("Test Applications", BrowsePath("/apps"))
     val environmentNode = BrowseTreeNodeData("Test Env", BrowsePath("/1"))
     val applicationNode = BrowseTreeNodeData("Test App", BrowsePath("/2"))
+    val applicationUsersItem = BrowseTreeItemData("Test App Users", BrowsePath("/users"))
     val rolesNode = BrowseTreeNodeData("Test Roles", BrowsePath("/roles"))
     val roleItem = BrowseTreeItemData("Test Role", BrowsePath("/3"))
     (companyController.getCompaniesItem _).expects(companiesItem.path)
@@ -88,6 +92,8 @@ class AdminRouteControllerSpec extends TestSpec {
     systems.foreach { system =>
       (systemController.getApplicationNode _).expects(environmentNode.path, system)
         .returning(applicationNode)
+      (systemUserController.getUsersItem _).expects(BrowsePath(s"${applicationNode.path}/users"), system.id.get)
+        .returning(applicationUsersItem)
       (roleController.getRolesNode _).expects(BrowsePath(s"${applicationNode.path}/roles"))
         .returning(rolesNode)
     }
@@ -108,6 +114,7 @@ class AdminRouteControllerSpec extends TestSpec {
               val roles = roleState.getRoles(system.id.get)
               systemNode.copy(
                 children = List(
+                  applicationUsersItem,
                   rolesNode.copy(
                     children = roles.map(_ => roleItem)
                   )

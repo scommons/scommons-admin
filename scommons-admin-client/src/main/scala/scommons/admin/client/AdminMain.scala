@@ -12,6 +12,7 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
+import scommons.admin.client.system.user.SystemUserController
 import scommons.admin.client.user.UserController
 import scommons.client.app._
 
@@ -39,6 +40,7 @@ object AdminMain {
     val userController = new UserController(apiActions, apiActions, apiActions)
     val envController = new SystemGroupController(apiActions, apiActions)
     val appController = new SystemController(apiActions)
+    val appUserController = new SystemUserController(apiActions)
     val roleController = new RoleController(apiActions)
     val rolePermissionController = new RolePermissionController(apiActions)
     val routeController = new AdminRouteController(
@@ -46,6 +48,7 @@ object AdminMain {
       userController,
       envController,
       appController,
+      appUserController,
       roleController,
       rolePermissionController
     )
