@@ -2,6 +2,7 @@ package scommons.admin.client
 
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
@@ -9,7 +10,7 @@ import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.role.{RoleController, RoleState}
 import scommons.admin.client.system.group.{SystemGroupController, SystemGroupState}
-import scommons.admin.client.system.user.SystemUserController
+import scommons.admin.client.system.user.{SystemUserController, SystemUserParams, SystemUserState}
 import scommons.admin.client.system.{SystemController, SystemState}
 import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams, UserState}
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
@@ -53,9 +54,9 @@ class AdminRouteControllerSpec extends TestSpec {
     )
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
-    val params = UserParams(Some(123), Some(UserDetailsTab.profile))
-    val userState = UserState(params)
-    val usersPath = AdminRouteController.buildUsersPath(params)
+    val userParams = UserParams(Some(123), Some(UserDetailsTab.profile))
+    val userState = UserState(userParams)
+    val usersPath = buildUsersPath(userParams)
     val systemGroups = List(
       SystemGroupData(Some(1), "env 1"),
       SystemGroupData(Some(2), "env 2")
@@ -66,6 +67,8 @@ class AdminRouteControllerSpec extends TestSpec {
       SystemData(Some(12), "app_2", "", "App 2", "http://app2", 2)
     )
     val systemState = SystemState(systems.groupBy(_.parentId))
+    val systemUserParams = SystemUserParams(Some(1), Some(2), Some(3))
+    val systemUserState = SystemUserState(systemUserParams)
     val roles = List(
       RoleData(Some(111), 11, "ROLE_1"),
       RoleData(Some(122), 12, "ROLE_2")
@@ -92,7 +95,10 @@ class AdminRouteControllerSpec extends TestSpec {
     systems.foreach { system =>
       (systemController.getApplicationNode _).expects(environmentNode.path, system)
         .returning(applicationNode)
-      (systemUserController.getUsersItem _).expects(BrowsePath(s"${applicationNode.path}/users"), system.id.get)
+      (systemUserController.getUsersItem _).expects(buildAppsUsersPath(systemUserParams.copy(
+        groupId = Some(system.parentId),
+        systemId = system.id
+      )), system.id.get)
         .returning(applicationUsersItem)
       (roleController.getRolesNode _).expects(BrowsePath(s"${applicationNode.path}/roles"))
         .returning(rolesNode)
@@ -129,6 +135,7 @@ class AdminRouteControllerSpec extends TestSpec {
     (state.userState _).expects().returning(userState)
     (state.systemGroupState _).expects().returning(systemGroupState)
     (state.systemState _).expects().returning(systemState)
+    (state.systemUserState _).expects().returning(systemUserState)
     (state.roleState _).expects().returning(roleState)
 
     //when

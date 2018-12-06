@@ -16,23 +16,49 @@ import scala.concurrent.Future
 
 class SystemUserPanelSpec extends AsyncTestSpec {
 
-  it should "dispatch SystemUserListFetchAction when load data" in {
+  it should "dispatch actions when select user" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemUserActions]
-    val systemId = 123
-    val props = getSystemUserPanelProps(dispatch, actions = actions, selectedSystemId = Some(systemId))
+    var selectedParams: Option[SystemUserParams] = None
+    val onChangeParams = { params: SystemUserParams =>
+      selectedParams = Some(params)
+    }
+    val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
     val comp = shallowRender(<(SystemUserPanel())(^.wrapped := props)())
     val tablePanelProps = findComponentProps(comp, SystemUserTablePanel)
+    val userId = 22
+    val params = props.selectedParams.copy(userId = Some(userId))
+
+    //when
+    tablePanelProps.onChangeSelect(userId)
+
+    //then
+    eventually {
+      selectedParams shouldBe Some(params)
+    }
+  }
+
+  it should "dispatch actions when load data" in {
+    //given
+    val dispatch = mockFunction[Any, Any]
+    val actions = mock[SystemUserActions]
+    val onChangeParams = mockFunction[SystemUserParams, Unit]
+    val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+    val systemId = props.selectedParams.systemId.get
+    val comp = shallowRender(<(SystemUserPanel())(^.wrapped := props)())
+    val tablePanelProps = findComponentProps(comp, SystemUserTablePanel)
+    val params = props.selectedParams.copy(userId = None)
     val offset = Some(10)
     val symbols = Some("test")
     val action = SystemUserListFetchAction(
-      FutureTask("Fetching", Future.successful(SystemUserListResp(Nil, None))), systemId, offset
+      FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), offset
     )
     (actions.systemUserListFetch _).expects(dispatch, systemId, offset, symbols).returning(action)
 
     //then
     dispatch.expects(action)
+    onChangeParams.expects(params)
     
     //when
     tablePanelProps.onLoadData(offset, symbols)
@@ -44,16 +70,21 @@ class SystemUserPanelSpec extends AsyncTestSpec {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemUserActions]
+    val onChangeParams = mockFunction[SystemUserParams, Unit]
     val systemId = 123
-    val props = getSystemUserPanelProps(dispatch, actions = actions, selectedSystemId = Some(systemId))
+    val props = {
+      val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+      props.copy(selectedParams = props.selectedParams.copy(systemId = Some(systemId)))
+    }
     val component = <(SystemUserPanel())(^.wrapped := props)()
     val listFetchAction = SystemUserListFetchAction(
-      FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), systemId, None
+      FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), None
     )
     (actions.systemUserListFetch _).expects(dispatch, systemId, None, None).returning(listFetchAction)
 
     //then
     dispatch.expects(listFetchAction)
+    onChangeParams.expects(props.selectedParams)
 
     //when
     renderIntoDocument(component)
@@ -64,11 +95,13 @@ class SystemUserPanelSpec extends AsyncTestSpec {
   it should "not dispatch actions if params not changed when componentDidMount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val props = getSystemUserPanelProps(dispatch)
+    val onChangeParams = mockFunction[SystemUserParams, Unit]
+    val props = getSystemUserPanelProps(dispatch, onChangeParams = onChangeParams)
     val component = <(SystemUserPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
+    onChangeParams.expects(*).never()
 
     //when
     renderIntoDocument(component)
@@ -80,24 +113,22 @@ class SystemUserPanelSpec extends AsyncTestSpec {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemUserActions]
-    val prevProps = {
-      val systemId = 12
-      val props = getSystemUserPanelProps(dispatch, actions = actions, selectedSystemId = Some(systemId))
-      props.copy(data = props.data.copy(systemId = Some(systemId)))
-    }
+    val onChangeParams = mockFunction[SystemUserParams, Unit]
+    val prevProps = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
     val comp = renderIntoDocument(<(SystemUserPanel())(^.wrapped := prevProps)())
     val containerElement = findReactElement(comp).parentNode
     val newSystemId = 123
     val props = prevProps.copy(
-      selectedSystemId = Some(newSystemId)
+      selectedParams = prevProps.selectedParams.copy(systemId = Some(newSystemId))
     )
     val listFetchAction = SystemUserListFetchAction(
-      FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), newSystemId, None
+      FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), None
     )
     (actions.systemUserListFetch _).expects(dispatch, newSystemId, None, None).returning(listFetchAction)
 
     //then
     dispatch.expects(listFetchAction)
+    onChangeParams.expects(props.selectedParams)
 
     //when
     ReactDOM.render(<(SystemUserPanel())(^.wrapped := props)(), containerElement)
@@ -108,11 +139,8 @@ class SystemUserPanelSpec extends AsyncTestSpec {
   it should "not dispatch actions if params not changed when componentDidUpdate" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val prevProps = {
-      val systemId = 123
-      val props = getSystemUserPanelProps(dispatch, selectedSystemId = Some(systemId))
-      props.copy(data = props.data.copy(systemId = Some(systemId)))
-    }
+    val onChangeParams = mockFunction[SystemUserParams, Unit]
+    val prevProps = getSystemUserPanelProps(dispatch, onChangeParams = onChangeParams)
     val comp = renderIntoDocument(<(SystemUserPanel())(^.wrapped := prevProps)())
     val containerElement = findReactElement(comp).parentNode
     val props = prevProps.copy(
@@ -123,6 +151,7 @@ class SystemUserPanelSpec extends AsyncTestSpec {
 
     //then
     dispatch.expects(*).never()
+    onChangeParams.expects(*).never()
 
     //when
     ReactDOM.render(<(SystemUserPanel())(^.wrapped := props)(), containerElement)
@@ -132,8 +161,26 @@ class SystemUserPanelSpec extends AsyncTestSpec {
 
   it should "render component" in {
     //given
-    val systemId = 123
-    val props = getSystemUserPanelProps(selectedSystemId = Some(systemId))
+    val props = getSystemUserPanelProps()
+    val component = <(SystemUserPanel())(^.wrapped := props)()
+    
+    //when
+    val result = shallowRender(component)
+    
+    //then
+    assertSystemUserPanel(result, props)
+  }
+
+  it should "render component with selected user" in {
+    //given
+    val props = {
+      val props = getSystemUserPanelProps()
+      val userId = props.data.dataList.head.userId
+      props.copy(
+        data = props.data.copy(params = props.data.params.copy(userId = Some(userId))),
+        selectedParams = props.selectedParams.copy(userId = Some(userId))
+      )
+    }
     val component = <(SystemUserPanel())(^.wrapped := props)()
     
     //when
@@ -146,6 +193,7 @@ class SystemUserPanelSpec extends AsyncTestSpec {
   private def getSystemUserPanelProps(dispatch: Dispatch = mockFunction[Any, Any],
                                       actions: SystemUserActions = mock[SystemUserActions],
                                       data: SystemUserState = SystemUserState(
+                                        params = SystemUserParams(Some(11), Some(12)),
                                         dataList = List(SystemUserData(
                                           userId = 1,
                                           login = "test_login_1",
@@ -155,13 +203,15 @@ class SystemUserPanelSpec extends AsyncTestSpec {
                                           version = 123
                                         ))
                                       ),
-                                      selectedSystemId: Option[Int] = None): SystemUserPanelProps = {
+                                      selectedParams: SystemUserParams = SystemUserParams(Some(11), Some(12)),
+                                      onChangeParams: SystemUserParams => Unit = _ => ()): SystemUserPanelProps = {
 
     SystemUserPanelProps(
       dispatch = dispatch,
       actions = actions,
       data = data,
-      selectedSystemId = selectedSystemId
+      selectedParams = selectedParams,
+      onChangeParams = onChangeParams
     )
   }
 
@@ -170,7 +220,7 @@ class SystemUserPanelSpec extends AsyncTestSpec {
       assertComponent(tablePanel, SystemUserTablePanel) {
         case SystemUserTablePanelProps(data, selectedUserId, _, _) =>
           data shouldBe props.data
-          selectedUserId shouldBe None
+          selectedUserId shouldBe props.selectedParams.userId
       }
     })
   }

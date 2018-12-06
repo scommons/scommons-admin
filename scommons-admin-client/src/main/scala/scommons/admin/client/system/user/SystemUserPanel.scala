@@ -9,7 +9,8 @@ import scommons.client.ui._
 case class SystemUserPanelProps(dispatch: Dispatch,
                                 actions: SystemUserActions,
                                 data: SystemUserState,
-                                selectedSystemId: Option[Int])
+                                selectedParams: SystemUserParams,
+                                onChangeParams: SystemUserParams => Unit)
 
 object SystemUserPanel extends UiComponent[SystemUserPanelProps] {
 
@@ -19,28 +20,40 @@ object SystemUserPanel extends UiComponent[SystemUserPanelProps] {
   private def createComp = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
-      if (props.data.systemId != props.selectedSystemId && props.selectedSystemId.isDefined) {
-        props.dispatch(props.actions.systemUserListFetch(props.dispatch, props.selectedSystemId.get, None, None))
+      props.selectedParams.systemId.foreach { systemId =>
+        if (!props.data.params.systemId.contains(systemId)) {
+          props.dispatch(props.actions.systemUserListFetch(props.dispatch, systemId, None, None))
+        }
+      }
+      if (props.selectedParams != props.data.params) {
+        props.onChangeParams(props.selectedParams)
       }
     },
     componentDidUpdate = { (self, prevProps, _) =>
       val props = self.props.wrapped
-      if (props.selectedSystemId != prevProps.wrapped.selectedSystemId) {
-        if (props.data.systemId != props.selectedSystemId && props.selectedSystemId.isDefined) {
-          props.dispatch(props.actions.systemUserListFetch(props.dispatch, props.selectedSystemId.get, None, None))
+      if (props.selectedParams != prevProps.wrapped.selectedParams) {
+        props.selectedParams.systemId.foreach { systemId =>
+          if (!props.data.params.systemId.contains(systemId)) {
+            props.dispatch(props.actions.systemUserListFetch(props.dispatch, systemId, None, None))
+          }
+        }
+        if (props.selectedParams != props.data.params) {
+          props.onChangeParams(props.selectedParams)
         }
       }
     },
     render = { self =>
       val props = self.props.wrapped
 
-      <.div()(props.selectedSystemId.map { systemId =>
+      <.div()(props.selectedParams.systemId.map { systemId =>
         <(SystemUserTablePanel())(^.wrapped := SystemUserTablePanelProps(
           data = props.data,
-          selectedUserId = None,
-          onChangeSelect = { _ =>
+          selectedUserId = props.selectedParams.userId,
+          onChangeSelect = { userId =>
+            props.onChangeParams(props.selectedParams.copy(userId = Some(userId)))
           },
           onLoadData = { (offset, symbols) =>
+            props.onChangeParams(props.selectedParams.copy(userId = None))
             props.dispatch(props.actions.systemUserListFetch(props.dispatch, systemId, offset, symbols))
           }
         ))()

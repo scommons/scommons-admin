@@ -56,6 +56,6 @@ class AdminStateReducerSpec extends TestSpec {
     
     //when & then
     AdminStateReducer.reduce(Some(result), CompanyCreateRequestAction(true))
-      .currentTask shouldBe None
+      .currentTask shouldBe result.currentTask
   }
 }

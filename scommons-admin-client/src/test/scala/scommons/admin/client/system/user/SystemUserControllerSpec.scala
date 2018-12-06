@@ -1,5 +1,6 @@
 package scommons.admin.client.system.user
 
+import scommons.admin.client.AdminRouteController.buildAppsUsersPath
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
@@ -27,10 +28,15 @@ class SystemUserControllerSpec extends TestSpec {
     val systemUserState = mock[SystemUserState]
     val state = mock[AdminStateDef]
     val routeParams = mock[RouteParams]
-    val pathParams = PathParams(s"/apps/1/123/users")
+    val pathParams = PathParams(s"/apps/1/2/users/3")
+    val params = SystemUserParams(Some(4), Some(5), Some(6))
+    val path = buildAppsUsersPath(params)
 
     (state.systemUserState _).expects().returning(systemUserState)
     (routeParams.pathParams _).expects().returning(pathParams)
+    
+    (routeParams.push _).expects(path.value)
+    dispatch.expects(SystemUserParamsChangedAction(params))
 
     //when
     val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
@@ -41,12 +47,14 @@ class SystemUserControllerSpec extends TestSpec {
       disp,
       resActions,
       resState,
-      selectedSystemId
+      selectedParams,
+      onChangeParams
       ) =>
         disp shouldBe dispatch
         resActions shouldBe actions
         resState shouldBe systemUserState
-        selectedSystemId shouldBe Some(123)
+        selectedParams shouldBe SystemUserParams(Some(1), Some(2), Some(3))
+        onChangeParams(params)
     }
   }
 

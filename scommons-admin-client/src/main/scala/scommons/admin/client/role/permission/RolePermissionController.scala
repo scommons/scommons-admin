@@ -18,6 +18,6 @@ class RolePermissionController(apiActions: RolePermissionActions)
     val pathParams = routeParams.pathParams
 
     RolePermissionPanelProps(dispatch, apiActions, state.rolePermissionState,
-      extractRoleId(pathParams).getOrElse(-1))
+      extractSystemRoleId(pathParams).getOrElse(-1))
   }
 }

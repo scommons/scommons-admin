@@ -8,7 +8,7 @@ import scommons.admin.client.role.RoleController
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.system.SystemController
 import scommons.admin.client.system.group.SystemGroupController
-import scommons.admin.client.system.user.SystemUserController
+import scommons.admin.client.system.user.{SystemUserController, SystemUserParams}
 import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams}
 import scommons.client.app._
 import scommons.client.controller.{BaseStateController, PathParams}
@@ -42,6 +42,7 @@ class AdminRouteController(companyController: CompanyController,
     val userState = state.userState
     val systemGroupState = state.systemGroupState
     val systemState = state.systemState
+    val systemUserState = state.systemUserState
     val roleState = state.roleState
     
     List(
@@ -49,17 +50,22 @@ class AdminRouteController(companyController: CompanyController,
       userController.getUsersItem(buildUsersPath(userState.params)),
       applicationsNode.copy(
         children = systemGroupState.dataList.map { group =>
+          val groupId = group.id.getOrElse(-1)
           val groupNode = systemGroupController.getEnvironmentNode(applicationsNode.path, group)
-          val systems = systemState.getSystems(group.id.get)
+          val systems = systemState.getSystems(groupId)
           groupNode.copy(
             children = systems.map { system =>
+              val systemId = system.id.getOrElse(-1)
               val systemNode = systemController.getApplicationNode(groupNode.path, system)
-              val systemId = system.id.get
+              val appsUsersPath = buildAppsUsersPath(systemUserState.params.copy(
+                groupId = Some(groupId),
+                systemId = Some(systemId)
+              ))
               val roles = roleState.getRoles(systemId)
               val rolesNode = roleController.getRolesNode(BrowsePath(s"${systemNode.path}$rolesPath"))
               systemNode.copy(
                 children = List(
-                  systemUserController.getUsersItem(BrowsePath(s"${systemNode.path}$appsUsersPath"), systemId),
+                  systemUserController.getUsersItem(appsUsersPath, systemId),
                   rolesNode.copy(
                     children = roles.map(roleController.getRoleItem(rolesNode.path, _, rolePermissionController))
                   )
@@ -78,15 +84,16 @@ object AdminRouteController {
   private val companiesPath = BrowsePath("/companies")
   private val usersPath = BrowsePath("/users", exact = false)
   private val appsPath = BrowsePath("/apps")
-  private val appsUsersPath = BrowsePath("/users", exact = false)
+  private val appsUsersPath = BrowsePath("/users")
   private val rolesPath = BrowsePath("/roles")
 
   private val userIdRegex = s"$usersPath/(\\d+)".r
   private val userTabRegex = s"$usersPath/\\d+/(.+)".r
   
-  private val groupIdRegex = s"$appsPath/(\\d+)".r
+  private val systemGroupIdRegex = s"$appsPath/(\\d+)".r
   private val systemIdRegex = s"$appsPath/\\d+/(\\d+)".r
-  private val roleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
+  private val systemUserIdRegex = s"$appsPath/\\d+/\\d+$appsUsersPath/(\\d+)".r
+  private val systemRoleIdRegex = s"$appsPath/\\d+/\\d+$rolesPath/(\\d+)".r
 
   def buildUsersPath(params: UserParams): BrowsePath = {
     params.userId.map { id =>
@@ -96,18 +103,31 @@ object AdminRouteController {
     }.getOrElse(usersPath)
   }
   
+  def buildAppsUsersPath(params: SystemUserParams): BrowsePath = {
+    val groupId = params.groupId.getOrElse(-1)
+    val systemId = params.systemId.getOrElse(-1)
+    val basePath = BrowsePath(s"$appsPath/$groupId/$systemId$appsUsersPath", exact = false)
+    
+    params.userId.map { userId =>
+      basePath.copy(value = s"$basePath/$userId")
+    }.getOrElse(basePath)
+  }
+  
   def extractUserId(params: PathParams): Option[Int] =
     params.extractInt(userIdRegex)
   
   def extractUserTab(params: PathParams): Option[UserDetailsTab] =
     params.extract(userTabRegex).flatMap(UserDetailsTab.of)
   
-  def extractGroupId(params: PathParams): Option[Int] =
-    params.extractInt(groupIdRegex)
+  def extractSystemGroupId(params: PathParams): Option[Int] =
+    params.extractInt(systemGroupIdRegex)
   
   def extractSystemId(params: PathParams, exact: Boolean = false): Option[Int] =
     params.extractInt(systemIdRegex, exact)
   
-  def extractRoleId(params: PathParams): Option[Int] =
-    params.extractInt(roleIdRegex)
+  def extractSystemUserId(params: PathParams): Option[Int] =
+    params.extractInt(systemUserIdRegex)
+  
+  def extractSystemRoleId(params: PathParams): Option[Int] =
+    params.extractInt(systemRoleIdRegex)
 }

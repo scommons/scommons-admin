@@ -24,7 +24,7 @@ trait SystemUserActions {
         dispatch(SystemUserListFetchedAction(dataList, totalCount))
     }
 
-    SystemUserListFetchAction(FutureTask("Fetching Application Users", future), systemId, offset)
+    SystemUserListFetchAction(FutureTask("Fetching Application Users", future), offset)
   }
 }
 
@@ -32,8 +32,9 @@ object SystemUserActions {
 
   val listLimit = 10
 
+  case class SystemUserParamsChangedAction(params: SystemUserParams) extends Action
+  
   case class SystemUserListFetchAction(task: FutureTask[SystemUserListResp],
-                                       systemId: Int,
                                        offset: Option[Int]) extends TaskAction
 
   case class SystemUserListFetchedAction(dataList: List[SystemUserData],

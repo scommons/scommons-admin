@@ -2,6 +2,7 @@ package scommons.admin.client.system.user
 
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
+import scommons.admin.client.system.user.SystemUserActions.SystemUserParamsChangedAction
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeItemData
@@ -18,9 +19,19 @@ class SystemUserController(apiActions: SystemUserActions)
                               routeParams: RouteParams): SystemUserPanelProps = {
 
     val pathParams = routeParams.pathParams
+    val params = SystemUserParams(
+      extractSystemGroupId(pathParams),
+      extractSystemId(pathParams),
+      extractSystemUserId(pathParams)
+    )
 
-    SystemUserPanelProps(dispatch, apiActions, state.systemUserState,
-      extractSystemId(pathParams))
+    SystemUserPanelProps(dispatch, apiActions, state.systemUserState, params, onChangeParams = { params =>
+      val path = buildAppsUsersPath(params)
+      if (pathParams.path != path.value) {
+        routeParams.push(path.value)
+      }
+      dispatch(SystemUserParamsChangedAction(params))
+    })
   }
 
   private lazy val usersItem = BrowseTreeItemData(

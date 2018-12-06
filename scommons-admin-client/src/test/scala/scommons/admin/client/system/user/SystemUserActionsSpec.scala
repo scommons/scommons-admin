@@ -27,11 +27,10 @@ class SystemUserActionsSpec extends AsyncTestSpec {
     dispatch.expects(SystemUserListFetchedAction(dataList, totalCount))
     
     //when
-    val SystemUserListFetchAction(FutureTask(message, future), resultSystemId, resultOffset) =
+    val SystemUserListFetchAction(FutureTask(message, future), resultOffset) =
       actions.systemUserListFetch(dispatch, systemId, offset, symbols)
     
     //then
-    resultSystemId shouldBe systemId
     resultOffset shouldBe offset
     message shouldBe "Fetching Application Users"
     future.map { resp =>

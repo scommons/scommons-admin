@@ -23,7 +23,7 @@ class RoleController(apiActions: RoleActions)
     val pathParams = routeParams.pathParams
 
     RolePanelProps(dispatch, apiActions, state.roleState,
-      extractSystemId(pathParams), extractRoleId(pathParams))
+      extractSystemId(pathParams), extractSystemRoleId(pathParams))
   }
 
   private lazy val rolesNode = BrowseTreeNodeData(

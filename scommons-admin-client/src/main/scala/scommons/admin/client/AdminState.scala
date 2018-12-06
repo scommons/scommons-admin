@@ -52,6 +52,6 @@ object AdminStateReducer {
                                  action: Any): Option[AbstractTaskKey] = action match {
 
     case a: TaskAction => Some(a.task.key)
-    case _ => None
+    case _ => currentTask
   }
 }

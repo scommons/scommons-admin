@@ -22,7 +22,7 @@ class SystemController(apiActions: SystemActions)
     val pathParams = routeParams.pathParams
     
     SystemPanelProps(dispatch, apiActions, state.systemState,
-      extractGroupId(pathParams), extractSystemId(pathParams, exact = true))
+      extractSystemGroupId(pathParams), extractSystemId(pathParams, exact = true))
   }
 
   private lazy val applicationNode = BrowseTreeNodeData(

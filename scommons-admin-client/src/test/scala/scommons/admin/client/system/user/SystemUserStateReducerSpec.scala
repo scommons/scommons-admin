@@ -16,15 +16,23 @@ class SystemUserStateReducerSpec extends TestSpec {
     reduce(None, "") shouldBe SystemUserState()
   }
   
-  it should "set systemId and offset when SystemUserListFetchAction" in {
+  it should "set params when SystemUserParamsChangedAction" in {
+    //given
+    val params = SystemUserParams(Some(1), Some(2))
+
+    //when & then
+    reduce(Some(SystemUserState()), SystemUserParamsChangedAction(params)) shouldBe {
+      SystemUserState(params = params)
+    }
+  }
+  
+  it should "set offset when SystemUserListFetchAction" in {
     //given
     val task = FutureTask("test task", Future.successful(SystemUserListResp(Nil, None)))
-    val systemId = 12
     val offset = Some(123)
     
     //when & then
-    reduce(Some(SystemUserState()), SystemUserListFetchAction(task, systemId, offset)) shouldBe SystemUserState(
-      systemId = Some(systemId),
+    reduce(Some(SystemUserState()), SystemUserListFetchAction(task, offset)) shouldBe SystemUserState(
       offset = offset
     )
   }

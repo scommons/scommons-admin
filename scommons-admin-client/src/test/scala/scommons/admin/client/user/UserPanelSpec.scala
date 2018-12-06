@@ -20,7 +20,7 @@ import scala.concurrent.Future
 
 class UserPanelSpec extends AsyncTestSpec {
 
-  it should "dispatch UserFetchAction and call onChangeParams when select user" in {
+  it should "dispatch actions when select user" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserActions]
@@ -49,7 +49,7 @@ class UserPanelSpec extends AsyncTestSpec {
     }
   }
 
-  it should "dispatch UserListFetchAction and call onChangeParams when load data" in {
+  it should "dispatch actions when load data" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserActions]
