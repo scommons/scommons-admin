@@ -31,6 +31,13 @@ class RoleDao(val ctx: AdminDBContext)
     )
   }
 
+  def listBySystemId(systemId: Int)(implicit ec: ExecutionContext): Future[List[Role]] = {
+    ctx.run(roles
+      .filter(c => c.systemId == lift(systemId))
+      .sortBy(_.title)
+    )
+  }
+
   def list()(implicit ec: ExecutionContext): Future[List[Role]] = {
     ctx.run(roles
       .sortBy(_.title)

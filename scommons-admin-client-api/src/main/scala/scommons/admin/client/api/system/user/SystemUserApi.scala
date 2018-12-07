@@ -8,4 +8,10 @@ trait SystemUserApi {
                       offset: Option[Int],
                       limit: Option[Int],
                       symbols: Option[String]): Future[SystemUserListResp]
+
+  def listSystemUserRoles(systemId: Int, userId: Int): Future[SystemUserRoleResp]
+
+  def addSystemUserRoles(systemId: Int, userId: Int, data: SystemUserRoleUpdateReq): Future[SystemUserRoleResp]
+
+  def removeSystemUserRoles(systemId: Int, userId: Int, data: SystemUserRoleUpdateReq): Future[SystemUserRoleResp]
 }

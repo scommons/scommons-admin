@@ -12,7 +12,20 @@ class SystemUserDao(val ctx: AdminDBContext)
 
   import ctx._
 
-  def getBySystemId(systemId: Int)(implicit ec: ExecutionContext): Future[List[SystemUser]] = {
+  def getById(systemId: Int, userId: Int)(implicit ec: ExecutionContext): Future[Option[SystemUser]] = {
+    getOne("getById", ctx.run(systemsUsers
+      .filter(c => c.systemId == lift(systemId) && c.userId == lift(userId))
+    ))
+  }
+
+  def getSystemUser(systemId: Int, userId: Int)(implicit ec: ExecutionContext): Future[Option[(SystemUser, User)]] = {
+    getOne("getSystemUser", ctx.run(systemsUsers
+      .filter(c => c.systemId == lift(systemId))
+      .join(users.filter(_.id == lift(userId))).on { case (su, user) => su.userId == user.id }
+    ))
+  }
+
+  def listBySystemId(systemId: Int)(implicit ec: ExecutionContext): Future[List[SystemUser]] = {
     ctx.run(systemsUsers
       .filter(c => c.systemId == lift(systemId))
     )
@@ -55,6 +68,17 @@ class SystemUserDao(val ctx: AdminDBContext)
     ).map(_ => ())
   }
 
+  def update(entity: SystemUser)(implicit ec: ExecutionContext): Future[Boolean] = {
+    isUpdated(ctx.run(systemsUsers
+      .filter { c =>
+        c.systemId == lift(entity.systemId) &&
+          c.userId == lift(entity.userId) &&
+          c.version == lift(entity.version)
+      }
+      .update(lift(entity))
+    ))
+  }
+  
   def delete(userId: Int, systemIds: Set[Int])(implicit ec: ExecutionContext): Future[Boolean] = {
     isUpdated(ctx.run(systemsUsers
       .filter(c => c.userId == lift(userId)

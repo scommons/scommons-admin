@@ -38,4 +38,10 @@ object AdminUiApiStatuses {
   val UserLoginAlreadyExists = ApiStatus(1042, "User with such login already exists")
   val UserEmailAlreadyExists = ApiStatus(1043, "User with such email already exists")
   val UserAlreadyUpdated = ApiStatus(1044, "User was already updated by another user, try refresh")
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // systems/users
+
+  val SystemUserNotFound = ApiStatus(1051, "SystemUser not found")
+  val SystemUserAlreadyUpdated = ApiStatus(1052, "SystemUser was already updated by another user, try refresh")
 }

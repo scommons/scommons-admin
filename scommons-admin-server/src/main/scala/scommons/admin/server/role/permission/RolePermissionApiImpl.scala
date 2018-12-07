@@ -16,7 +16,7 @@ class RolePermissionApiImpl(roleService: RoleService,
     roleService.getRoleById(roleId).flatMap {
       case None => Future.successful(RolePermissionResp(RoleNotFound))
       case Some(role) =>
-        rolePermissionService.listRolePermissions(role).map { permissions =>
+        rolePermissionService.listRolePermissions(role.systemId, Set(role)).map { permissions =>
           convertToRolePermissionResp(permissions, role)
         }
     }

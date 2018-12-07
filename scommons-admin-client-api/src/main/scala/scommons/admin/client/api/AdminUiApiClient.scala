@@ -102,6 +102,18 @@ class AdminUiApiClient(client: ApiHttpClient)
     ))
   }
 
+  def listSystemUserRoles(systemId: Int, userId: Int): Future[SystemUserRoleResp] = {
+    client.execGet[SystemUserRoleResp](s"/systems/$systemId/users/$userId/roles")
+  }
+
+  def addSystemUserRoles(systemId: Int, userId: Int, data: SystemUserRoleUpdateReq): Future[SystemUserRoleResp] = {
+    client.execPost[SystemUserRoleUpdateReq, SystemUserRoleResp](s"/systems/$systemId/users/$userId/roles", data)
+  }
+
+  def removeSystemUserRoles(systemId: Int, userId: Int, data: SystemUserRoleUpdateReq): Future[SystemUserRoleResp] = {
+    client.execPut[SystemUserRoleUpdateReq, SystemUserRoleResp](s"/systems/$systemId/users/$userId/roles", data)
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // roles
 

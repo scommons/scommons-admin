@@ -13,7 +13,7 @@ import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.role.permission._
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
-import scommons.admin.client.api.system.user.SystemUserData
+import scommons.admin.client.api.system.user._
 import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system._
 import scommons.admin.domain.dao._
@@ -35,7 +35,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
 
   implicit val defaultPatience: PatienceConfig = PatienceConfig(
     timeout = Span(10, Seconds),
-    interval = Span(50, Millis)
+    interval = Span(25, Millis)
   )
 
   private def inject[T: ClassTag]: T = app.injector.instanceOf[T]
@@ -249,6 +249,53 @@ trait BaseAdminIntegrationSpec extends FlatSpec
     (resp.dataList.getOrElse(Nil), resp.totalCount)
   }
 
+  def callSystemUserRoleList(systemId: Int, userId: Int): SystemUserRoleRespData = {
+    callSystemUserRoleList(systemId, userId, ApiStatus.Ok).get
+  }
+
+  def callSystemUserRoleList(systemId: Int,
+                             userId: Int,
+                             expectedStatus: ApiStatus): Option[SystemUserRoleRespData] = {
+    
+    val resp = uiApiClient.listSystemUserRoles(systemId, userId).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callSystemUserRoleAdd(systemId: Int,
+                            userId: Int,
+                            data: SystemUserRoleUpdateReq): SystemUserRoleRespData = {
+    
+    callSystemUserRoleAdd(systemId, userId, data, ApiStatus.Ok).get
+  }
+
+  def callSystemUserRoleAdd(systemId: Int,
+                            userId: Int,
+                            data: SystemUserRoleUpdateReq,
+                            expectedStatus: ApiStatus): Option[SystemUserRoleRespData] = {
+
+    val resp = uiApiClient.addSystemUserRoles(systemId, userId, data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
+  def callSystemUserRoleRemove(systemId: Int,
+                               userId: Int,
+                               data: SystemUserRoleUpdateReq): SystemUserRoleRespData = {
+    
+    callSystemUserRoleRemove(systemId, userId, data, ApiStatus.Ok).get
+  }
+
+  def callSystemUserRoleRemove(systemId: Int,
+                               userId: Int,
+                               data: SystemUserRoleUpdateReq,
+                               expectedStatus: ApiStatus): Option[SystemUserRoleRespData] = {
+
+    val resp = uiApiClient.removeSystemUserRoles(systemId, userId, data).futureValue
+    resp.status shouldBe expectedStatus
+    resp.data
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////
   // roles
 
@@ -316,7 +363,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
     
     permissionDao.insert(Set(permission)).futureValue
     
-    val created = permissionDao.list(systemId, None).map { permissions =>
+    val created = permissionDao.list(systemId, Set.empty).map { permissions =>
       permissions.collectFirst {
         case (p, _) if p.name == name => RolePermissionData(
           id = p.id,

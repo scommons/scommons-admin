@@ -12,9 +12,9 @@ class PermissionDao(val ctx: AdminDBContext)
 
   import ctx._
 
-  def list(systemId: Int, roleId: Option[Int])(implicit ec: ExecutionContext): Future[List[(Permission, Boolean)]] = {
+  def list(systemId: Int, roleIds: Set[Int])(implicit ec: ExecutionContext): Future[List[(Permission, Boolean)]] = {
     ctx.run(permissions.filter(p => p.systemId == lift(systemId))
-      .leftJoin(rolesPermissions.filter(rp => rp.roleId == lift(roleId.getOrElse(0))))
+      .leftJoin(rolesPermissions.filter(rp => liftQuery(roleIds).contains(rp.roleId)))
       .on((p, rp) => p.id == rp.permissionId)
       .sortBy { case (p, _) => (p.parentId, p.title) }
       .map { case (p, rp) => (p, rp.nonEmpty) }
