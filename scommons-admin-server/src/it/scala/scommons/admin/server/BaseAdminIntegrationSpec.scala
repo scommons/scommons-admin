@@ -349,7 +349,7 @@ trait BaseAdminIntegrationSpec extends FlatSpec
   def createRandomPermission(systemId: Int,
                              isNode: Boolean = false,
                              parentId: Option[Int] = None,
-                             enabledForRoleId: Option[Int] = None): RolePermissionData = {
+                             enabledForRoleIds: Set[Int] = Set.empty): RolePermissionData = {
     
     val name = s"${System.nanoTime()}-name"
     val permission = Permission(
@@ -377,11 +377,10 @@ trait BaseAdminIntegrationSpec extends FlatSpec
       )
     }.futureValue
 
-    enabledForRoleId match {
-      case None => created
-      case Some(roleId) =>
-        rolePermissionDao.insert(Set(RolePermission(roleId, created.id))).futureValue
-        created.copy(isEnabled = true)
+    if (enabledForRoleIds.isEmpty) created
+    else {
+      rolePermissionDao.insert(enabledForRoleIds.map(roleId => RolePermission(roleId, created.id))).futureValue
+      created.copy(isEnabled = true)
     }
   }
 

@@ -14,10 +14,14 @@ class PermissionDao(val ctx: AdminDBContext)
 
   def list(systemId: Int, roleIds: Set[Int])(implicit ec: ExecutionContext): Future[List[(Permission, Boolean)]] = {
     ctx.run(permissions.filter(p => p.systemId == lift(systemId))
-      .leftJoin(rolesPermissions.filter(rp => liftQuery(roleIds).contains(rp.roleId)))
-      .on((p, rp) => p.id == rp.permissionId)
+      .leftJoin(rolesPermissions
+        .filter(rp => liftQuery(roleIds).contains(rp.roleId))
+        .map(rp => (rp.permissionId, rp.permissionId))
+        .distinct
+      )
+      .on((p, rp) => p.id == rp._1)
       .sortBy { case (p, _) => (p.parentId, p.title) }
-      .map { case (p, rp) => (p, rp.nonEmpty) }
+      .map { case (p, rp) => (p, rp.map(_._1).isDefined) }
     )
   }
 

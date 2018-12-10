@@ -30,7 +30,7 @@ class RoleService(roleDao: RoleDao)(implicit ec: ExecutionContext) {
           }
           
           bitIndex + 1
-        }.getOrElse(0))
+        }.getOrElse(0)) //TODO: start with 1, since 0 is reserved for SUPERUSER role
         
         roleDao.insert(roleWithBitIndex).flatMap { id =>
           roleDao.getById(id).map(_.get)

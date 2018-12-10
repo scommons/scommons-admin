@@ -20,10 +20,10 @@ class RolePermissionApiIntegrationSpec extends BaseAdminIntegrationSpec {
 
     val p0 = createRandomPermission(systemId, isNode = true)
     val p1 = createRandomPermission(systemId, isNode = true)
-    val p2 = createRandomPermission(systemId, parentId = Some(p1.id), enabledForRoleId = Some(role.id.get))
+    val p2 = createRandomPermission(systemId, parentId = Some(p1.id), enabledForRoleIds = Set(role.id.get))
     val p3 = createRandomPermission(systemId, parentId = Some(p1.id), isNode = true)
-    val p4 = createRandomPermission(systemId, parentId = Some(p3.id), enabledForRoleId = Some(role.id.get))
-    val p5 = createRandomPermission(systemId, parentId = Some(p3.id), enabledForRoleId = Some(role.id.get))
+    val p4 = createRandomPermission(systemId, parentId = Some(p3.id), enabledForRoleIds = Set(role.id.get))
+    val p5 = createRandomPermission(systemId, parentId = Some(p3.id), enabledForRoleIds = Set(role.id.get))
     val permissions = List(p0, p1, p2, p3, p4, p5).sortBy(p => (p.parentId, p.title))
     
     //when
@@ -136,8 +136,8 @@ class RolePermissionApiIntegrationSpec extends BaseAdminIntegrationSpec {
     val systemId = createRandomSystem(group.id.get).id.get
     val role = createRandomRole(systemId)
 
-    val p = createRandomPermission(systemId, enabledForRoleId = Some(role.id.get))
-    val p2 = createRandomPermission(systemId, enabledForRoleId = Some(role.id.get))
+    val p = createRandomPermission(systemId, enabledForRoleIds = Set(role.id.get))
+    val p2 = createRandomPermission(systemId, enabledForRoleIds = Set(role.id.get))
     val updated = callRolePermissionRemove(role.id.get, RolePermissionUpdateReq(
       Set(p.id),
       role.version.get
@@ -162,8 +162,8 @@ class RolePermissionApiIntegrationSpec extends BaseAdminIntegrationSpec {
 
     val p1 = createRandomPermission(systemId)
     val p2 = createRandomPermission(systemId, parentId = Some(p1.id), isNode = true)
-    val p3 = createRandomPermission(systemId, parentId = Some(p2.id), enabledForRoleId = Some(role.id.get))
-    val p4 = createRandomPermission(systemId, parentId = Some(p2.id), enabledForRoleId = Some(role.id.get))
+    val p3 = createRandomPermission(systemId, parentId = Some(p2.id), enabledForRoleIds = Set(role.id.get))
+    val p4 = createRandomPermission(systemId, parentId = Some(p2.id), enabledForRoleIds = Set(role.id.get))
     p0.isEnabled shouldBe false
     p1.isEnabled shouldBe false
     p2.isEnabled shouldBe false
@@ -194,8 +194,8 @@ class RolePermissionApiIntegrationSpec extends BaseAdminIntegrationSpec {
     val systemId = createRandomSystem(group.id.get).id.get
     val role = createRandomRole(systemId)
 
-    val p = createRandomPermission(systemId, enabledForRoleId = Some(role.id.get))
-    val p2 = createRandomPermission(systemId, enabledForRoleId = Some(role.id.get))
+    val p = createRandomPermission(systemId, enabledForRoleIds = Set(role.id.get))
+    val p2 = createRandomPermission(systemId, enabledForRoleIds = Set(role.id.get))
     val updated = callRolePermissionRemove(role.id.get, RolePermissionUpdateReq(
       Set(p.id),
       role.version.get
