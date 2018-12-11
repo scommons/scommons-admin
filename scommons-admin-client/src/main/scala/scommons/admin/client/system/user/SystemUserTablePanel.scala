@@ -29,9 +29,19 @@ object SystemUserTablePanel extends UiComponent[SystemUserTablePanelProps] {
     
     val dataList = {
       val list = props.data.dataList
-      
-      //TODO: make sure that selected user is added to the list
-      list
+
+      // make sure that selected user is added to the list
+      props.data.selectedUser.filter(su => props.selectedUserId.contains(su.userId)) match {
+        case None => list
+        case Some(selectedUser) =>
+          list.find(su => su.userId == selectedUser.userId) match {
+            case None => list :+ selectedUser
+            case _ => list.map {
+              case su if su.userId == selectedUser.userId => selectedUser
+              case su => su
+            }
+          }
+      }
     }
 
     val rows = dataList.map { data =>

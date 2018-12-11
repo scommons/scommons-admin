@@ -82,7 +82,7 @@ object RolePermissionPanel extends UiComponent[RolePermissionPanelProps] {
     loop(permissions.getOrElse(Some(id), Nil), Set(id))
   }
   
-  private[permission] def buildTree(permissions: Map[Option[Int], List[RolePermissionData]]): List[CheckBoxTreeData] = {
+  def buildTree(permissions: Map[Option[Int], List[RolePermissionData]]): List[CheckBoxTreeData] = {
 
     def loop(dataList: List[RolePermissionData]): List[CheckBoxTreeData] = dataList.map { p =>
       val key = p.id.toString

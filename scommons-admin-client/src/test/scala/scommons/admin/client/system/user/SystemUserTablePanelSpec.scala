@@ -60,7 +60,10 @@ class SystemUserTablePanelSpec extends TestSpec {
 
   it should "render component with selected user in the list" in {
     //given
-    val state = getSystemUserState
+    val state = {
+      val state = getSystemUserState
+      state.copy(selectedUser = Some(state.dataList.head.copy(login = "updated_login")))
+    }
     val props = getSystemUserTablePanelProps(state, selectedUserId = Some(state.dataList.head.userId))
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
     
@@ -68,16 +71,16 @@ class SystemUserTablePanelSpec extends TestSpec {
     val result = shallowRender(component)
     
     //then
-    assertSystemUserTablePanel(result, props)
+    assertSystemUserTablePanel(result, props.copy(
+      data = state.copy(dataList = state.selectedUser.get +: state.dataList.tail)
+    ))
   }
 
-  ignore should "render component with selected user added to the list" in {
+  it should "render component with selected user added to the list" in {
     //given
     val state = {
       val state = getSystemUserState
-//      val details = state.userDetails.get
-//      state.copy(userDetails = Some(details.copy(user = details.user.copy(id = Some(123)))))
-      state
+      state.copy(selectedUser = Some(state.dataList.head.copy(userId = 123)))
     }
     val props = getSystemUserTablePanelProps(state, selectedUserId = Some(123))
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
@@ -87,7 +90,7 @@ class SystemUserTablePanelSpec extends TestSpec {
     
     //then
     assertSystemUserTablePanel(result, props.copy(
-//      data = state.copy(dataList = state.dataList :+ state.userDetails.get.user)
+      data = state.copy(dataList = state.dataList :+ state.selectedUser.get)
     ))
   }
 

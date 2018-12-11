@@ -25,10 +25,17 @@ class SystemUserPanelSpec extends AsyncTestSpec {
       selectedParams = Some(params)
     }
     val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+    val systemId = props.selectedParams.systemId.get
     val comp = shallowRender(<(SystemUserPanel())(^.wrapped := props)())
     val tablePanelProps = findComponentProps(comp, SystemUserTablePanel)
     val userId = 22
     val params = props.selectedParams.copy(userId = Some(userId))
+    val respData = mock[SystemUserRoleRespData]
+    val action = SystemUserRoleFetchAction(
+      FutureTask("Fetching Roles", Future.successful(SystemUserRoleResp(respData)))
+    )
+    (actions.systemUserRolesFetch _).expects(dispatch, systemId, userId).returning(action)
+    dispatch.expects(action)
 
     //when
     tablePanelProps.onChangeSelect(userId)
@@ -72,18 +79,25 @@ class SystemUserPanelSpec extends AsyncTestSpec {
     val actions = mock[SystemUserActions]
     val onChangeParams = mockFunction[SystemUserParams, Unit]
     val systemId = 123
+    val userId = 12345
     val props = {
       val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
-      props.copy(selectedParams = props.selectedParams.copy(systemId = Some(systemId)))
+      props.copy(selectedParams = props.selectedParams.copy(systemId = Some(systemId), userId = Some(userId)))
     }
     val component = <(SystemUserPanel())(^.wrapped := props)()
     val listFetchAction = SystemUserListFetchAction(
       FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), None
     )
+    val respData = mock[SystemUserRoleRespData]
+    val rolesFetchAction = SystemUserRoleFetchAction(
+      FutureTask("Fetching Roles", Future.successful(SystemUserRoleResp(respData)))
+    )
     (actions.systemUserListFetch _).expects(dispatch, systemId, None, None).returning(listFetchAction)
+    (actions.systemUserRolesFetch _).expects(dispatch, systemId, userId).returning(rolesFetchAction)
 
     //then
     dispatch.expects(listFetchAction)
+    dispatch.expects(rolesFetchAction)
     onChangeParams.expects(props.selectedParams)
 
     //when
@@ -118,16 +132,23 @@ class SystemUserPanelSpec extends AsyncTestSpec {
     val comp = renderIntoDocument(<(SystemUserPanel())(^.wrapped := prevProps)())
     val containerElement = findReactElement(comp).parentNode
     val newSystemId = 123
+    val newUserId = 12345
     val props = prevProps.copy(
-      selectedParams = prevProps.selectedParams.copy(systemId = Some(newSystemId))
+      selectedParams = prevProps.selectedParams.copy(systemId = Some(newSystemId), userId = Some(newUserId))
     )
     val listFetchAction = SystemUserListFetchAction(
       FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), None
     )
+    val respData = mock[SystemUserRoleRespData]
+    val rolesFetchAction = SystemUserRoleFetchAction(
+      FutureTask("Fetching Roles", Future.successful(SystemUserRoleResp(respData)))
+    )
     (actions.systemUserListFetch _).expects(dispatch, newSystemId, None, None).returning(listFetchAction)
+    (actions.systemUserRolesFetch _).expects(dispatch, newSystemId, newUserId).returning(rolesFetchAction)
 
     //then
     dispatch.expects(listFetchAction)
+    dispatch.expects(rolesFetchAction)
     onChangeParams.expects(props.selectedParams)
 
     //when
