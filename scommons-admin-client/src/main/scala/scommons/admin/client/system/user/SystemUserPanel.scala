@@ -29,7 +29,7 @@ object SystemUserPanel extends UiComponent[SystemUserPanelProps] {
           props.dispatch(props.actions.systemUserListFetch(props.dispatch, systemId, None, None))
         }
         props.selectedParams.userId.foreach { userId =>
-          if (!props.data.params.systemId.contains(systemId) || !props.data.params.userId.contains(userId)) {
+          if (props.selectedParams != props.data.params) {
             props.dispatch(props.actions.systemUserRolesFetch(props.dispatch, systemId, userId))
           }
         }
@@ -46,7 +46,7 @@ object SystemUserPanel extends UiComponent[SystemUserPanelProps] {
             props.dispatch(props.actions.systemUserListFetch(props.dispatch, systemId, None, None))
           }
           props.selectedParams.userId.foreach { userId =>
-            if (!props.data.params.systemId.contains(systemId) || !props.data.params.userId.contains(userId)) {
+            if (props.selectedParams != props.data.params) {
               props.dispatch(props.actions.systemUserRolesFetch(props.dispatch, systemId, userId))
             }
           }

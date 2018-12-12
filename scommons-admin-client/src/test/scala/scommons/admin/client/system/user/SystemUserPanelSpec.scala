@@ -1,16 +1,19 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.ReactDOM
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
+import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import io.github.shogowada.scalajs.reactjs.{React, ReactDOM}
 import org.joda.time.DateTime
 import org.scalatest._
+import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.client.task.FutureTask
 import scommons.client.test.AsyncTestSpec
 import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.test.util.TestDOMUtils.findReactElement
+import scommons.client.ui.tab.{TabDirection, TabItemData, TabPanel, TabPanelProps}
 
 import scala.concurrent.Future
 
@@ -196,10 +199,13 @@ class SystemUserPanelSpec extends AsyncTestSpec {
     //given
     val props = {
       val props = getSystemUserPanelProps()
-      val userId = props.data.dataList.head.userId
+      val su = props.data.dataList.head
       props.copy(
-        data = props.data.copy(params = props.data.params.copy(userId = Some(userId))),
-        selectedParams = props.selectedParams.copy(userId = Some(userId))
+        data = props.data.copy(
+          params = props.data.params.copy(userId = Some(su.userId)),
+          selectedUser = Some(su)
+        ),
+        selectedParams = props.selectedParams.copy(userId = Some(su.userId))
       )
     }
     val component = <(SystemUserPanel())(^.wrapped := props)()
@@ -237,12 +243,59 @@ class SystemUserPanelSpec extends AsyncTestSpec {
   }
 
   private def assertSystemUserPanel(result: ComponentInstance, props: SystemUserPanelProps): Assertion = {
-    assertDOMComponent(result, <.div()(), { case List(tablePanel) =>
+    val systemId = props.selectedParams.systemId.get
+
+    def assertSystemUserRolePanel(component: ReactElement): Assertion = {
+      val wrapped = React.createClass[Unit, Unit] { _ =>
+        <.div()(component)
+      }
+      val result = shallowRender(<(wrapped)()())
+
+      assertDOMComponent(result, <.div()(), { case List(comp) =>
+        assertComponent(comp, SystemUserRolePanel) {
+          case SystemUserRolePanelProps(dispatch, actions, data, resSystemId) =>
+            dispatch shouldBe props.dispatch
+            actions shouldBe props.actions
+            data shouldBe props.data
+            resSystemId shouldBe systemId
+        }
+      })
+    }
+
+    def assertComponents(tablePanel: ComponentInstance,
+                         rolePanel: Option[ComponentInstance]): Assertion = {
+      
       assertComponent(tablePanel, SystemUserTablePanel) {
         case SystemUserTablePanelProps(data, selectedUserId, _, _) =>
           data shouldBe props.data
           selectedUserId shouldBe props.selectedParams.userId
       }
+      
+      rolePanel.size shouldBe props.data.selectedUser.size
+      props.data.selectedUser.foreach { _ =>
+        assertComponent(rolePanel.get, TabPanel) {
+          case TabPanelProps(items, selectedIndex, _, direction) =>
+            items.size shouldBe 1
+            selectedIndex shouldBe 0
+            direction shouldBe TabDirection.Top
+            
+            inside(items.head) {
+              case TabItemData(title, image, component, render) =>
+                title shouldBe "Permissions"
+                image shouldBe Some(AdminImagesCss.key)
+                component shouldBe None
+                render should not be None
+                
+                assertSystemUserRolePanel(render.get.apply(null))
+            }
+        }
+      }
+      Succeeded
+    }
+    
+    assertDOMComponent(result, <.div()(), {
+      case List(tb) => assertComponents(tb, None)
+      case List(tb, rolePanel) => assertComponents(tb, Some(rolePanel))
     })
   }
 }
