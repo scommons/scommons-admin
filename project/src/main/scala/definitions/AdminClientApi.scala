@@ -21,6 +21,7 @@ object AdminClientApi {
     .settings(
       libraryDependencies ++= Seq(
         Libs.scommonsApiCore.value,
+        Libs.scommonsApiAdmin.value,
         Libs.scommonsApiJodaTime.value
       )
     ).jvmSettings(

@@ -1,6 +1,6 @@
 package scommons.admin.client.api.system
 
-import scommons.api.permission._
+import scommons.api.admin.permission._
 
 object SystemPermissions extends PermissionNode("System", "Systems") {
 

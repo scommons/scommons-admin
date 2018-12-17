@@ -1,6 +1,6 @@
 package scommons.admin.client.api.user
 
-import scommons.api.permission._
+import scommons.api.admin.permission._
 
 object UserPermissions extends PermissionNode("User", "Users") {
 

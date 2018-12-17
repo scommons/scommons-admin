@@ -1,6 +1,6 @@
 package scommons.admin.client.api.role
 
-import scommons.api.permission._
+import scommons.api.admin.permission._
 
 object RolePermissions extends PermissionNode("Roles", "Roles") {
 

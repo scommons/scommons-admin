@@ -14,6 +14,7 @@ object Libs extends CommonLibs {
   // shared dependencies
 
   lazy val scommonsApiCore = Def.setting("org.scommons.api" %%% "scommons-api-core" % scommonsApiVersion)
+  lazy val scommonsApiAdmin = Def.setting("org.scommons.api" %%% "scommons-api-admin" % scommonsApiVersion)
   lazy val scommonsApiJodaTime = Def.setting("org.scommons.api" %%% "scommons-api-joda-time" % scommonsApiVersion)
 
   //////////////////////////////////////////////////////////////////////////////
