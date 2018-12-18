@@ -18,6 +18,7 @@ object AdminServer extends AdminModule with CommonPlayModule {
 
   override def internalDependencies: Seq[ClasspathDep[ProjectReference]] = Seq(
     AdminClientApi.jvm,
+    AdminService.definition,
     AdminDao.definition
   )
 

@@ -20,6 +20,7 @@ object Libs extends CommonLibs {
   //////////////////////////////////////////////////////////////////////////////
   // jvm dependencies
 
+  lazy val scommonsApiPlayWs = Def.setting("org.scommons.api" %% "scommons-api-play-ws" % scommonsApiVersion)
   lazy val scommonsServiceDao = Def.setting("org.scommons.service" %% "scommons-service-dao" % scommonsServiceVersion)
   
   lazy val postgresJdbc = Def.setting("org.postgresql" % "postgresql" % "42.2.5")
