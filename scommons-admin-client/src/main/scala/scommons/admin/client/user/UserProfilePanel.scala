@@ -5,15 +5,13 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import scommons.admin.client.api.user.UserProfileData
 import scommons.client.ui._
+import scommons.react.UiComponent
 
 case class UserProfilePanelProps(data: UserProfileData)
 
 object UserProfilePanel extends UiComponent[UserProfilePanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
     val onChange = (_: String) => ()
 

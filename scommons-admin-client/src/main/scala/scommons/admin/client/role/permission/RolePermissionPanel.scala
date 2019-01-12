@@ -8,6 +8,7 @@ import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.role.permission.{RolePermissionData, RolePermissionUpdateReq}
 import scommons.client.ui._
 import scommons.client.ui.tree._
+import scommons.react.UiComponent
 
 case class RolePermissionPanelProps(dispatch: Dispatch,
                                     actions: RolePermissionActions,
@@ -16,10 +17,7 @@ case class RolePermissionPanelProps(dispatch: Dispatch,
 
 object RolePermissionPanel extends UiComponent[RolePermissionPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (!props.state.role.flatMap(_.id).contains(props.selectedRoleId)) {

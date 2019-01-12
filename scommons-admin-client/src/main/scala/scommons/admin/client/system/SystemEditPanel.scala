@@ -5,6 +5,7 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import scommons.admin.client.api.system.SystemData
 import scommons.client.ui._
+import scommons.react.UiComponent
 
 case class SystemEditPanelProps(readOnly: Boolean,
                                 initialData: SystemData,
@@ -14,10 +15,7 @@ case class SystemEditPanelProps(readOnly: Boolean,
 
 object SystemEditPanel extends UiComponent[SystemEditPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
     val data = props.initialData
 

@@ -7,8 +7,8 @@ import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
-import scommons.client.ui._
 import scommons.client.ui.tab._
+import scommons.react.UiComponent
 
 case class UserDetailsPanelProps(renderSystems: Props[_] => ReactElement,
                                  profile: UserProfileData,
@@ -17,10 +17,7 @@ case class UserDetailsPanelProps(renderSystems: Props[_] => ReactElement,
 
 object UserDetailsPanel extends UiComponent[UserDetailsPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
     
     val tabItems = List(

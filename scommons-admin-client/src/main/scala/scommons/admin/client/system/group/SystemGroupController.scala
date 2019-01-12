@@ -9,8 +9,9 @@ import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeNodeData
-import scommons.client.ui.{ButtonImagesCss, Buttons, UiComponent}
+import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.{ActionsData, BrowsePath}
+import scommons.react.UiComponent
 
 class SystemGroupController(groupActions: SystemGroupActions, systemActions: SystemActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemGroupPanelProps] {

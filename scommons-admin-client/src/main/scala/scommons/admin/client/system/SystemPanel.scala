@@ -6,7 +6,7 @@ import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
-import scommons.client.ui._
+import scommons.react.UiComponent
 
 case class SystemPanelProps(dispatch: Dispatch,
                             actions: SystemActions,
@@ -16,10 +16,7 @@ case class SystemPanelProps(dispatch: Dispatch,
 
 object SystemPanel extends UiComponent[SystemPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.state.systemsByParentId.isEmpty) {

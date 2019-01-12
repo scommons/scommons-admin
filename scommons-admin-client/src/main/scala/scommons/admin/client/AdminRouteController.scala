@@ -13,8 +13,9 @@ import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams}
 import scommons.client.app._
 import scommons.client.controller.{BaseStateController, PathParams}
 import scommons.client.ui.tree._
-import scommons.client.ui.{Buttons, UiComponent}
+import scommons.client.ui.Buttons
 import scommons.client.util.BrowsePath
+import scommons.react.UiComponent
 
 class AdminRouteController(companyController: CompanyController,
                            userController: UserController,

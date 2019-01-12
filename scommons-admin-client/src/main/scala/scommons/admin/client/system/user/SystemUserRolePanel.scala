@@ -7,9 +7,9 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user.SystemUserRoleUpdateReq
 import scommons.admin.client.role.permission.RolePermissionPanel
-import scommons.client.ui._
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
 import scommons.client.ui.tree.{CheckBoxTree, CheckBoxTreeProps}
+import scommons.react.UiComponent
 
 case class SystemUserRolePanelProps(dispatch: Dispatch,
                                     actions: SystemUserActions,
@@ -18,10 +18,7 @@ case class SystemUserRolePanelProps(dispatch: Dispatch,
 
 object SystemUserRolePanel extends UiComponent[SystemUserRolePanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
     
     val roots = RolePermissionPanel.buildTree(props.data.permissionsByParentId)

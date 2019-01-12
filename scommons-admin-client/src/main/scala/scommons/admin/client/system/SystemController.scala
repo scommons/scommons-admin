@@ -7,8 +7,9 @@ import scommons.admin.client.system.SystemActions.SystemUpdateRequestAction
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeNodeData
-import scommons.client.ui.{Buttons, UiComponent}
+import scommons.client.ui.Buttons
 import scommons.client.util.{ActionsData, BrowsePath}
+import scommons.react.UiComponent
 
 class SystemController(apiActions: SystemActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemPanelProps] {

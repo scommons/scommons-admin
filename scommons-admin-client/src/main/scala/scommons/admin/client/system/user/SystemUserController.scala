@@ -6,8 +6,9 @@ import scommons.admin.client.system.user.SystemUserActions.SystemUserParamsChang
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeItemData
-import scommons.client.ui.{Buttons, UiComponent}
+import scommons.client.ui.Buttons
 import scommons.client.util.{ActionsData, BrowsePath}
+import scommons.react.UiComponent
 
 class SystemUserController(apiActions: SystemUserActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemUserPanelProps] {

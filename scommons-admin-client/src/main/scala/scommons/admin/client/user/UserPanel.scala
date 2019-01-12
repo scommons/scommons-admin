@@ -10,6 +10,7 @@ import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system.{UserSystemActions, UserSystemPanel, UserSystemPanelProps, UserSystemState}
 import scommons.client.ui._
 import scommons.client.util.ActionsData
+import scommons.react.UiComponent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,10 +25,7 @@ case class UserPanelProps(dispatch: Dispatch,
 
 object UserPanel extends UiComponent[UserPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.data.dataList.isEmpty) {

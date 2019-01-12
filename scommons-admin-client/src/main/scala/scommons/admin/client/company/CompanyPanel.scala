@@ -8,6 +8,7 @@ import scommons.admin.client.company.CompanyActions._
 import scommons.client.ui._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 import scommons.client.util.ActionsData
+import scommons.react.UiComponent
 
 case class CompanyPanelProps(dispatch: Dispatch,
                              actions: CompanyActions,
@@ -15,10 +16,7 @@ case class CompanyPanelProps(dispatch: Dispatch,
 
 object CompanyPanel extends UiComponent[CompanyPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
     
     val selectedData = props.data.dataList.find(_.id == props.data.selectedId)

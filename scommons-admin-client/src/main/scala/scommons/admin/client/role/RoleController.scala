@@ -8,8 +8,9 @@ import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
-import scommons.client.ui.{Buttons, UiComponent}
+import scommons.client.ui.Buttons
 import scommons.client.util.{ActionsData, BrowsePath}
+import scommons.react.UiComponent
 
 class RoleController(apiActions: RoleActions)
   extends BaseStateAndRouteController[AdminStateDef, RolePanelProps] {

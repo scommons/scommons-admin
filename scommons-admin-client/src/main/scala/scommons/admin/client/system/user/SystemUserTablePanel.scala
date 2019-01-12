@@ -3,9 +3,9 @@ package scommons.admin.client.system.user
 import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
-import scommons.client.ui._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
+import scommons.react.UiComponent
 
 case class SystemUserTablePanelProps(data: SystemUserState,
                                      selectedUserId: Option[Int],
@@ -14,10 +14,7 @@ case class SystemUserTablePanelProps(data: SystemUserState,
 
 object SystemUserTablePanel extends UiComponent[SystemUserTablePanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
 
     val header = List(

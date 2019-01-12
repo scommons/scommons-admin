@@ -8,8 +8,9 @@ import scommons.admin.client.user.system.UserSystemActions
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
 import scommons.client.ui.tree.BrowseTreeItemData
-import scommons.client.ui.{Buttons, UiComponent}
+import scommons.client.ui.Buttons
 import scommons.client.util.{ActionsData, BrowsePath}
+import scommons.react.UiComponent
 
 class UserController(companyActions: CompanyActions,
                      userActions: UserActions,

@@ -6,8 +6,8 @@ import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
-import scommons.client.ui._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
+import scommons.react.UiComponent
 
 case class RolePanelProps(dispatch: Dispatch,
                           actions: RoleActions,
@@ -17,10 +17,7 @@ case class RolePanelProps(dispatch: Dispatch,
 
 object RolePanel extends UiComponent[RolePanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.state.rolesBySystemId.isEmpty) {

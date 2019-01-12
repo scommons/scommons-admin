@@ -5,8 +5,8 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.system.group.SystemGroupActions._
-import scommons.client.ui._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
+import scommons.react.UiComponent
 
 case class SystemGroupPanelProps(dispatch: Dispatch,
                                  actions: SystemGroupActions,
@@ -15,10 +15,7 @@ case class SystemGroupPanelProps(dispatch: Dispatch,
 
 object SystemGroupPanel extends UiComponent[SystemGroupPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.state.dataList.isEmpty) {

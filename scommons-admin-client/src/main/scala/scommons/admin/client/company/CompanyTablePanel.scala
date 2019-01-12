@@ -5,9 +5,9 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.company.CompanyActions._
-import scommons.client.ui._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
+import scommons.react.UiComponent
 
 case class CompanyTablePanelProps(dispatch: Dispatch,
                                   actions: CompanyActions,
@@ -15,10 +15,7 @@ case class CompanyTablePanelProps(dispatch: Dispatch,
 
 object CompanyTablePanel extends UiComponent[CompanyTablePanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = React.createClass[PropsType, Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.data.dataList.isEmpty) {

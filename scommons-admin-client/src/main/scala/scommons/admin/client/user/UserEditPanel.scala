@@ -8,6 +8,7 @@ import scommons.admin.client.api.user.{UserCompanyData, UserDetailsData}
 import scommons.admin.client.company.CompanyActions
 import scommons.client.ui._
 import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
+import scommons.react.UiComponent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,10 +21,7 @@ case class UserEditPanelProps(dispatch: Dispatch,
 
 object UserEditPanel extends UiComponent[UserEditPanelProps] {
 
-  def apply(): ReactClass = reactClass
-  lazy val reactClass: ReactClass = createComp
-
-  private def createComp = React.createClass[PropsType, Unit] { self =>
+  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
     val props = self.props.wrapped
     val data = props.initialData
 

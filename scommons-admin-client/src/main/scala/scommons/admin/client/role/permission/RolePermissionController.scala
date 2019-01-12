@@ -4,7 +4,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.AdminStateDef
 import scommons.client.controller.{BaseStateAndRouteController, RouteParams}
-import scommons.client.ui.UiComponent
+import scommons.react.UiComponent
 
 class RolePermissionController(apiActions: RolePermissionActions)
   extends BaseStateAndRouteController[AdminStateDef, RolePermissionPanelProps] {
