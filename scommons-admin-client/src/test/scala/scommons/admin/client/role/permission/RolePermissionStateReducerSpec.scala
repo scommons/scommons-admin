@@ -3,7 +3,7 @@ package scommons.admin.client.role.permission
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.role.permission._
 import scommons.admin.client.role.permission.RolePermissionActions._
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 class RolePermissionStateReducerSpec extends TestSpec {
 

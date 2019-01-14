@@ -3,7 +3,7 @@ package scommons.admin.client.user.system
 import scommons.admin.client.api.user.system._
 import scommons.admin.client.api.user.{UserCompanyData, UserData}
 import scommons.admin.client.user.system.UserSystemActions._
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 class UserSystemStateReducerSpec extends TestSpec {
 

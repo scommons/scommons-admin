@@ -1,6 +1,5 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.joda.time.DateTime
 import scommons.admin.client.AdminImagesCss
@@ -8,14 +7,15 @@ import scommons.admin.client.api.system.user._
 import scommons.admin.client.role.permission.RolePermissionPanel
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.list._
 import scommons.client.ui.tree._
+import scommons.react.test.TestSpec
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class SystemUserRolePanelSpec extends TestSpec {
+class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
 
   it should "dispatch SystemUserRoleAddAction if add item(s) when onSelectChange" in {
     //given
@@ -146,8 +146,8 @@ class SystemUserRolePanelSpec extends TestSpec {
   private def assertSystemUserRolePanel(result: ComponentInstance, props: SystemUserRolePanelProps): Unit = {
     val roots = RolePermissionPanel.buildTree(props.data.permissionsByParentId)
 
-    assertDOMComponent(result, <.div(^.className := "row-fluid")(), { case List(col1, col2) =>
-      assertDOMComponent(col1, <.div(^.className := "span6")(), { case List(pickList) =>
+    assertNativeComponent(result, <.div(^.className := "row-fluid")(), { case List(col1, col2) =>
+      assertNativeComponent(col1, <.div(^.className := "span6")(), { case List(pickList) =>
         assertComponent(pickList, PickList) {
           case PickListProps(items, selectedIds, preSelectedIds, _, sourceTitle, destTitle) =>
             items shouldBe props.data.userRoles.map { r =>
@@ -159,7 +159,7 @@ class SystemUserRolePanelSpec extends TestSpec {
             destTitle shouldBe "Assigned Roles"
         }
       })
-      assertDOMComponent(col2, <.div(^.className := "span6")(), { case List(checkBoxTree) =>
+      assertNativeComponent(col2, <.div(^.className := "span6")(), { case List(checkBoxTree) =>
         assertComponent(checkBoxTree, CheckBoxTree) {
           case CheckBoxTreeProps(resultRoots, _, readOnly, openNodes, closeNodes) =>
             resultRoots shouldBe roots

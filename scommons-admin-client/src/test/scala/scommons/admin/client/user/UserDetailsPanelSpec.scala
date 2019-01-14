@@ -7,11 +7,12 @@ import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.tab._
+import scommons.react.test.TestSpec
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
-class UserDetailsPanelSpec extends TestSpec {
+class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
   
   it should "call onChangeTab when select tab" in {
     //given
@@ -91,7 +92,7 @@ class UserDetailsPanelSpec extends TestSpec {
       }
       val result = shallowRender(<(wrapped)()())
 
-      assertDOMComponent(result, <.div()(), { case List(comp) =>
+      assertNativeComponent(result, <.div()(), { case List(comp) =>
         assertComponent(comp, UserProfilePanel) {
           case UserProfilePanelProps(resultData) =>
             resultData shouldBe data

@@ -8,10 +8,10 @@ import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
-import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
+import scommons.react.test.TestSpec
 
 class RoleControllerSpec extends TestSpec {
 

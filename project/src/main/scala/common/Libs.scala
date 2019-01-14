@@ -8,6 +8,7 @@ object Libs extends CommonLibs {
 
   val scommonsApiVersion = "0.1.0-SNAPSHOT"
   val scommonsServiceVersion = "0.1.0-SNAPSHOT"
+  val scommonsReactVersion = "0.1.0-SNAPSHOT"
   val scommonsClientVersion = "0.1.0-SNAPSHOT"
 
   //////////////////////////////////////////////////////////////////////////////

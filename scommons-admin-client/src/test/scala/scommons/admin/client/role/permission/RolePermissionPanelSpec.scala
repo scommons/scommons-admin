@@ -1,7 +1,6 @@
 package scommons.admin.client.role.permission
 
 import io.github.shogowada.scalajs.reactjs.ReactDOM
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.role.RoleData
@@ -9,15 +8,16 @@ import scommons.admin.client.api.role.permission._
 import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.admin.client.role.permission.RolePermissionPanel._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.test.util.TestDOMUtils._
 import scommons.client.ui.TriState._
 import scommons.client.ui.tree._
+import scommons.react.test.TestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class RolePermissionPanelSpec extends TestSpec {
+class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch RolePermissionAddAction if Selected when onChange" in {
     //given

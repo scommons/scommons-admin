@@ -6,7 +6,7 @@ import scommons.admin.client.role.RoleActions.RoleUpdatedAction
 import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.admin.client.role.permission.RolePermissionActionsSpec._
 import scommons.client.task.FutureTask
-import scommons.client.test.AsyncTestSpec
+import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future
 

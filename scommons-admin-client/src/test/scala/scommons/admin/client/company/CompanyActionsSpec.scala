@@ -4,7 +4,7 @@ import scommons.admin.client.api.company._
 import scommons.admin.client.company.CompanyActions._
 import scommons.admin.client.company.CompanyActionsSpec._
 import scommons.client.task.FutureTask
-import scommons.client.test.AsyncTestSpec
+import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future
 

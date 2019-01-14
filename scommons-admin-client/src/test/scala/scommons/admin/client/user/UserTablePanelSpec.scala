@@ -1,14 +1,14 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import scommons.admin.client.api.user._
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
+import scommons.react.test.TestSpec
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
-class UserTablePanelSpec extends TestSpec {
+class UserTablePanelSpec extends TestSpec with ShallowRendererUtils {
 
   it should "call onChangeSelect when select row" in {
     //given
@@ -177,7 +177,7 @@ class UserTablePanelSpec extends TestSpec {
     val expectedTotalPages = toTotalPages(props.data.totalCount.getOrElse(0), limit)
     val expectedSelectedPage = math.min(expectedTotalPages, toPage(props.data.offset.getOrElse(0), limit))
 
-    assertDOMComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
+    assertNativeComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
       assertComponent(tablePanel, TablePanel) {
         case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader

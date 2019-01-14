@@ -1,17 +1,18 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.TestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class SystemPanelSpec extends TestSpec {
+class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch SystemCreateAction when onSave in create popup" in {
     //given
@@ -270,7 +271,7 @@ class SystemPanelSpec extends TestSpec {
       Succeeded
     }
     
-    assertDOMComponent(result, <.div()(), {
+    assertNativeComponent(result, <.div()(), {
       case List() => assertComponents(None, None, None)
       case List(createPopup) => assertComponents(Some(createPopup), None, None)
       case List(createPopup, editPanel, editPopup) =>

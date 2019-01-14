@@ -7,10 +7,10 @@ import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
-import scommons.client.test.TestSpec
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.BrowsePath
+import scommons.react.test.TestSpec
 
 class SystemGroupControllerSpec extends TestSpec {
 

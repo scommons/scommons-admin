@@ -3,7 +3,7 @@ package scommons.admin.client
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.client.task.{FutureTask, TaskManager, TaskManagerProps}
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
 

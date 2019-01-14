@@ -3,7 +3,7 @@ package scommons.admin.client.user
 import scommons.admin.client.api.user._
 import scommons.admin.client.user.UserActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
 

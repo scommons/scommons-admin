@@ -4,10 +4,10 @@ import scommons.admin.client.AdminRouteController.buildAppsUsersPath
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
-import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.util.BrowsePath
+import scommons.react.test.TestSpec
 
 class SystemUserControllerSpec extends TestSpec {
 

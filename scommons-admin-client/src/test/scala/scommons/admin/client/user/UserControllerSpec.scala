@@ -6,10 +6,10 @@ import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system.{UserSystemActions, UserSystemState}
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
-import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.util.BrowsePath
+import scommons.react.test.TestSpec
 
 class UserControllerSpec extends TestSpec {
 

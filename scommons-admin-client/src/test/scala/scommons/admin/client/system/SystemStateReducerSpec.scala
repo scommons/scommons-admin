@@ -2,7 +2,7 @@ package scommons.admin.client.system
 
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 class SystemStateReducerSpec extends TestSpec {
 

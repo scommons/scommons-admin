@@ -8,7 +8,7 @@ import scommons.admin.client.system.user.SystemUserActions._
 import scommons.admin.client.system.user.SystemUserActionsSpec.SystemUserActionsTest
 import scommons.api.ApiStatus
 import scommons.client.task.FutureTask
-import scommons.client.test.AsyncTestSpec
+import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future
 

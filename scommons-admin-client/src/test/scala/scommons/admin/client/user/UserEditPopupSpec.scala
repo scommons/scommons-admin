@@ -4,9 +4,10 @@ import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
+import scommons.react.test.util.ShallowRendererUtils
 
-class UserEditPopupSpec extends TestSpec {
+class UserEditPopupSpec extends TestSpec with ShallowRendererUtils {
 
   it should "enable save button if all required fields are filled" in {
     //given

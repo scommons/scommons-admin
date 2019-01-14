@@ -10,14 +10,15 @@ import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.AsyncTestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.test.util.TestDOMUtils.findReactElement
 import scommons.client.ui.tab.{TabDirection, TabItemData, TabPanel, TabPanelProps}
+import scommons.react.test.dom.AsyncTestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class SystemUserPanelSpec extends AsyncTestSpec {
+class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch actions when select user" in {
     //given
@@ -251,7 +252,7 @@ class SystemUserPanelSpec extends AsyncTestSpec {
       }
       val result = shallowRender(<(wrapped)()())
 
-      assertDOMComponent(result, <.div()(), { case List(comp) =>
+      assertNativeComponent(result, <.div()(), { case List(comp) =>
         assertComponent(comp, SystemUserRolePanel) {
           case SystemUserRolePanelProps(dispatch, actions, data, resSystemId) =>
             dispatch shouldBe props.dispatch
@@ -293,7 +294,7 @@ class SystemUserPanelSpec extends AsyncTestSpec {
       Succeeded
     }
     
-    assertDOMComponent(result, <.div()(), {
+    assertNativeComponent(result, <.div()(), {
       case List(tb) => assertComponents(tb, None)
       case List(tb, rolePanel) => assertComponents(tb, Some(rolePanel))
     })

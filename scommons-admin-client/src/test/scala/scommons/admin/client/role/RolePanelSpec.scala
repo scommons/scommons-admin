@@ -1,18 +1,19 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.role._
 import scommons.admin.client.role.RoleActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.popup._
+import scommons.react.test.TestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class RolePanelSpec extends TestSpec {
+class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch RoleCreateAction when onOk in create popup" in {
     //given
@@ -224,7 +225,7 @@ class RolePanelSpec extends TestSpec {
       Succeeded
     }
     
-    assertDOMComponent(result, <.div()(), {
+    assertNativeComponent(result, <.div()(), {
       case List(createPopup) => assertComponents(createPopup, None)
       case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
     })

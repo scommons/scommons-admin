@@ -1,20 +1,20 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.company.CompanyActions.CompanyListFetchAction
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
 import scommons.client.ui.{PasswordField, PasswordFieldProps, TextField, TextFieldProps}
+import scommons.react.test.TestSpec
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class UserEditPanelSpec extends TestSpec {
+class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
   
   it should "call onChange, onEnter when in login field" in {
     //given
@@ -271,7 +271,7 @@ class UserEditPanelSpec extends TestSpec {
   private def assertUserEditPanel(result: ComponentInstance, props: UserEditPanelProps): Unit = {
     val data = props.initialData
 
-    assertDOMComponent(result, <.div(^.className := "form-horizontal")(), {
+    assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
       case List(
       loginComp,
       passwordComp,
@@ -282,9 +282,9 @@ class UserEditPanelSpec extends TestSpec {
       phoneComp,
       noteComp
       ) =>
-        assertDOMComponent(loginComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Login"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(loginComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Login"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.user.login
@@ -296,9 +296,9 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(passwordComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Password"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(passwordComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Password"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, PasswordField) {
               case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 password shouldBe data.user.password
@@ -310,9 +310,9 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(companyComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Company"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(companyComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Company"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, SearchSelect) {
               case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
                 selected shouldBe {
@@ -324,9 +324,9 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*First Name"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*First Name"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.firstName
@@ -338,9 +338,9 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*Last Name"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Last Name"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.lastName
@@ -352,9 +352,9 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("*E-mail"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*E-mail"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.email
@@ -366,9 +366,9 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("Phone"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("Phone"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.phone.getOrElse("")
@@ -380,7 +380,7 @@ class UserEditPanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(noteComp, <.p()(<.small()("(*) Indicates required fields")))
+        assertNativeComponent(noteComp, <.p()(<.small()("(*) Indicates required fields")))
     })
   }
 }

@@ -1,12 +1,12 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import scommons.admin.client.api.user._
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.{TextField, TextFieldProps}
+import scommons.react.test.TestSpec
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
-class UserProfilePanelSpec extends TestSpec {
+class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
   
   it should "render component" in {
     //given
@@ -26,16 +26,16 @@ class UserProfilePanelSpec extends TestSpec {
   }
 
   private def assertUserProfilePanel(result: ComponentInstance, props: UserProfilePanelProps): Unit = {
-    assertDOMComponent(result, <.div(^.className := "form-horizontal")(), {
+    assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
       case List(
       firstNameComp,
       lastNameComp,
       emailComp,
       phoneComp
       ) =>
-        assertDOMComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("First Name"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("First Name"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.firstName
@@ -47,9 +47,9 @@ class UserProfilePanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("Last Name"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("Last Name"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.lastName
@@ -61,9 +61,9 @@ class UserProfilePanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("E-mail"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("E-mail"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.email
@@ -75,9 +75,9 @@ class UserProfilePanelSpec extends TestSpec {
             }
           })
         })
-        assertDOMComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertDOMComponent(labelComp, <.label(^.className := "control-label")("Phone"))
-          assertDOMComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
+        assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+          assertNativeComponent(labelComp, <.label(^.className := "control-label")("Phone"))
+          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
             assertComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.phone.getOrElse("")

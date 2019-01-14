@@ -1,18 +1,19 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system.group._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.popup._
+import scommons.react.test.TestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class SystemGroupPanelSpec extends TestSpec {
+class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch SystemGroupCreateAction when onOk in create popup" in {
     //given
@@ -222,7 +223,7 @@ class SystemGroupPanelSpec extends TestSpec {
       Succeeded
     }
     
-    assertDOMComponent(result, <.div()(), {
+    assertNativeComponent(result, <.div()(), {
       case List(createPopup) => assertComponents(createPopup, None)
       case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
     })

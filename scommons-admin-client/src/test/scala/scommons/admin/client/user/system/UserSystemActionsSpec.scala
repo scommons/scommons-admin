@@ -6,7 +6,7 @@ import scommons.admin.client.user.UserActions.UserUpdatedAction
 import scommons.admin.client.user.system.UserSystemActions._
 import scommons.admin.client.user.system.UserSystemActionsSpec._
 import scommons.client.task.FutureTask
-import scommons.client.test.AsyncTestSpec
+import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future
 

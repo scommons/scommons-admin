@@ -5,7 +5,7 @@ import scommons.admin.client.api.role.permission.RolePermissionData
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
 

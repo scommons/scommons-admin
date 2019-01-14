@@ -1,21 +1,21 @@
 package scommons.admin.client.user.system
 
 import io.github.shogowada.scalajs.reactjs.ReactDOM
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user.system._
 import scommons.admin.client.api.user.{UserCompanyData, UserData}
 import scommons.admin.client.user.system.UserSystemActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.test.util.TestDOMUtils._
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
+import scommons.react.test.TestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class UserSystemPanelSpec extends TestSpec {
+class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch UserSystemAddAction if add item(s) when onSelectChange" in {
     //given

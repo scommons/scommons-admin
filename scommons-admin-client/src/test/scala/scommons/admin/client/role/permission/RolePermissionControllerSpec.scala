@@ -3,7 +3,7 @@ package scommons.admin.client.role.permission
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
 import scommons.client.controller.{PathParams, RouteParams}
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 class RolePermissionControllerSpec extends TestSpec {
 

@@ -14,10 +14,10 @@ import scommons.admin.client.system.user.{SystemUserController, SystemUserParams
 import scommons.admin.client.system.{SystemController, SystemState}
 import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams, UserState}
 import scommons.client.app.{AppBrowseController, AppBrowseControllerProps}
-import scommons.client.test.TestSpec
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
+import scommons.react.test.TestSpec
 
 class AdminRouteControllerSpec extends TestSpec {
 

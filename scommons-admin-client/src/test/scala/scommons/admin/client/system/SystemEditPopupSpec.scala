@@ -2,9 +2,10 @@ package scommons.admin.client.system
 
 import io.github.shogowada.scalajs.reactjs.React
 import scommons.admin.client.api.system.SystemData
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
+import scommons.react.test.util.ShallowRendererUtils
 
-class SystemEditPopupSpec extends TestSpec {
+class SystemEditPopupSpec extends TestSpec with ShallowRendererUtils {
 
   it should "enable save button if all required fields are filled" in {
     //given

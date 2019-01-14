@@ -1,12 +1,12 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import scommons.admin.client.api.system.SystemData
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.ui.{PasswordField, PasswordFieldProps, TextField, TextFieldProps}
+import scommons.client.ui._
+import scommons.react.test.TestSpec
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
-class SystemEditPanelSpec extends TestSpec {
+class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
   
   it should "call onChange, onEnter when in name field" in {
     //given
@@ -141,9 +141,9 @@ class SystemEditPanelSpec extends TestSpec {
   private def assertSystemEditPanel(result: ComponentInstance, props: SystemEditPanelProps): Unit = {
     val data = props.initialData
 
-    assertDOMComponent(result, <.div()(), { case List(nameComp, passwordComp, titleComp, urlComp) =>
-      assertDOMComponent(nameComp, <.div()(), { case List(labelComp, fieldComp) =>
-        assertDOMComponent(labelComp, <.label()("Name"))
+    assertNativeComponent(result, <.div()(), { case List(nameComp, passwordComp, titleComp, urlComp) =>
+      assertNativeComponent(nameComp, <.div()(), { case List(labelComp, fieldComp) =>
+        assertNativeComponent(labelComp, <.label()("Name"))
         assertComponent(fieldComp, TextField) {
           case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             text shouldBe data.name
@@ -154,8 +154,8 @@ class SystemEditPanelSpec extends TestSpec {
             readOnly shouldBe props.readOnly
         }
       })
-      assertDOMComponent(passwordComp, <.div()(), { case List(labelComp, fieldComp) =>
-        assertDOMComponent(labelComp, <.label()("Password"))
+      assertNativeComponent(passwordComp, <.div()(), { case List(labelComp, fieldComp) =>
+        assertNativeComponent(labelComp, <.label()("Password"))
         assertComponent(fieldComp, PasswordField) {
           case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             password shouldBe data.password
@@ -166,8 +166,8 @@ class SystemEditPanelSpec extends TestSpec {
             readOnly shouldBe props.readOnly
         }
       })
-      assertDOMComponent(titleComp, <.div()(), { case List(labelComp, fieldComp) =>
-        assertDOMComponent(labelComp, <.label()("Title"))
+      assertNativeComponent(titleComp, <.div()(), { case List(labelComp, fieldComp) =>
+        assertNativeComponent(labelComp, <.label()("Title"))
         assertComponent(fieldComp, TextField) {
           case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             text shouldBe data.title
@@ -178,8 +178,8 @@ class SystemEditPanelSpec extends TestSpec {
             readOnly shouldBe props.readOnly
         }
       })
-      assertDOMComponent(urlComp, <.div()(), { case List(labelComp, fieldComp) =>
-        assertDOMComponent(labelComp, <.label()("URL"))
+      assertNativeComponent(urlComp, <.div()(), { case List(labelComp, fieldComp) =>
+        assertNativeComponent(labelComp, <.label()("URL"))
         assertComponent(fieldComp, TextField) {
           case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             text shouldBe data.url

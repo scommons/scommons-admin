@@ -2,7 +2,7 @@ package scommons.admin.client.role
 
 import scommons.admin.client.api.role._
 import scommons.admin.client.role.RoleActions._
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 class RoleStateReducerSpec extends TestSpec {
 

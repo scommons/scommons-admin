@@ -1,9 +1,9 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.{React, ReactDOM}
 import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
+import io.github.shogowada.scalajs.reactjs.{React, ReactDOM}
 import org.scalatest._
 import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system.UserSystemData
@@ -11,14 +11,15 @@ import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system._
 import scommons.client.task.FutureTask
-import scommons.client.test.AsyncTestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
-import scommons.client.test.util.TestDOMUtils.findReactElement
 import scommons.client.ui._
+import scommons.react.test.dom.AsyncTestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class UserPanelSpec extends AsyncTestSpec {
+class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch actions when select user" in {
     //given
@@ -393,7 +394,7 @@ class UserPanelSpec extends AsyncTestSpec {
       }
       val result = shallowRender(<(wrapped)()())
 
-      assertDOMComponent(result, <.div()(), { case List(comp) =>
+      assertNativeComponent(result, <.div()(), { case List(comp) =>
         assertComponent(comp, UserSystemPanel) {
           case UserSystemPanelProps(dispatch, actions, systemData, selectedUser) =>
             dispatch shouldBe props.dispatch
@@ -476,7 +477,7 @@ class UserPanelSpec extends AsyncTestSpec {
       Succeeded
     }
     
-    assertDOMComponent(result, <.div()(), {
+    assertNativeComponent(result, <.div()(), {
       case List(bp, tp, createPopup) =>
         assertComponents(bp, tp, createPopup, None, None)
       case List(bp, tp, createPopup, details, editPopup) =>

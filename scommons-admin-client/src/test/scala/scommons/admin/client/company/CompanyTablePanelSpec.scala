@@ -1,19 +1,20 @@
 package scommons.admin.client.company
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.company._
 import scommons.admin.client.company.CompanyActions._
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
-import scommons.client.test.raw.ShallowRenderer.ComponentInstance
 import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
+import scommons.react.test.TestSpec
+import scommons.react.test.dom.util.TestDOMUtils
+import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
 
-class CompanyTablePanelSpec extends TestSpec {
+class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
 
   it should "dispatch CompanySelectedAction when select row" in {
     //given
@@ -170,7 +171,7 @@ class CompanyTablePanelSpec extends TestSpec {
     val expectedTotalPages = toTotalPages(props.data.totalCount.getOrElse(0), limit)
     val expectedSelectedPage = math.min(expectedTotalPages, toPage(props.data.offset.getOrElse(0), limit))
 
-    assertDOMComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
+    assertNativeComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
       assertComponent(tablePanel, TablePanel) {
         case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader

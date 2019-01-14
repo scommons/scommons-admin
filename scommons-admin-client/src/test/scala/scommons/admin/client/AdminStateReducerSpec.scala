@@ -11,7 +11,7 @@ import scommons.admin.client.system.user.SystemUserState
 import scommons.admin.client.user.UserState
 import scommons.admin.client.user.system.UserSystemState
 import scommons.client.task.FutureTask
-import scommons.client.test.TestSpec
+import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
 
