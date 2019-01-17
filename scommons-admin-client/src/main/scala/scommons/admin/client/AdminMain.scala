@@ -15,6 +15,7 @@ import scommons.admin.client.system.group.SystemGroupController
 import scommons.admin.client.system.user.SystemUserController
 import scommons.admin.client.user.UserController
 import scommons.client.app._
+import scommons.client.ui.popup.raw.NativeReactModal
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -23,6 +24,8 @@ object AdminMain {
   @JSExportTopLevel("scommons.admin.client.main")
   def main(args: Array[String]): Unit = {
     val mountNode = dom.document.getElementById("root")
+
+    NativeReactModal.setAppElement(mountNode)
 
     dom.document.title = "scommons-admin"
 

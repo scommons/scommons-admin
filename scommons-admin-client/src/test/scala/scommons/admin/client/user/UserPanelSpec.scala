@@ -12,6 +12,7 @@ import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system._
 import scommons.client.task.FutureTask
 import scommons.client.ui._
+import scommons.client.ui.popup.raw.NativeReactModal
 import scommons.react.test.dom.AsyncTestSpec
 import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowRenderer.ComponentInstance
@@ -21,6 +22,8 @@ import scala.concurrent.Future
 
 class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOMUtils {
 
+  NativeReactModal.setAppElement(org.scalajs.dom.document.body)
+  
   it should "dispatch actions when select user" in {
     //given
     val dispatch = mockFunction[Any, Any]
