@@ -9,7 +9,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
 import scommons.client.ui.{PasswordField, PasswordFieldProps, TextField, TextFieldProps}
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -268,7 +268,7 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertUserEditPanel(result: ComponentInstance, props: UserEditPanelProps): Unit = {
+  private def assertUserEditPanel(result: ShallowInstance, props: UserEditPanelProps): Unit = {
     val data = props.initialData
 
     assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {

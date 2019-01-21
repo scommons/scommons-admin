@@ -12,7 +12,7 @@ import scommons.client.ui.TriState._
 import scommons.client.ui.tree._
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -267,7 +267,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     )
   }
 
-  private def assertRolePermissionPanel(result: ComponentInstance, props: RolePermissionPanelProps): Unit = {
+  private def assertRolePermissionPanel(result: ShallowInstance, props: RolePermissionPanelProps): Unit = {
     val roots = buildTree(props.state.permissionsByParentId)
     
     assertComponent(result, CheckBoxTree) {

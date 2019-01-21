@@ -8,7 +8,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui._
 import scommons.client.ui.popup._
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -197,13 +197,13 @@ class CompanyPanelSpec extends TestSpec with ShallowRendererUtils {
     assertCompanyPanel(result, props)
   }
 
-  private def assertCompanyPanel(result: ComponentInstance, props: CompanyPanelProps): Unit = {
+  private def assertCompanyPanel(result: ShallowInstance, props: CompanyPanelProps): Unit = {
     val selectedData = props.data.dataList.find(_.id == props.data.selectedId)
 
-    def assertComponents(buttonsPanel: ComponentInstance,
-                         tablePanel: ComponentInstance,
-                         createPopup: ComponentInstance,
-                         editPopup: Option[ComponentInstance]): Assertion = {
+    def assertComponents(buttonsPanel: ShallowInstance,
+                         tablePanel: ShallowInstance,
+                         createPopup: ShallowInstance,
+                         editPopup: Option[ShallowInstance]): Assertion = {
 
       assertComponent(buttonsPanel, ButtonsPanel) {
         case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>

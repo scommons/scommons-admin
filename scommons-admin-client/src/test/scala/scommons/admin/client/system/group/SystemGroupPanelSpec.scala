@@ -8,7 +8,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui.popup._
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -196,11 +196,11 @@ class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestD
     assertSystemGroupPanel(result, props)
   }
 
-  private def assertSystemGroupPanel(result: ComponentInstance, props: SystemGroupPanelProps): Unit = {
+  private def assertSystemGroupPanel(result: ShallowInstance, props: SystemGroupPanelProps): Unit = {
     val selectedData = props.state.dataList.find(_.id == props.selectedId)
 
-    def assertComponents(createPopup: ComponentInstance,
-                         editPopup: Option[ComponentInstance]): Assertion = {
+    def assertComponents(createPopup: ShallowInstance,
+                         editPopup: Option[ShallowInstance]): Assertion = {
 
       assertComponent(createPopup, InputPopup) {
         case InputPopupProps(show, message, _, _, placeholder, initialValue) =>

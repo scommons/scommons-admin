@@ -13,7 +13,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui.tab.{TabDirection, TabItemData, TabPanel, TabPanelProps}
 import scommons.react.test.dom.AsyncTestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -243,7 +243,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
     )
   }
 
-  private def assertSystemUserPanel(result: ComponentInstance, props: SystemUserPanelProps): Assertion = {
+  private def assertSystemUserPanel(result: ShallowInstance, props: SystemUserPanelProps): Assertion = {
     val systemId = props.selectedParams.systemId.get
 
     def assertSystemUserRolePanel(component: ReactElement): Assertion = {
@@ -263,8 +263,8 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
       })
     }
 
-    def assertComponents(tablePanel: ComponentInstance,
-                         rolePanel: Option[ComponentInstance]): Assertion = {
+    def assertComponents(tablePanel: ShallowInstance,
+                         rolePanel: Option[ShallowInstance]): Assertion = {
       
       assertComponent(tablePanel, SystemUserTablePanel) {
         case SystemUserTablePanelProps(data, selectedUserId, _, _) =>

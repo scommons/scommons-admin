@@ -15,7 +15,7 @@ import scommons.client.ui._
 import scommons.client.ui.popup.raw.NativeReactModal
 import scommons.react.test.dom.AsyncTestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -388,7 +388,7 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
     )
   }
 
-  private def assertUserPanel(result: ComponentInstance, props: UserPanelProps): Assertion = {
+  private def assertUserPanel(result: ShallowInstance, props: UserPanelProps): Assertion = {
     val selectedData = props.data.userDetails
 
     def assertUserSystemPanel(component: ReactElement, data: UserDetailsData): Assertion = {
@@ -411,11 +411,11 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
       })
     }
 
-    def assertComponents(buttonsPanel: ComponentInstance,
-                         tablePanel: ComponentInstance,
-                         createPopup: ComponentInstance,
-                         detailsPanel: Option[ComponentInstance],
-                         editPopup: Option[ComponentInstance]): Assertion = {
+    def assertComponents(buttonsPanel: ShallowInstance,
+                         tablePanel: ShallowInstance,
+                         createPopup: ShallowInstance,
+                         detailsPanel: Option[ShallowInstance],
+                         editPopup: Option[ShallowInstance]): Assertion = {
 
       assertComponent(buttonsPanel, ButtonsPanel) {
         case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>

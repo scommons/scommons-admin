@@ -8,7 +8,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui.popup._
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -195,14 +195,14 @@ class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils
     assertRolePanel(result, props)
   }
 
-  private def assertRolePanel(result: ComponentInstance, props: RolePanelProps): Unit = {
+  private def assertRolePanel(result: ShallowInstance, props: RolePanelProps): Unit = {
     val selectedData = props.selectedSystemId.flatMap { systemId =>
       props.state.rolesBySystemId.getOrElse(systemId, Nil)
         .find(_.id == props.selectedId)
     }
 
-    def assertComponents(createPopup: ComponentInstance,
-                         editPopup: Option[ComponentInstance]): Assertion = {
+    def assertComponents(createPopup: ShallowInstance,
+                         editPopup: Option[ShallowInstance]): Assertion = {
 
       assertComponent(createPopup, InputPopup) {
         case InputPopupProps(show, message, _, _, placeholder, initialValue) =>

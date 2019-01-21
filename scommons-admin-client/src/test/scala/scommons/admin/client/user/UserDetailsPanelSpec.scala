@@ -9,7 +9,7 @@ import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
 import scommons.client.ui.tab._
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
@@ -84,7 +84,7 @@ class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertUserDetailsPanel(result: ComponentInstance, props: UserDetailsPanelProps): Unit = {
+  private def assertUserDetailsPanel(result: ShallowInstance, props: UserDetailsPanelProps): Unit = {
     
     def assertUserProfilePanel(component: ReactElement, data: UserProfileData): Assertion = {
       val wrapped = React.createClass[Unit, Unit] { _ =>

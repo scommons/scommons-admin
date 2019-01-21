@@ -9,7 +9,7 @@ import scommons.client.ui.page._
 import scommons.client.ui.table._
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -157,7 +157,7 @@ class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with Test
     assertCompanyTablePanel(result, props)
   }
   
-  private def assertCompanyTablePanel(result: ComponentInstance, props: CompanyTablePanelProps): Unit = {
+  private def assertCompanyTablePanel(result: ShallowInstance, props: CompanyTablePanelProps): Unit = {
     val tableHeader = List(
       TableColumnData("Id"),
       TableColumnData("Company Name")

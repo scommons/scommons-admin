@@ -10,7 +10,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -338,7 +338,7 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
     assertUserSystemPanel(result, props)
   }
 
-  private def assertUserSystemPanel(result: ComponentInstance, props: UserSystemPanelProps): Unit = {
+  private def assertUserSystemPanel(result: ShallowInstance, props: UserSystemPanelProps): Unit = {
     assertComponent(result, PickList) {
       case PickListProps(items, selectedIds, preSelectedIds, _, sourceTitle, destTitle) =>
         items shouldBe props.systemData.systems.map { s =>

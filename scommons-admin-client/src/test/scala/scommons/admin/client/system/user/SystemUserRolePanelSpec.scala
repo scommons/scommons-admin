@@ -10,7 +10,7 @@ import scommons.client.task.FutureTask
 import scommons.client.ui.list._
 import scommons.client.ui.tree._
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -143,7 +143,7 @@ class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertSystemUserRolePanel(result: ComponentInstance, props: SystemUserRolePanelProps): Unit = {
+  private def assertSystemUserRolePanel(result: ShallowInstance, props: SystemUserRolePanelProps): Unit = {
     val roots = RolePermissionPanel.buildTree(props.data.permissionsByParentId)
 
     assertNativeComponent(result, <.div(^.className := "row-fluid")(), { case List(col1, col2) =>

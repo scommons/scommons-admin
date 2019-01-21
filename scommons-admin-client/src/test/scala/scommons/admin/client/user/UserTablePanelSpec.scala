@@ -5,7 +5,7 @@ import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 class UserTablePanelSpec extends TestSpec with ShallowRendererUtils {
@@ -154,7 +154,7 @@ class UserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
   
-  private def assertUserTablePanel(result: ComponentInstance, props: UserTablePanelProps): Unit = {
+  private def assertUserTablePanel(result: ShallowInstance, props: UserTablePanelProps): Unit = {
     val tableHeader = List(
       TableColumnData("Login"),
       TableColumnData("Active"),

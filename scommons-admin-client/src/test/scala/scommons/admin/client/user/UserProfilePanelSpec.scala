@@ -3,7 +3,7 @@ package scommons.admin.client.user
 import scommons.admin.client.api.user._
 import scommons.client.ui.{TextField, TextFieldProps}
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
@@ -25,7 +25,7 @@ class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
     assertUserProfilePanel(result, props)
   }
 
-  private def assertUserProfilePanel(result: ComponentInstance, props: UserProfilePanelProps): Unit = {
+  private def assertUserProfilePanel(result: ShallowInstance, props: UserProfilePanelProps): Unit = {
     assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
       case List(
       firstNameComp,

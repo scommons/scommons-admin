@@ -7,7 +7,7 @@ import scommons.admin.client.system.SystemActions._
 import scommons.client.task.FutureTask
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowRenderer.ComponentInstance
+import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
 import scala.concurrent.Future
@@ -226,15 +226,15 @@ class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUti
     assertSystemPanel(result, props)
   }
 
-  private def assertSystemPanel(result: ComponentInstance, props: SystemPanelProps): Unit = {
+  private def assertSystemPanel(result: ShallowInstance, props: SystemPanelProps): Unit = {
     val selectedData = props.selectedParentId.flatMap { parentId =>
       props.state.systemsByParentId.getOrElse(parentId, Nil)
         .find(_.id == props.selectedId)
     }
 
-    def assertComponents(createPopup: Option[ComponentInstance],
-                         editPanel: Option[ComponentInstance],
-                         editPopup: Option[ComponentInstance]): Assertion = {
+    def assertComponents(createPopup: Option[ShallowInstance],
+                         editPanel: Option[ShallowInstance],
+                         editPopup: Option[ShallowInstance]): Assertion = {
       
       createPopup.isEmpty shouldBe props.selectedParentId.isEmpty
       props.selectedParentId.foreach { parentId =>
