@@ -7,6 +7,8 @@ object AdminDao extends AdminModule {
 
   override val id: String = "scommons-admin-dao"
 
+  override val base: File = file("dao")
+
   override val internalDependencies: Seq[ClasspathDep[ProjectReference]] = Nil
 
   override val superRepoProjectsDependencies: Seq[(String, String, Option[String])] = Seq(

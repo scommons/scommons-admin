@@ -8,6 +8,8 @@ object AdminService extends AdminModule {
 
   override val id: String = "scommons-admin-service"
 
+  override val base: File = file("service")
+
   override def definition: Project = super.definition
     .settings(
       description := "Common Admin Service utilities"

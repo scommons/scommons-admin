@@ -9,6 +9,8 @@ object AdminServer extends AdminModule with CommonPlayModule {
 
   override val id: String = "scommons-admin-server"
 
+  override val base: File = file("server")
+
   override def definition: Project = {
     super.definition
       .settings(

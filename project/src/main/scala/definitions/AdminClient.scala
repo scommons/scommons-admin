@@ -8,6 +8,8 @@ object AdminClient extends AdminModule with CommonClientModule {
 
   override val id: String = "scommons-admin-client"
 
+  override val base: File = file("client")
+
   override def definition: Project = {
     super.definition
       .settings(

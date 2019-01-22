@@ -8,6 +8,8 @@ object AdminServiceApi extends AdminModule {
 
   override val id: String = "scommons-admin-service-api"
 
+  override val base: File = file("service-api")
+
   override def definition: Project = super.definition
     .settings(
       description := "Common Admin Service REST API"

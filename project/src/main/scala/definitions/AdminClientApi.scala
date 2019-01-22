@@ -12,8 +12,8 @@ object AdminClientApi {
 
   val id: String = "scommons-admin-client-api"
 
-  def base: File = file(id)
-
+  val base: File = file("client-api")
+  
   private lazy val `scommons-admin-client-api`: CrossProject = crossProject
     .crossType(CrossType.Pure).in(base)
     .settings(CommonModule.settings: _*)
