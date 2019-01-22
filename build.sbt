@@ -1,11 +1,12 @@
 import definitions._
 import scommons.sbtplugin.project.CommonModule
+import scommons.sbtplugin.project.CommonModule.ideExcludedDirectories
 
 lazy val `scommons-admin` = (project in file("."))
   .settings(CommonModule.settings: _*)
   .settings(AdminModule.settings: _*)
   .settings(
-    ideaExcludeFolders += s"${baseDirectory.value}/docs/_site"
+    ideExcludedDirectories += baseDirectory.value / "docs" / "_site"
   )
   .aggregate(
     `scommons-admin-client-api-jvm`,
