@@ -2,7 +2,6 @@ package scommons.admin.client.user
 
 import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss

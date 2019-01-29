@@ -1,7 +1,6 @@
 package scommons.admin.client.role
 
 import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
