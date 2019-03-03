@@ -1,10 +1,11 @@
 package definitions
 
 import common.Libs
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import org.scalajs.sbtplugin.cross.CrossProject
 import sbt.Keys._
 import sbt._
+import sbtcrossproject.CrossPlugin.autoImport._
+import sbtcrossproject.{CrossProject, JVMPlatform}
+import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
 import scommons.sbtplugin.project.CommonModule
 import scoverage.ScoverageKeys._
 
@@ -14,8 +15,8 @@ object AdminClientApi {
 
   val base: File = file("client-api")
   
-  private lazy val `scommons-admin-client-api`: CrossProject = crossProject
-    .crossType(CrossType.Pure).in(base)
+  private lazy val `scommons-admin-client-api`: CrossProject = CrossProject(id, base)(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
     .settings(CommonModule.settings: _*)
     .settings(AdminModule.settings: _*)
     .settings(
@@ -32,6 +33,5 @@ object AdminClientApi {
     )
 
   lazy val jvm: Project = `scommons-admin-client-api`.jvm
-
   lazy val js: Project = `scommons-admin-client-api`.js
 }
