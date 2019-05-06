@@ -4,6 +4,7 @@ services:
 - docker
 jdk:
 - oraclejdk8
+dist: trusty
 env:
   global:
   - TRAVIS_NODE_VERSION="8"
