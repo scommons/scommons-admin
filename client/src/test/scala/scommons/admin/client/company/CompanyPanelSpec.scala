@@ -7,13 +7,16 @@ import scommons.admin.client.company.CompanyActions._
 import scommons.client.task.FutureTask
 import scommons.client.ui._
 import scommons.client.ui.popup._
+import scommons.react._
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class CompanyPanelSpec extends TestSpec with ShallowRendererUtils {
+class CompanyPanelSpec extends TestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
   it should "dispatch CompanyCreateRequestAction when ADD command" in {
     //given
@@ -136,6 +139,92 @@ class CompanyPanelSpec extends TestSpec with ShallowRendererUtils {
     editPopupProps.onCancel()
   }
 
+  it should "dispatch CompanySelectedAction when select row" in {
+    //given
+    val dispatch = mockFunction[Any, Any]
+    val actions = mock[CompanyActions]
+    val state = CompanyState()
+    val props = CompanyPanelProps(dispatch, actions, state)
+    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
+    val tpProps = findComponentProps(comp, CompanyTablePanel)
+    val companyId = 1
+
+    //then
+    dispatch.expects(CompanySelectedAction(companyId))
+
+    //when
+    tpProps.onChangeSelect(companyId)
+  }
+
+  it should "dispatch CompanyListFetchAction when select page" in {
+    //given
+    val dispatch = mockFunction[Any, Any]
+    val actions = mock[CompanyActions]
+    val state = CompanyState()
+    val props = CompanyPanelProps(dispatch, actions, state)
+    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
+    val tpProps = findComponentProps(comp, CompanyTablePanel)
+    val offset = Some(10)
+    val symbols = None
+    val action = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      offset
+    )
+    (actions.companyListFetch _).expects(dispatch, offset, symbols)
+      .returning(action)
+
+    //then
+    dispatch.expects(action)
+
+    //when
+    tpProps.onLoadData(offset, symbols)
+  }
+
+  it should "dispatch CompanyListFetchAction if empty dataList when mount" in {
+    //given
+    val dispatch = mockFunction[Any, Any]
+    val actions = mock[CompanyActions]
+    val state = CompanyState()
+    val props = CompanyPanelProps(dispatch, actions, state)
+    val comp = <(CompanyPanel())(^.wrapped := props)()
+    val action = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      None
+    )
+    (actions.companyListFetch _).expects(dispatch, None, None)
+      .returning(action)
+
+    //then
+    dispatch.expects(action)
+
+    //when
+    val renderer = createTestRenderer(comp)
+    
+    //cleanup
+    renderer.unmount()
+  }
+
+  it should "not dispatch CompanyListFetchAction if non empty dataList when mount" in {
+    //given
+    val dispatch = mockFunction[Any, Any]
+    val actions = mock[CompanyActions]
+    val state = CompanyState(List(
+      CompanyData(Some(1), "Test Company"),
+      CompanyData(Some(2), "Test Company 2")
+    ))
+    val props = CompanyPanelProps(dispatch, actions, state)
+    val comp = <(CompanyPanel())(^.wrapped := props)()
+
+    //then
+    dispatch.expects(*).never()
+
+    //when
+    val renderer = createTestRenderer(comp)
+
+    //cleanup
+    renderer.unmount()
+  }
+
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
@@ -215,9 +304,7 @@ class CompanyPanelSpec extends TestSpec with ShallowRendererUtils {
           group shouldBe false
       }
       assertComponent(tablePanel, CompanyTablePanel) {
-        case CompanyTablePanelProps(dispatch, actions, data) =>
-          dispatch shouldBe props.dispatch
-          actions shouldBe props.actions
+        case CompanyTablePanelProps(data, _, _) =>
           data shouldBe props.data
       }
       
@@ -241,9 +328,11 @@ class CompanyPanelSpec extends TestSpec with ShallowRendererUtils {
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), {
-      case List(bp, tp, createPopup) => assertComponents(bp, tp, createPopup, None)
-      case List(bp, tp, createPopup, editPopup) => assertComponents(bp, tp, createPopup, Some(editPopup))
+    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
+      children match {
+        case List(bp, tp, createPopup) => assertComponents(bp, tp, createPopup, None)
+        case List(bp, tp, createPopup, editPopup) => assertComponents(bp, tp, createPopup, Some(editPopup))
+      }
     })
   }
 }

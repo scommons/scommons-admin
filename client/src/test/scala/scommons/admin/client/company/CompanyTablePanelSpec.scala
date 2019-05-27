@@ -1,114 +1,60 @@
 package scommons.admin.client.company
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.company._
-import scommons.admin.client.company.CompanyActions._
-import scommons.client.task.FutureTask
 import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
+import scommons.react._
 import scommons.react.test.TestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
 
-import scala.concurrent.Future
+class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils {
 
-class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
-
-  it should "dispatch CompanySelectedAction when select row" in {
+  it should "call onChangeSelect when select row" in {
     //given
-    val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
     val state = CompanyState()
-    val props = CompanyTablePanelProps(dispatch, actions, state)
+    val onChangeSelect = mockFunction[Int, Unit]
+    val props = CompanyTablePanelProps(state, onChangeSelect = onChangeSelect, (_, _) => ())
     val comp = shallowRender(<(CompanyTablePanel())(^.wrapped := props)())
     val tpProps = findComponentProps(comp, TablePanel)
-    val row = TableRowData("1", List("1", "test user 1"))
-    
+    val companyId = 1
+    val row = TableRowData(s"$companyId", List("1", "test user 1"))
+
     //then
-    dispatch.expects(CompanySelectedAction(row.id.toInt))
-    
+    onChangeSelect.expects(companyId)
+
     //when
     tpProps.onSelect(row)
   }
 
-  it should "dispatch CompanyListFetchAction when select page" in {
+  it should "call onLoadData when select page" in {
     //given
-    val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val onLoadData = mockFunction[Option[Int], Option[String], Unit]
     val state = CompanyState()
-    val props = CompanyTablePanelProps(dispatch, actions, state)
+    val props = CompanyTablePanelProps(state, _ => (), onLoadData = onLoadData)
     val comp = shallowRender(<(CompanyTablePanel())(^.wrapped := props)())
     val ppProps = findComponentProps(comp, PaginationPanel)
     val page = 2
     val offset = Some(10)
-    val action = CompanyListFetchAction(
-      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
-      offset
-    )
-    (actions.companyListFetch _).expects(dispatch, offset, None)
-      .returning(action)
 
     //then
-    dispatch.expects(action)
-    
+    onLoadData.expects(offset, None)
+
     //when
     ppProps.onPage(page)
   }
 
-  it should "dispatch CompanyListFetchAction when componentDidMount" in {
-    //given
-    val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
-    val state = CompanyState()
-    val props = CompanyTablePanelProps(dispatch, actions, state)
-    val component = <(CompanyTablePanel())(^.wrapped := props)()
-    val action = CompanyListFetchAction(
-      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
-      None
-    )
-    (actions.companyListFetch _).expects(dispatch, None, None)
-      .returning(action)
-
-    //then
-    dispatch.expects(action)
-
-    //when
-    renderIntoDocument(component)
-  }
-
-  it should "not dispatch CompanyListFetchAction if non empty dataList when componentDidMount" in {
-    //given
-    val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
-    val state = CompanyState(List(
-      CompanyData(Some(1), "Test Company"),
-      CompanyData(Some(2), "Test Company 2")
-    ))
-    val props = CompanyTablePanelProps(dispatch, actions, state)
-    val component = <(CompanyTablePanel())(^.wrapped := props)()
-
-    //then
-    dispatch.expects(*).never()
-
-    //when
-    renderIntoDocument(component)
-  }
-
   it should "render component" in {
     //given
-    val dispatch = mock[Dispatch]
-    val actions = mock[CompanyActions]
     val state = CompanyState(List(
       CompanyData(Some(1), "Test Company"),
       CompanyData(Some(2), "Test Company 2")
     ))
-    val props = CompanyTablePanelProps(dispatch, actions, state)
-    val component = <(CompanyTablePanel())(^.wrapped := props)()
+    val props = CompanyTablePanelProps(state, _ => (), (_, _) => ())
     
     //when
-    val result = shallowRender(component)
+    val result = shallowRender(<(CompanyTablePanel())(^.wrapped := props)())
     
     //then
     assertCompanyTablePanel(result, props)
@@ -116,8 +62,6 @@ class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with Test
 
   it should "render component with selected row" in {
     //given
-    val dispatch = mock[Dispatch]
-    val actions = mock[CompanyActions]
     val state = CompanyState(
       dataList = List(
         CompanyData(Some(1), "Test Company"),
@@ -125,11 +69,10 @@ class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with Test
       ),
       selectedId = Some(1)
     )
-    val props = CompanyTablePanelProps(dispatch, actions, state)
-    val component = <(CompanyTablePanel())(^.wrapped := props)()
+    val props = CompanyTablePanelProps(state, _ => (), (_, _) => ())
     
     //when
-    val result = shallowRender(component)
+    val result = shallowRender(<(CompanyTablePanel())(^.wrapped := props)())
     
     //then
     assertCompanyTablePanel(result, props)
@@ -137,8 +80,6 @@ class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with Test
 
   it should "render component with selected second page" in {
     //given
-    val dispatch = mock[Dispatch]
-    val actions = mock[CompanyActions]
     val state = CompanyState(
       dataList = List(
         CompanyData(Some(1), "Test Company"),
@@ -147,11 +88,10 @@ class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with Test
       offset = Some(CompanyActions.listLimit),
       totalCount = Some(CompanyActions.listLimit + 5)
     )
-    val props = CompanyTablePanelProps(dispatch, actions, state)
-    val component = <(CompanyTablePanel())(^.wrapped := props)()
+    val props = CompanyTablePanelProps(state, _ => (), (_, _) => ())
     
     //when
-    val result = shallowRender(component)
+    val result = shallowRender(<(CompanyTablePanel())(^.wrapped := props)())
     
     //then
     assertCompanyTablePanel(result, props)
@@ -171,7 +111,7 @@ class CompanyTablePanelSpec extends TestSpec with ShallowRendererUtils with Test
     val expectedTotalPages = toTotalPages(props.data.totalCount.getOrElse(0), limit)
     val expectedSelectedPage = math.min(expectedTotalPages, toPage(props.data.offset.getOrElse(0), limit))
 
-    assertNativeComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
+    assertNativeComponent(result, <.>()(), { case List(tablePanel, paginationPanel) =>
       assertComponent(tablePanel, TablePanel) {
         case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader

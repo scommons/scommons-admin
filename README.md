@@ -10,14 +10,14 @@ Easy applications, users and permissions management
 
 To build and run tests use the following command:
 ```bash
-sbt clean test it:test
+sbt -mem 2048 test it:test
 ```
 
 #### How to Run Server
 
 To start the application server locally in development mode with refresh workflow:
 ```bash
-sbt ';project scommons-admin-server ;set WebKeys.exportedMappings in Assets := Seq()' run
+sbt -mem 2048 ';project scommons-admin-server ;set WebKeys.exportedMappings in Assets := Seq()' run
 ```
 
 #### Admin Client UI
