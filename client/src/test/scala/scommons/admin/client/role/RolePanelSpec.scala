@@ -6,14 +6,16 @@ import scommons.admin.client.api.role._
 import scommons.admin.client.role.RoleActions._
 import scommons.client.task.FutureTask
 import scommons.client.ui.popup._
+import scommons.react._
 import scommons.react.test.TestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
+class RolePanelSpec extends TestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
   it should "dispatch RoleCreateAction when onOk in create popup" in {
     //given
@@ -97,13 +99,12 @@ class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils
     editPopupProps.onCancel()
   }
 
-  it should "dispatch RoleListFetchAction when componentDidMount" in {
+  it should "dispatch RoleListFetchAction if empty rolesBySystemId when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RoleActions]
     val state = RoleState()
     val props = RolePanelProps(dispatch, actions, state, None, None)
-    val component = <(RolePanel())(^.wrapped := props)()
     val action = RoleListFetchAction(
       FutureTask("Fetching", Future.successful(RoleListResp(Nil)))
     )
@@ -114,10 +115,13 @@ class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils
     dispatch.expects(action)
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(RolePanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch RoleListFetchAction if non empty dataList when componentDidMount" in {
+  it should "not dispatch RoleListFetchAction if non empty rolesBySystemId when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RoleActions]
@@ -126,13 +130,15 @@ class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils
       RoleData(Some(2), 3, "test role 2")
     ).groupBy(_.systemId))
     val props = RolePanelProps(dispatch, actions, state, Some(3), None)
-    val component = <(RolePanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(RolePanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
   it should "render component" in {
@@ -225,9 +231,11 @@ class RolePanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), {
-      case List(createPopup) => assertComponents(createPopup, None)
-      case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
+    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
+      children match {
+        case List(createPopup) => assertComponents(createPopup, None)
+        case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
+      }
     })
   }
 }

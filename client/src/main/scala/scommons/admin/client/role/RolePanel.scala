@@ -1,13 +1,11 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
-import scommons.react.UiComponent
+import scommons.react._
+import scommons.react.hooks._
 
 case class RolePanelProps(dispatch: Dispatch,
                           actions: RoleActions,
@@ -15,55 +13,53 @@ case class RolePanelProps(dispatch: Dispatch,
                           selectedSystemId: Option[Int],
                           selectedId: Option[Int])
 
-object RolePanel extends UiComponent[RolePanelProps] {
+object RolePanel extends FunctionComponent[RolePanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit](
-    componentDidMount = { self =>
-      val props = self.props.wrapped
+  protected def render(selfProps: Props): ReactElement = {
+    val props = selfProps.wrapped
+    
+    useEffect({ () =>
       if (props.state.rolesBySystemId.isEmpty) {
         props.dispatch(props.actions.roleListFetch(props.dispatch))
-      }
-    },
-    render = { self =>
-      val props = self.props.wrapped
+      }: Unit
+    }, Nil)
 
-      val selectedData = props.selectedSystemId.flatMap { systemId =>
-        props.state.getRoles(systemId)
-          .find(_.id == props.selectedId)
-      }
-      
-      <.div()(
-        props.selectedSystemId.map { systemId =>
-          <(InputPopup())(^.wrapped := InputPopupProps(
-            props.state.showCreatePopup,
-            "Enter Role title:",
-            onOk = { text =>
-              props.dispatch(props.actions.roleCreate(props.dispatch, RoleData(
-                id = None,
-                systemId = systemId,
-                title = text
-              )))
-            },
-            onCancel = { () =>
-              props.dispatch(RoleCreateRequestAction(create = false))
-            },
-            initialValue = "NEW_ROLE"
-          ))()
-        },
-        selectedData.map { data =>
-          <(InputPopup())(^.wrapped := InputPopupProps(
-            props.state.showEditPopup,
-            "Enter new Role title:",
-            onOk = { text =>
-              props.dispatch(props.actions.roleUpdate(props.dispatch, data.copy(title = text)))
-            },
-            onCancel = { () =>
-              props.dispatch(RoleUpdateRequestAction(update = false))
-            },
-            initialValue = data.title
-          ))()
-        }
-      )
+    val selectedData = props.selectedSystemId.flatMap { systemId =>
+      props.state.getRoles(systemId)
+        .find(_.id == props.selectedId)
     }
-  )
+    
+    <.>()(
+      props.selectedSystemId.map { systemId =>
+        <(InputPopup())(^.wrapped := InputPopupProps(
+          props.state.showCreatePopup,
+          "Enter Role title:",
+          onOk = { text =>
+            props.dispatch(props.actions.roleCreate(props.dispatch, RoleData(
+              id = None,
+              systemId = systemId,
+              title = text
+            )))
+          },
+          onCancel = { () =>
+            props.dispatch(RoleCreateRequestAction(create = false))
+          },
+          initialValue = "NEW_ROLE"
+        ))()
+      },
+      selectedData.map { data =>
+        <(InputPopup())(^.wrapped := InputPopupProps(
+          props.state.showEditPopup,
+          "Enter new Role title:",
+          onOk = { text =>
+            props.dispatch(props.actions.roleUpdate(props.dispatch, data.copy(title = text)))
+          },
+          onCancel = { () =>
+            props.dispatch(RoleUpdateRequestAction(update = false))
+          },
+          initialValue = data.title
+        ))()
+      }
+    )
+  }
 }
