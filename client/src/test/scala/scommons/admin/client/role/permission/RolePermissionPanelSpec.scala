@@ -1,6 +1,5 @@
 package scommons.admin.client.role.permission
 
-import io.github.shogowada.scalajs.reactjs.ReactDOM
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.role.RoleData
@@ -83,7 +82,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     checkBoxTreeProps.onChange(CheckBoxTreeNodeData("1", Selected, "test"), Deselected)
   }
 
-  it should "dispatch RolePermissionFetchAction when componentDidMount" in {
+  it should "dispatch RolePermissionFetchAction if different selected role when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RolePermissionActions]
@@ -106,10 +105,10 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(action)
 
     //when
-    renderIntoDocument(component)
+    domRender(component)
   }
 
-  it should "not dispatch RolePermissionFetchAction if state contains roleId when componentDidMount" in {
+  it should "not dispatch RolePermissionFetchAction if same selected role when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RolePermissionActions]
@@ -130,10 +129,10 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    domRender(component)
   }
 
-  it should "dispatch RolePermissionFetchAction when componentDidUpdate" in {
+  it should "dispatch RolePermissionFetchAction if different selected role when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RolePermissionActions]
@@ -148,9 +147,8 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
       role = Some(respData.role)
     )
     val prevProps = RolePermissionPanelProps(dispatch, actions, state, respData.role.id.get)
-    val comp = renderIntoDocument(<(RolePermissionPanel())(^.wrapped := prevProps)())
+    domRender(<(RolePermissionPanel())(^.wrapped := prevProps)())
     val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
-    val containerElement = findReactElement(comp).parentNode
     props.selectedRoleId should not be prevProps.selectedRoleId
     
     val action = RolePermissionFetchAction(
@@ -163,10 +161,10 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(action)
 
     //when
-    ReactDOM.render(<(RolePermissionPanel())(^.wrapped := props)(), containerElement)
+    domRender(<(RolePermissionPanel())(^.wrapped := props)())
   }
 
-  it should "not dispatch RolePermissionFetchAction if same selectedRoleId when componentDidUpdate" in {
+  it should "not dispatch RolePermissionFetchAction if same selected role when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RolePermissionActions]
@@ -181,9 +179,8 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
       role = Some(respData.role)
     )
     val prevProps = RolePermissionPanelProps(dispatch, actions, state, respData.role.id.get)
-    val comp = renderIntoDocument(<(RolePermissionPanel())(^.wrapped := prevProps)())
+    domRender(<(RolePermissionPanel())(^.wrapped := prevProps)())
     val props = RolePermissionPanelProps(dispatch, mock[RolePermissionActions], state, roleId)
-    val containerElement = findReactElement(comp).parentNode
     props should not be prevProps
     props.selectedRoleId shouldBe prevProps.selectedRoleId
     
@@ -191,7 +188,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(*).never()
 
     //when
-    ReactDOM.render(<(RolePermissionPanel())(^.wrapped := props)(), containerElement)
+    domRender(<(RolePermissionPanel())(^.wrapped := props)())
   }
 
   it should "render component" in {

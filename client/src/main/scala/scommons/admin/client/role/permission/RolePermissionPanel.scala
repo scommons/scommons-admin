@@ -1,67 +1,57 @@
 package scommons.admin.client.role.permission
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.role.permission.{RolePermissionData, RolePermissionUpdateReq}
 import scommons.client.ui._
 import scommons.client.ui.tree._
-import scommons.react.UiComponent
+import scommons.react._
+import scommons.react.hooks._
 
 case class RolePermissionPanelProps(dispatch: Dispatch,
                                     actions: RolePermissionActions,
                                     state: RolePermissionState,
                                     selectedRoleId: Int)
 
-object RolePermissionPanel extends UiComponent[RolePermissionPanelProps] {
+object RolePermissionPanel extends FunctionComponent[RolePermissionPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit](
-    componentDidMount = { self =>
-      val props = self.props.wrapped
+  protected def render(selfProps: Props): ReactElement = {
+    val props = selfProps.wrapped
+    
+    useEffect({ () =>
       if (!props.state.role.flatMap(_.id).contains(props.selectedRoleId)) {
         props.dispatch(props.actions.rolePermissionsFetch(props.dispatch, props.selectedRoleId))
-      }
-    },
-    componentDidUpdate = { (self, prevProps, _) =>
-      val props = self.props.wrapped
-      if (props.selectedRoleId != prevProps.wrapped.selectedRoleId) {
-        props.dispatch(props.actions.rolePermissionsFetch(props.dispatch, props.selectedRoleId))
-      }
-    },
-    render = { self =>
-      val props = self.props.wrapped
+      }: Unit
+    }, List(props.selectedRoleId))
 
-      val roots = buildTree(props.state.permissionsByParentId)
+    val roots = buildTree(props.state.permissionsByParentId)
 
-      <(CheckBoxTree())(^.wrapped := CheckBoxTreeProps(
-        roots = roots,
-        onChange = { (data, value) =>
-          val permissionId = data.key.toInt
-          val ids = getAllDescendantIds(permissionId, props.state.permissionsByParentId)
-          
-          props.state.role.flatMap(_.version).foreach { roleVersion =>
-            if (TriState.isSelected(value)) {
-              props.dispatch(props.actions.rolePermissionsAdd(
-                props.dispatch,
-                props.selectedRoleId,
-                RolePermissionUpdateReq(ids, roleVersion)
-              ))
-            }
-            else {
-              props.dispatch(props.actions.rolePermissionsRemove(
-                props.dispatch,
-                props.selectedRoleId,
-                RolePermissionUpdateReq(ids, roleVersion)
-              ))
-            }
+    <(CheckBoxTree())(^.wrapped := CheckBoxTreeProps(
+      roots = roots,
+      onChange = { (data, value) =>
+        val permissionId = data.key.toInt
+        val ids = getAllDescendantIds(permissionId, props.state.permissionsByParentId)
+        
+        props.state.role.flatMap(_.version).foreach { roleVersion =>
+          if (TriState.isSelected(value)) {
+            props.dispatch(props.actions.rolePermissionsAdd(
+              props.dispatch,
+              props.selectedRoleId,
+              RolePermissionUpdateReq(ids, roleVersion)
+            ))
           }
-        },
-        openNodes = roots.map(_.key).toSet
-      ))()
-    }
-  )
+          else {
+            props.dispatch(props.actions.rolePermissionsRemove(
+              props.dispatch,
+              props.selectedRoleId,
+              RolePermissionUpdateReq(ids, roleVersion)
+            ))
+          }
+        }
+      },
+      openNodes = roots.map(_.key).toSet
+    ))()
+  }
 
   private[permission] def getAllDescendantIds(id: Int,
                                               permissions: Map[Option[Int], List[RolePermissionData]]): Set[Int] = {
