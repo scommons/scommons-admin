@@ -5,14 +5,16 @@ import org.scalatest._
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
 import scommons.client.task.FutureTask
+import scommons.react._
 import scommons.react.test.TestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
+class SystemPanelSpec extends TestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
   it should "dispatch SystemCreateAction when onSave in create popup" in {
     //given
@@ -112,13 +114,12 @@ class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUti
     editPopupProps.onCancel()
   }
 
-  it should "dispatch SystemListFetchAction when componentDidMount" in {
+  it should "dispatch SystemListFetchAction if empty systems when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemActions]
     val state = SystemState()
     val props = SystemPanelProps(dispatch, actions, state, None, None)
-    val component = <(SystemPanel())(^.wrapped := props)()
     val action = SystemListFetchAction(
       FutureTask("Fetching", Future.successful(SystemListResp(Nil)))
     )
@@ -129,10 +130,13 @@ class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUti
     dispatch.expects(action)
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(SystemPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch SystemListFetchAction if non empty dataList when componentDidMount" in {
+  it should "not dispatch SystemListFetchAction if non empty systems when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemActions]
@@ -145,13 +149,15 @@ class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUti
       parentId = 1
     )).groupBy(_.parentId))
     val props = SystemPanelProps(dispatch, actions, state, None, None)
-    val component = <(SystemPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(SystemPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
   it should "render component" in {
@@ -271,11 +277,13 @@ class SystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUti
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), {
-      case List() => assertComponents(None, None, None)
-      case List(createPopup) => assertComponents(Some(createPopup), None, None)
-      case List(createPopup, editPanel, editPopup) =>
-        assertComponents(Some(createPopup), Some(editPanel), Some(editPopup))
+    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
+      children match {
+        case List() => assertComponents(None, None, None)
+        case List(createPopup) => assertComponents(Some(createPopup), None, None)
+        case List(createPopup, editPanel, editPopup) =>
+          assertComponents(Some(createPopup), Some(editPanel), Some(editPopup))
+      }
     })
   }
 }

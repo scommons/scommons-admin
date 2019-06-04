@@ -2,6 +2,7 @@ package scommons.admin.client.system
 
 import scommons.admin.client.api.system.SystemData
 import scommons.client.ui._
+import scommons.react._
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
@@ -141,7 +142,7 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
   private def assertSystemEditPanel(result: ShallowInstance, props: SystemEditPanelProps): Unit = {
     val data = props.initialData
 
-    assertNativeComponent(result, <.div()(), { case List(nameComp, passwordComp, titleComp, urlComp) =>
+    assertNativeComponent(result, <.>()(), { case List(nameComp, passwordComp, titleComp, urlComp) =>
       assertNativeComponent(nameComp, <.div()(), { case List(labelComp, fieldComp) =>
         assertNativeComponent(labelComp, <.label()("Name"))
         assertComponent(fieldComp, TextField) {

@@ -1,11 +1,8 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import scommons.admin.client.api.system.SystemData
 import scommons.client.ui._
-import scommons.react.UiComponent
+import scommons.react._
 
 case class SystemEditPanelProps(readOnly: Boolean,
                                 initialData: SystemData,
@@ -13,13 +10,13 @@ case class SystemEditPanelProps(readOnly: Boolean,
                                 onChange: SystemData => Unit,
                                 onEnter: () => Unit)
 
-object SystemEditPanel extends UiComponent[SystemEditPanelProps] {
+object SystemEditPanel extends FunctionComponent[SystemEditPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
     val data = props.initialData
 
-    <.div()(
+    <.>()(
       <.div()(
         <.label()("Name"),
         <(TextField())(^.wrapped := TextFieldProps(
