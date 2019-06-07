@@ -6,14 +6,16 @@ import scommons.admin.client.api.system.group._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.client.task.FutureTask
 import scommons.client.ui.popup._
+import scommons.react._
 import scommons.react.test.TestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
+class SystemGroupPanelSpec extends TestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
   it should "dispatch SystemGroupCreateAction when onOk in create popup" in {
     //given
@@ -98,13 +100,12 @@ class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestD
     editPopupProps.onCancel()
   }
 
-  it should "dispatch SystemGroupListFetchAction when componentDidMount" in {
+  it should "dispatch SystemGroupListFetchAction if empty dataList when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemGroupActions]
     val state = SystemGroupState()
     val props = SystemGroupPanelProps(dispatch, actions, state, None)
-    val component = <(SystemGroupPanel())(^.wrapped := props)()
     val action = SystemGroupListFetchAction(
       FutureTask("Fetching", Future.successful(SystemGroupListResp(Nil)))
     )
@@ -115,10 +116,13 @@ class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestD
     dispatch.expects(action)
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch SystemGroupListFetchAction if non empty dataList when componentDidMount" in {
+  it should "not dispatch SystemGroupListFetchAction if non empty dataList when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemGroupActions]
@@ -127,13 +131,15 @@ class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestD
       SystemGroupData(Some(2), "test env 2")
     ))
     val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
-    val component = <(SystemGroupPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
   it should "render component" in {
@@ -223,9 +229,11 @@ class SystemGroupPanelSpec extends TestSpec with ShallowRendererUtils with TestD
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), {
-      case List(createPopup) => assertComponents(createPopup, None)
-      case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
+    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
+      children match {
+        case List(createPopup) => assertComponents(createPopup, None)
+        case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
+      }
     })
   }
 }
