@@ -1,21 +1,18 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import scommons.client.ui.page._
 import scommons.client.ui.table._
-import scommons.react.UiComponent
+import scommons.react._
 
 case class SystemUserTablePanelProps(data: SystemUserState,
                                      selectedUserId: Option[Int],
                                      onChangeSelect: Int => Unit,
                                      onLoadData: (Option[Int], Option[String]) => Unit)
 
-object SystemUserTablePanel extends UiComponent[SystemUserTablePanelProps] {
+object SystemUserTablePanel extends FunctionComponent[SystemUserTablePanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
 
     val header = List(
       TableColumnData("Login"),
@@ -55,7 +52,7 @@ object SystemUserTablePanel extends UiComponent[SystemUserTablePanelProps] {
     val totalPages = PaginationPanel.toTotalPages(props.data.totalCount.getOrElse(0), limit)
     val selectedPage = math.min(totalPages, PaginationPanel.toPage(props.data.offset.getOrElse(0), limit))
 
-    <.div()(
+    <.>()(
       <(TablePanel())(^.wrapped := TablePanelProps(
         header = header,
         rows = rows,

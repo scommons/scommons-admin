@@ -1,23 +1,25 @@
 package scommons.admin.client.system.user
 
+import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.{React, ReactDOM}
 import org.joda.time.DateTime
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.client.task.FutureTask
-import scommons.client.ui.tab.{TabDirection, TabItemData, TabPanel, TabPanelProps}
+import scommons.client.ui.tab._
+import scommons.react._
 import scommons.react.test.dom.AsyncTestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOMUtils {
+class SystemUserPanelSpec extends AsyncTestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
   it should "dispatch actions when select user" in {
     //given
@@ -76,7 +78,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
     Succeeded
   }
 
-  it should "dispatch actions when componentDidMount" in {
+  it should "dispatch actions if diff params when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemUserActions]
@@ -87,7 +89,6 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
       val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
       props.copy(selectedParams = props.selectedParams.copy(systemId = Some(systemId), userId = Some(userId)))
     }
-    val component = <(SystemUserPanel())(^.wrapped := props)()
     val listFetchAction = SystemUserListFetchAction(
       FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), None
     )
@@ -104,36 +105,40 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
     onChangeParams.expects(props.selectedParams)
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(SystemUserPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
 
     Succeeded
   }
 
-  it should "not dispatch actions if params not changed when componentDidMount" in {
+  it should "not dispatch actions if same params when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val onChangeParams = mockFunction[SystemUserParams, Unit]
     val props = getSystemUserPanelProps(dispatch, onChangeParams = onChangeParams)
-    val component = <(SystemUserPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
     onChangeParams.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(SystemUserPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
 
     Succeeded
   }
 
-  it should "dispatch actions when componentDidUpdate" in {
+  it should "dispatch actions if diff params when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemUserActions]
     val onChangeParams = mockFunction[SystemUserParams, Unit]
     val prevProps = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
-    val comp = renderIntoDocument(<(SystemUserPanel())(^.wrapped := prevProps)())
-    val containerElement = findReactElement(comp).parentNode
+    val renderer = createTestRenderer(<(SystemUserPanel())(^.wrapped := prevProps)())
     val newSystemId = 123
     val newUserId = 12345
     val props = prevProps.copy(
@@ -155,18 +160,20 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
     onChangeParams.expects(props.selectedParams)
 
     //when
-    ReactDOM.render(<(SystemUserPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(SystemUserPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
 
     Succeeded
   }
 
-  it should "not dispatch actions if params not changed when componentDidUpdate" in {
+  it should "not dispatch actions if same params when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val onChangeParams = mockFunction[SystemUserParams, Unit]
     val prevProps = getSystemUserPanelProps(dispatch, onChangeParams = onChangeParams)
-    val comp = renderIntoDocument(<(SystemUserPanel())(^.wrapped := prevProps)())
-    val containerElement = findReactElement(comp).parentNode
+    val renderer = createTestRenderer(<(SystemUserPanel())(^.wrapped := prevProps)())
     val props = prevProps.copy(
       data = prevProps.data.copy(
         dataList = Nil
@@ -178,7 +185,10 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
     onChangeParams.expects(*).never()
 
     //when
-    ReactDOM.render(<(SystemUserPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(SystemUserPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
 
     Succeeded
   }
@@ -251,7 +261,8 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
       }
       val result = shallowRender(<(wrapped)()())
 
-      assertNativeComponent(result, <.div()(), { case List(comp) =>
+      assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
+        val List(comp) = children
         assertComponent(comp, SystemUserRolePanel) {
           case SystemUserRolePanelProps(dispatch, actions, data, resSystemId) =>
             dispatch shouldBe props.dispatch
@@ -293,9 +304,11 @@ class SystemUserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with T
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), {
-      case List(tb) => assertComponents(tb, None)
-      case List(tb, rolePanel) => assertComponents(tb, Some(rolePanel))
+    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
+      children match {
+        case List(tb) => assertComponents(tb, None)
+        case List(tb, rolePanel) => assertComponents(tb, Some(rolePanel))
+      }
     })
   }
 }

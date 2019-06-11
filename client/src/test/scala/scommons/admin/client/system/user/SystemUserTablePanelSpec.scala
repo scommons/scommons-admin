@@ -5,6 +5,7 @@ import scommons.admin.client.api.system.user._
 import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
+import scommons.react._
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
@@ -183,7 +184,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val expectedTotalPages = toTotalPages(props.data.totalCount.getOrElse(0), limit)
     val expectedSelectedPage = math.min(expectedTotalPages, toPage(props.data.offset.getOrElse(0), limit))
 
-    assertNativeComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
+    assertNativeComponent(result, <.>()(), { case List(tablePanel, paginationPanel) =>
       assertComponent(tablePanel, TablePanel) {
         case TablePanelProps(header, rows, selectedIds, _) =>
           header shouldBe tableHeader

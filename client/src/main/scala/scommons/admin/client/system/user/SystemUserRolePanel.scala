@@ -1,25 +1,22 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user.SystemUserRoleUpdateReq
 import scommons.admin.client.role.permission.RolePermissionPanel
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
 import scommons.client.ui.tree.{CheckBoxTree, CheckBoxTreeProps}
-import scommons.react.UiComponent
+import scommons.react._
 
 case class SystemUserRolePanelProps(dispatch: Dispatch,
                                     actions: SystemUserActions,
                                     data: SystemUserState,
                                     systemId: Int)
 
-object SystemUserRolePanel extends UiComponent[SystemUserRolePanelProps] {
+object SystemUserRolePanel extends FunctionComponent[SystemUserRolePanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
     
     val roots = RolePermissionPanel.buildTree(props.data.permissionsByParentId)
     

@@ -1,12 +1,9 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
-import scommons.client.ui.tab.{TabItemData, TabPanel, TabPanelProps}
-import scommons.react.UiComponent
+import scommons.client.ui.tab._
+import scommons.react._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,9 +13,9 @@ case class SystemUserPanelProps(dispatch: Dispatch,
                                 selectedParams: SystemUserParams,
                                 onChangeParams: SystemUserParams => Unit)
 
-object SystemUserPanel extends UiComponent[SystemUserPanelProps] {
+object SystemUserPanel extends ClassComponent[SystemUserPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = createClass[Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       props.selectedParams.systemId.foreach { systemId =>
@@ -56,7 +53,7 @@ object SystemUserPanel extends UiComponent[SystemUserPanelProps] {
     render = { self =>
       val props = self.props.wrapped
 
-      <.div()(props.selectedParams.systemId.toList.flatMap { systemId =>
+      <.>()(props.selectedParams.systemId.toList.flatMap { systemId =>
         <(SystemUserTablePanel())(^.wrapped := SystemUserTablePanelProps(
           data = props.data,
           selectedUserId = props.selectedParams.userId,
