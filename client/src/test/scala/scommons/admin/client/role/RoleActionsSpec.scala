@@ -3,7 +3,7 @@ package scommons.admin.client.role
 import scommons.admin.client.api.role._
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RoleActionsSpec._
-import scommons.client.task.FutureTask
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future

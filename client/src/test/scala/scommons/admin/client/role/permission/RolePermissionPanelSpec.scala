@@ -6,9 +6,9 @@ import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.role.permission._
 import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.admin.client.role.permission.RolePermissionPanel._
-import scommons.client.task.FutureTask
 import scommons.client.ui.TriState._
 import scommons.client.ui.tree._
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance

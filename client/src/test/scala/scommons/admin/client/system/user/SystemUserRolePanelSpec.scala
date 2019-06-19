@@ -6,9 +6,9 @@ import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.role.permission.RolePermissionPanel
 import scommons.admin.client.system.user.SystemUserActions._
-import scommons.client.task.FutureTask
 import scommons.client.ui.list._
 import scommons.client.ui.tree._
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils

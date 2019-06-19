@@ -6,7 +6,7 @@ import scommons.admin.client.api.AdminUiApiStatuses._
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.api.ApiStatus.Ok
-import scommons.client.task.{FutureTask, TaskAction}
+import scommons.react.redux.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success

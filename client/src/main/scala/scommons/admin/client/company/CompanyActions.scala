@@ -5,7 +5,7 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.company._
 import scommons.admin.client.company.CompanyActions._
 import scommons.api.ApiStatus.Ok
-import scommons.client.task.{FutureTask, TaskAction}
+import scommons.react.redux.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success

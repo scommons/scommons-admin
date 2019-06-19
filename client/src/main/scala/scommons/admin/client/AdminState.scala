@@ -8,12 +8,11 @@ import scommons.admin.client.system.user.{SystemUserState, SystemUserStateReduce
 import scommons.admin.client.system.{SystemState, SystemStateReducer}
 import scommons.admin.client.user.system.{UserSystemState, UserSystemStateReducer}
 import scommons.admin.client.user.{UserState, UserStateReducer}
-import scommons.client.task.AbstractTask.AbstractTaskKey
-import scommons.client.task.TaskAction
+import scommons.react.redux.task.{AbstractTask, TaskReducer}
 
 trait AdminStateDef {
 
-  def currentTask: Option[AbstractTaskKey]
+  def currentTask: Option[AbstractTask]
   def companyState: CompanyState
   def userState: UserState
   def userSystemState: UserSystemState
@@ -24,7 +23,7 @@ trait AdminStateDef {
   def rolePermissionState: RolePermissionState
 }
 
-case class AdminState(currentTask: Option[AbstractTaskKey],
+case class AdminState(currentTask: Option[AbstractTask],
                       companyState: CompanyState,
                       userState: UserState,
                       userSystemState: UserSystemState,
@@ -37,7 +36,7 @@ case class AdminState(currentTask: Option[AbstractTaskKey],
 object AdminStateReducer {
 
   def reduce(state: Option[AdminState], action: Any): AdminState = AdminState(
-    currentTask = currentTaskReducer(state.flatMap(_.currentTask), action),
+    currentTask = TaskReducer(state.flatMap(_.currentTask), action),
     companyState = CompanyStateReducer(state.map(_.companyState), action),
     userState = UserStateReducer(state.map(_.userState), action),
     userSystemState = UserSystemStateReducer(state.map(_.userSystemState), action),
@@ -47,11 +46,4 @@ object AdminStateReducer {
     roleState = RoleStateReducer(state.map(_.roleState), action),
     rolePermissionState = RolePermissionStateReducer(state.map(_.rolePermissionState), action)
   )
-
-  private def currentTaskReducer(currentTask: Option[AbstractTaskKey],
-                                 action: Any): Option[AbstractTaskKey] = action match {
-
-    case a: TaskAction => Some(a.task.key)
-    case _ => currentTask
-  }
 }

@@ -10,7 +10,7 @@ import scommons.admin.client.system.group.SystemGroupState
 import scommons.admin.client.system.user.SystemUserState
 import scommons.admin.client.user.UserState
 import scommons.admin.client.user.system.UserSystemState
-import scommons.client.task.FutureTask
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
@@ -52,7 +52,7 @@ class AdminStateReducerSpec extends TestSpec {
     
     //when & then
     val result = AdminStateReducer.reduce(None, CompanyListFetchAction(task, None))
-    result.currentTask shouldBe Some(task.key)
+    result.currentTask shouldBe Some(task)
     
     //when & then
     AdminStateReducer.reduce(Some(result), CompanyCreateRequestAction(true))

@@ -11,11 +11,12 @@ import scommons.admin.client.system.group.SystemGroupController
 import scommons.admin.client.system.user.{SystemUserController, SystemUserParams}
 import scommons.admin.client.user.{UserController, UserDetailsTab, UserParams}
 import scommons.client.app._
-import scommons.client.controller.{BaseStateController, PathParams}
+import scommons.client.controller.PathParams
 import scommons.client.ui.tree._
 import scommons.client.ui.Buttons
 import scommons.client.util.BrowsePath
 import scommons.react.UiComponent
+import scommons.react.redux.BaseStateController
 
 class AdminRouteController(companyController: CompanyController,
                            userController: UserController,

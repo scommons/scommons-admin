@@ -3,7 +3,7 @@ package scommons.admin.client.system.group
 import scommons.admin.client.api.system.group._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.SystemGroupActionsSpec._
-import scommons.client.task.FutureTask
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future

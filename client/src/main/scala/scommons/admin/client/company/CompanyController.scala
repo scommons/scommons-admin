@@ -3,11 +3,11 @@ package scommons.admin.client.company
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
-import scommons.client.controller.BaseStateController
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.{ActionsData, BrowsePath}
 import scommons.react.UiComponent
+import scommons.react.redux.BaseStateController
 
 class CompanyController(apiActions: CompanyActions)
   extends BaseStateController[AdminStateDef, CompanyPanelProps] {

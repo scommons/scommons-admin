@@ -6,7 +6,7 @@ import scommons.admin.client.api.role.permission._
 import scommons.admin.client.role.RoleActions.RoleUpdatedAction
 import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.api.ApiStatus.Ok
-import scommons.client.task.{FutureTask, TaskAction}
+import scommons.react.redux.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success

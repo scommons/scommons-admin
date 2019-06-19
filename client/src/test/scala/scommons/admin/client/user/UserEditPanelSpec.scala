@@ -5,9 +5,9 @@ import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.company.CompanyActions.CompanyListFetchAction
-import scommons.client.task.FutureTask
 import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
 import scommons.client.ui.{PasswordField, PasswordFieldProps, TextField, TextFieldProps}
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils

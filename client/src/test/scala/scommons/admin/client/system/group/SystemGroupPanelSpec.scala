@@ -4,9 +4,9 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system.group._
 import scommons.admin.client.system.group.SystemGroupActions._
-import scommons.client.task.FutureTask
 import scommons.client.ui.popup._
 import scommons.react._
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}

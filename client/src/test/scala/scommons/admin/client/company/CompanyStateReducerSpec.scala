@@ -2,7 +2,7 @@ package scommons.admin.client.company
 
 import scommons.admin.client.api.company.{CompanyData, CompanyListResp}
 import scommons.admin.client.company.CompanyActions._
-import scommons.client.task.FutureTask
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 
 import scala.concurrent.Future

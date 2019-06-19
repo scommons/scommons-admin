@@ -9,9 +9,9 @@ import scommons.admin.client.api.user.system.UserSystemData
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system._
-import scommons.client.task.FutureTask
 import scommons.client.ui._
 import scommons.client.ui.popup.raw.NativeReactModal
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.dom.AsyncTestSpec
 import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance

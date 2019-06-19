@@ -8,9 +8,9 @@ import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
-import scommons.client.task.FutureTask
 import scommons.client.ui.tab._
 import scommons.react._
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.dom.AsyncTestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
