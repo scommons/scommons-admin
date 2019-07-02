@@ -1,14 +1,11 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user.{UserCompanyData, UserDetailsData}
 import scommons.admin.client.company.CompanyActions
 import scommons.client.ui._
 import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
-import scommons.react.UiComponent
+import scommons.react._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,10 +16,10 @@ case class UserEditPanelProps(dispatch: Dispatch,
                               onChange: UserDetailsData => Unit,
                               onEnter: () => Unit)
 
-object UserEditPanel extends UiComponent[UserEditPanelProps] {
+object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
     val data = props.initialData
 
     <.div(^.className := "form-horizontal")(

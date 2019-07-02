@@ -1,9 +1,9 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
+import scommons.react._
 import scommons.react.test.TestSpec
 import scommons.react.test.util.ShallowRendererUtils
 
@@ -31,10 +31,12 @@ class UserEditPopupSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val onSave = mockFunction[Unit]
     val props = getUserEditPopupProps()
-    val wrapper = React.createClass[Unit, Unit] { _ =>
-      props.render(props.initialData, requestFocus = true, onChange, onSave)
+    val wrapper = new FunctionComponent[Unit] {
+      protected def render(compProps: Props): ReactElement = {
+        props.render(props.initialData, requestFocus = true, onChange, onSave)
+      }
     }
-    val component = <(wrapper)()()
+    val component = <(wrapper())()()
 
     //when
     val result = shallowRender(component)

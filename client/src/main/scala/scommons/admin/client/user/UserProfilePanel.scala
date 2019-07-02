@@ -1,18 +1,21 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import scommons.admin.client.api.user.UserProfileData
 import scommons.client.ui._
-import scommons.react.UiComponent
+import scommons.react._
 
 case class UserProfilePanelProps(data: UserProfileData)
 
-object UserProfilePanel extends UiComponent[UserProfilePanelProps] {
+object UserProfilePanel extends FunctionComponent[UserProfilePanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  override protected def create(): ReactClass = {
+    ReactMemo[Props](super.create(), { (prevProps, nextProps) =>
+      prevProps.wrapped == nextProps.wrapped
+    })
+  }
+  
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
     val onChange = (_: String) => ()
 
     <.div(^.className := "form-horizontal")(

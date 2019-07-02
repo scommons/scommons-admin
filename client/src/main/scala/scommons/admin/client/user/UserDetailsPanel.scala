@@ -1,24 +1,20 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
-import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
 import scommons.client.ui.tab._
-import scommons.react.UiComponent
+import scommons.react._
 
 case class UserDetailsPanelProps(renderSystems: Props[_] => ReactElement,
                                  profile: UserProfileData,
                                  selectedTab: Option[UserDetailsTab],
                                  onChangeTab: Option[UserDetailsTab] => Unit)
 
-object UserDetailsPanel extends UiComponent[UserDetailsPanelProps] {
+object UserDetailsPanel extends FunctionComponent[UserDetailsPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
     
     val tabItems = List(
       UserDetailsTab.apps -> TabItemData("Applications", image = Some(AdminImagesCss.computer), render = Some(

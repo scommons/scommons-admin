@@ -1,21 +1,18 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import scommons.client.ui.page._
 import scommons.client.ui.table._
-import scommons.react.UiComponent
+import scommons.react._
 
 case class UserTablePanelProps(data: UserState,
                                selectedUserId: Option[Int],
                                onChangeSelect: Int => Unit,
                                onLoadData: (Option[Int], Option[String]) => Unit)
 
-object UserTablePanel extends UiComponent[UserTablePanelProps] {
+object UserTablePanel extends FunctionComponent[UserTablePanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit] { self =>
-    val props = self.props.wrapped
+  protected def render(compProps: Props): ReactElement = {
+    val props = compProps.wrapped
 
     val header = List(
       TableColumnData("Login"),

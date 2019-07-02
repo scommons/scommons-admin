@@ -1,11 +1,10 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user.UserDetailsData
 import scommons.admin.client.company.CompanyActions
 import scommons.client.ui.popup.{SaveCancelPopup, SaveCancelPopupProps}
+import scommons.react._
 
 case class UserEditPopupProps(dispatch: Dispatch,
                               actions: CompanyActions,

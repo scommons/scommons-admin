@@ -1,8 +1,6 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import io.github.shogowada.scalajs.reactjs.{React, ReactDOM}
 import org.scalatest._
 import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system.UserSystemData
@@ -10,19 +8,18 @@ import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system._
 import scommons.client.ui._
-import scommons.client.ui.popup.raw.NativeReactModal
+import scommons.react._
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.dom.AsyncTestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOMUtils {
+class UserPanelSpec extends AsyncTestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
-  NativeReactModal.setAppElement(org.scalajs.dom.document.body)
-  
   it should "dispatch actions when select user" in {
     //given
     val dispatch = mockFunction[Any, Any]
@@ -175,7 +172,7 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
     Succeeded
   }
 
-  it should "dispatch actions when componentDidMount" in {
+  it should "dispatch actions when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserActions]
@@ -188,7 +185,6 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
         selectedParams = selectedParams)
       props.copy(data = props.data.copy(dataList = Nil))
     }
-    val component = <(UserPanel())(^.wrapped := props)()
     val listFetchAction = UserListFetchAction(
       FutureTask("Fetching Users", Future.successful(UserListResp(Nil, None))),
       None
@@ -205,37 +201,39 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
     onChangeParams.expects(selectedParams)
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(UserPanel())(^.wrapped := props)())
 
+    //cleanup
+    renderer.unmount()
     Succeeded
   }
 
-  it should "not dispatch actions if params not changed when componentDidMount" in {
+  it should "not dispatch actions if params not changed when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val onChangeParams = mockFunction[UserParams, Unit]
     val props = getUserPanelProps(dispatch, onChangeParams = onChangeParams)
-    val component = <(UserPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
     onChangeParams.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(UserPanel())(^.wrapped := props)())
 
+    //cleanup
+    renderer.unmount()
     Succeeded
   }
 
-  it should "dispatch actions when componentDidUpdate" in {
+  it should "dispatch actions when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserActions]
     val respData = mock[UserDetailsData]
     val onChangeParams = mockFunction[UserParams, Unit]
     val prevProps = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams)
-    val comp = renderIntoDocument(<(UserPanel())(^.wrapped := prevProps)())
-    val containerElement = findReactElement(comp).parentNode
+    val renderer = createTestRenderer(<(UserPanel())(^.wrapped := prevProps)())
     val newUserId = 123
     val selectedParams = UserParams(Some(newUserId))
     val props = prevProps.copy(
@@ -251,31 +249,31 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
     onChangeParams.expects(selectedParams)
 
     //when
-    ReactDOM.render(<(UserPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(UserPanel())(^.wrapped := props)())
 
+    //cleanup
+    renderer.unmount()
     Succeeded
   }
 
-  it should "not dispatch actions if params not changed when componentDidUpdate" in {
+  it should "not dispatch actions if params not changed when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val onChangeParams = mockFunction[UserParams, Unit]
     val prevProps = getUserPanelProps(dispatch, onChangeParams = onChangeParams)
-    val comp = renderIntoDocument(<(UserPanel())(^.wrapped := prevProps)())
-    val containerElement = findReactElement(comp).parentNode
-    val props = prevProps.copy(
-      data = prevProps.data.copy(
-        showCreatePopup = true
-      )
-    )
+    val renderer = createTestRenderer(<(UserPanel())(^.wrapped := prevProps)())
+    val props = prevProps.copy()
+    props should not be theSameInstanceAs(prevProps)
 
     //then
     dispatch.expects(*).never()
     onChangeParams.expects(*).never()
 
     //when
-    ReactDOM.render(<(UserPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(UserPanel())(^.wrapped := props)())
 
+    //cleanup
+    renderer.unmount()
     Succeeded
   }
 
@@ -391,21 +389,25 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
     val selectedData = props.data.userDetails
 
     def assertUserSystemPanel(component: ReactElement, data: UserDetailsData): Assertion = {
-      val wrapped = React.createClass[Unit, Unit] { _ =>
-        <.div()(component)
+      val wrapped = new FunctionComponent[Unit] {
+        protected def render(compProps: Props): ReactElement = {
+          <.div()(component)
+        }
       }
-      val result = shallowRender(<(wrapped)()())
+      val result = shallowRender(<(wrapped())()())
 
-      assertNativeComponent(result, <.div()(), { case List(comp) =>
-        assertComponent(comp, UserSystemPanel) {
-          case UserSystemPanelProps(dispatch, actions, systemData, selectedUser) =>
-            dispatch shouldBe props.dispatch
-            actions shouldBe props.userSystemActions
-            systemData shouldBe props.systemData
-            selectedUser shouldBe (props.selectedParams.tab.getOrElse(UserDetailsTab.apps) match {
-              case UserDetailsTab.apps => Some(data.user)
-              case _ => None
-            })
+      assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
+        inside(children) { case List(comp) =>
+          assertComponent(comp, UserSystemPanel) {
+            case UserSystemPanelProps(dispatch, actions, systemData, selectedUser) =>
+              dispatch shouldBe props.dispatch
+              actions shouldBe props.userSystemActions
+              systemData shouldBe props.systemData
+              selectedUser shouldBe (props.selectedParams.tab.getOrElse(UserDetailsTab.apps) match {
+                case UserDetailsTab.apps => Some(data.user)
+                case _ => None
+              })
+          }
         }
       })
     }
@@ -479,11 +481,13 @@ class UserPanelSpec extends AsyncTestSpec with ShallowRendererUtils with TestDOM
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), {
-      case List(bp, tp, createPopup) =>
-        assertComponents(bp, tp, createPopup, None, None)
-      case List(bp, tp, createPopup, details, editPopup) =>
-        assertComponents(bp, tp, createPopup, Some(details), Some(editPopup))
+    assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
+      inside(children) {
+        case List(bp, tp, createPopup) =>
+          assertComponents(bp, tp, createPopup, None, None)
+        case List(bp, tp, createPopup, details, editPopup) =>
+          assertComponents(bp, tp, createPopup, Some(details), Some(editPopup))
+      }
     })
   }
 }

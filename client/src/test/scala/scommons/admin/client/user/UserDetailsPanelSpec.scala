@@ -1,12 +1,11 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
 import scommons.client.ui.tab._
+import scommons.react._
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.ShallowInstance
 import scommons.react.test.util.ShallowRendererUtils
@@ -86,10 +85,12 @@ class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
   private def assertUserDetailsPanel(result: ShallowInstance, props: UserDetailsPanelProps): Unit = {
     
     def assertUserProfilePanel(component: ReactElement, data: UserProfileData): Assertion = {
-      val wrapped = React.createClass[Unit, Unit] { _ =>
-        <.div()(component)
+      val wrapped = new FunctionComponent[Unit] {
+        protected def render(props: Props): ReactElement = {
+          <.div()(component)
+        }
       }
-      val result = shallowRender(<(wrapped)()())
+      val result = shallowRender(<(wrapped())()())
 
       assertNativeComponent(result, <.div()(), { case List(comp) =>
         assertComponent(comp, UserProfilePanel) {

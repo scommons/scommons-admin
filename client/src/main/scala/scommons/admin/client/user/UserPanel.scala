@@ -1,16 +1,13 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
-import scommons.admin.client.user.system.{UserSystemActions, UserSystemPanel, UserSystemPanelProps, UserSystemState}
+import scommons.admin.client.user.system._
 import scommons.client.ui._
 import scommons.client.util.ActionsData
-import scommons.react.UiComponent
+import scommons.react._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -23,9 +20,9 @@ case class UserPanelProps(dispatch: Dispatch,
                           selectedParams: UserParams,
                           onChangeParams: UserParams => Unit)
 
-object UserPanel extends UiComponent[UserPanelProps] {
+object UserPanel extends ClassComponent[UserPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = createClass[Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       if (props.data.dataList.isEmpty) {

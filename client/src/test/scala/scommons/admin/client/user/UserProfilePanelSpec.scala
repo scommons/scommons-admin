@@ -3,10 +3,10 @@ package scommons.admin.client.user
 import scommons.admin.client.api.user._
 import scommons.client.ui.{TextField, TextFieldProps}
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.raw.TestInstance
+import scommons.react.test.util.TestRendererUtils
 
-class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
+class UserProfilePanelSpec extends TestSpec with TestRendererUtils {
   
   it should "render component" in {
     //given
@@ -16,16 +16,15 @@ class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
       lastName = "test lastName",
       phone = Some("0123456789")
     ))
-    val component = <(UserProfilePanel())(^.wrapped := props)()
 
     //when
-    val result = shallowRender(component)
+    val result = testRender(<(UserProfilePanel())(^.wrapped := props)()).children(0)
 
     //then
     assertUserProfilePanel(result, props)
   }
 
-  private def assertUserProfilePanel(result: ShallowInstance, props: UserProfilePanelProps): Unit = {
+  private def assertUserProfilePanel(result: TestInstance, props: UserProfilePanelProps): Unit = {
     assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
       case List(
       firstNameComp,
@@ -36,7 +35,7 @@ class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
         assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("First Name"))
           assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+            assertTestComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.firstName
                 requestFocus shouldBe false
@@ -50,7 +49,7 @@ class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
         assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("Last Name"))
           assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+            assertTestComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.lastName
                 requestFocus shouldBe false
@@ -64,7 +63,7 @@ class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
         assertNativeComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("E-mail"))
           assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+            assertTestComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.email
                 requestFocus shouldBe false
@@ -78,7 +77,7 @@ class UserProfilePanelSpec extends TestSpec with ShallowRendererUtils {
         assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("Phone"))
           assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+            assertTestComponent(fieldComp, TextField) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe props.data.phone.getOrElse("")
                 requestFocus shouldBe false
