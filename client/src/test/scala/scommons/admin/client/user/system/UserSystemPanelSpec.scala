@@ -1,6 +1,5 @@
 package scommons.admin.client.user.system
 
-import io.github.shogowada.scalajs.reactjs.ReactDOM
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user.system._
@@ -9,13 +8,14 @@ import scommons.admin.client.user.system.UserSystemActions._
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
-import scommons.react.test.dom.util.TestDOMUtils
 import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
 
 import scala.concurrent.Future
 
-class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
+class UserSystemPanelSpec extends TestSpec
+  with ShallowRendererUtils
+  with TestRendererUtils {
 
   it should "dispatch UserSystemAddAction if add item(s) when onSelectChange" in {
     //given
@@ -95,7 +95,7 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
     pickListProps.onSelectChange(Set("1"), false)
   }
 
-  it should "dispatch UserSystemFetchAction when componentDidMount" in {
+  it should "dispatch UserSystemFetchAction when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserSystemActions]
@@ -114,7 +114,6 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
     )
     val state = UserSystemState()
     val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val component = <(UserSystemPanel())(^.wrapped := props)()
     val action = UserSystemFetchAction(
       FutureTask("Fetching", Future.successful(UserSystemResp(respData)))
     )
@@ -125,10 +124,13 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
     dispatch.expects(action)
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := props)())
+    
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch UserSystemFetchAction if same selectedUser id when componentDidMount" in {
+  it should "not dispatch UserSystemFetchAction if same selectedUser id when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserSystemActions]
@@ -150,16 +152,18 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
       userId = respData.user.id
     )
     val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val component = <(UserSystemPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := props)())
+
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch UserSystemFetchAction if selectedUser not defined when componentDidMount" in {
+  it should "not dispatch UserSystemFetchAction if selectedUser not defined when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserSystemActions]
@@ -181,16 +185,18 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
       userId = respData.user.id
     )
     val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = None)
-    val component = <(UserSystemPanel())(^.wrapped := props)()
 
     //then
     dispatch.expects(*).never()
 
     //when
-    renderIntoDocument(component)
+    val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := props)())
+
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "dispatch UserSystemFetchAction when componentDidUpdate" in {
+  it should "dispatch UserSystemFetchAction when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserSystemActions]
@@ -212,11 +218,9 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
       userId = respData.user.id
     )
     val prevProps = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val comp = renderIntoDocument(<(UserSystemPanel())(^.wrapped := prevProps)())
     val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(
       userData.copy(id = Some(userId))
     ))
-    val containerElement = findReactElement(comp).parentNode
     props.selectedUser.get.id should not be prevProps.selectedUser.get.id
     
     val action = UserSystemFetchAction(
@@ -224,15 +228,19 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
     )
     (actions.userSystemsFetch _).expects(dispatch, userId)
       .returning(action)
+    val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := prevProps)())
 
     //then
     dispatch.expects(action)
 
     //when
-    ReactDOM.render(<(UserSystemPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(UserSystemPanel())(^.wrapped := props)())
+
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch UserSystemFetchAction if same selectedUser id when componentDidUpdate" in {
+  it should "not dispatch UserSystemFetchAction if same selectedUser id when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserSystemActions]
@@ -254,22 +262,24 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
       userId = respData.user.id
     )
     val prevProps = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val comp = renderIntoDocument(<(UserSystemPanel())(^.wrapped := prevProps)())
     val props = UserSystemPanelProps(dispatch, mock[UserSystemActions], state, selectedUser = Some(
       userData.copy(login = "changed_login")
     ))
-    val containerElement = findReactElement(comp).parentNode
     props should not be prevProps
     props.selectedUser.get.id shouldBe prevProps.selectedUser.get.id
+    val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := prevProps)())
     
     //then
     dispatch.expects(*).never()
 
     //when
-    ReactDOM.render(<(UserSystemPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(UserSystemPanel())(^.wrapped := props)())
+
+    //cleanup
+    renderer.unmount()
   }
 
-  it should "not dispatch UserSystemFetchAction if selectedUser not defined when componentDidUpdate" in {
+  it should "not dispatch UserSystemFetchAction if selectedUser not defined when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[UserSystemActions]
@@ -291,18 +301,20 @@ class UserSystemPanelSpec extends TestSpec with ShallowRendererUtils with TestDO
       userId = respData.user.id
     )
     val prevProps = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val comp = renderIntoDocument(<(UserSystemPanel())(^.wrapped := prevProps)())
     val props = UserSystemPanelProps(dispatch, mock[UserSystemActions], state, selectedUser = None)
-    val containerElement = findReactElement(comp).parentNode
     props should not be prevProps
     prevProps.selectedUser should not be None
     props.selectedUser shouldBe None
+    val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := prevProps)())
     
     //then
     dispatch.expects(*).never()
 
     //when
-    ReactDOM.render(<(UserSystemPanel())(^.wrapped := props)(), containerElement)
+    renderer.update(<(UserSystemPanel())(^.wrapped := props)())
+
+    //cleanup
+    renderer.unmount()
   }
 
   it should "render component" in {

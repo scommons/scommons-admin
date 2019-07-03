@@ -1,23 +1,20 @@
 package scommons.admin.client.user.system
 
-import io.github.shogowada.scalajs.reactjs.React
-import io.github.shogowada.scalajs.reactjs.VirtualDOM._
-import io.github.shogowada.scalajs.reactjs.classes.ReactClass
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user.UserData
 import scommons.admin.client.api.user.system.UserSystemUpdateReq
 import scommons.client.ui.list._
-import scommons.react.UiComponent
+import scommons.react._
 
 case class UserSystemPanelProps(dispatch: Dispatch,
                                 actions: UserSystemActions,
                                 systemData: UserSystemState,
                                 selectedUser: Option[UserData])
 
-object UserSystemPanel extends UiComponent[UserSystemPanelProps] {
+object UserSystemPanel extends ClassComponent[UserSystemPanelProps] {
 
-  protected def create(): ReactClass = React.createClass[PropsType, Unit](
+  protected def create(): ReactClass = createClass[Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
       val selectedUserId = props.selectedUser.flatMap(_.id)
