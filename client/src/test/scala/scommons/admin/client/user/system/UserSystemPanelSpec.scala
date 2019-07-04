@@ -8,14 +8,12 @@ import scommons.admin.client.user.system.UserSystemActions._
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
+import scommons.react.test.raw.TestInstance
+import scommons.react.test.util.TestRendererUtils
 
 import scala.concurrent.Future
 
-class UserSystemPanelSpec extends TestSpec
-  with ShallowRendererUtils
-  with TestRendererUtils {
+class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
 
   it should "dispatch UserSystemAddAction if add item(s) when onSelectChange" in {
     //given
@@ -32,15 +30,15 @@ class UserSystemPanelSpec extends TestSpec
       version = Some(version)
     )
     val respData = UserSystemRespData(
-      List(UserSystemData(1, "test_app", isSelected = false)),
-      userData
+      systems = List(UserSystemData(1, "test_app", isSelected = false)),
+      user = userData
     )
     val state = UserSystemState(
       systems = respData.systems,
       userId = respData.user.id
     )
     val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val comp = shallowRender(<(UserSystemPanel())(^.wrapped := props)())
+    val comp = testRender(<(UserSystemPanel())(^.wrapped := props)())
     val pickListProps = findComponentProps(comp, PickList)
     val data = UserSystemUpdateReq(Set(1), version)
     val action = UserSystemAddAction(
@@ -79,7 +77,7 @@ class UserSystemPanelSpec extends TestSpec
       userId = respData.user.id
     )
     val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val comp = shallowRender(<(UserSystemPanel())(^.wrapped := props)())
+    val comp = testRender(<(UserSystemPanel())(^.wrapped := props)())
     val pickListProps = findComponentProps(comp, PickList)
     val data = UserSystemUpdateReq(Set(1), version)
     val action = UserSystemRemoveAction(
@@ -344,14 +342,14 @@ class UserSystemPanelSpec extends TestSpec
     val component = <(UserSystemPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
-    assertUserSystemPanel(result, props)
+    assertUserSystemPanel(result.children(0), props)
   }
 
-  private def assertUserSystemPanel(result: ShallowInstance, props: UserSystemPanelProps): Unit = {
-    assertComponent(result, PickList) {
+  private def assertUserSystemPanel(result: TestInstance, props: UserSystemPanelProps): Unit = {
+    assertTestComponent(result, PickList) {
       case PickListProps(items, selectedIds, preSelectedIds, _, sourceTitle, destTitle) =>
         items shouldBe props.systemData.systems.map { s =>
           ListBoxData(s.id.toString, s.name, Some(AdminImagesCss.computer))
