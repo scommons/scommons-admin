@@ -97,7 +97,10 @@ class UserPanelSpec extends AsyncTestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val userActions = mock[UserActions]
-    val props = getUserPanelProps(dispatch, userActions = userActions)
+    val props = {
+      val props = getUserPanelProps(dispatch, userActions = userActions)
+      props.copy(data = props.data.copy(showCreatePopup = true))
+    }
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, UserEditPopup)
     val data = mock[UserDetailsData]
@@ -119,7 +122,10 @@ class UserPanelSpec extends AsyncTestSpec
   it should "dispatch UserCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val props = getUserPanelProps(dispatch)
+    val props = {
+      val props = getUserPanelProps(dispatch)
+      props.copy(data = props.data.copy(showCreatePopup = true))
+    }
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, UserEditPopup)
 
@@ -136,10 +142,13 @@ class UserPanelSpec extends AsyncTestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val userActions = mock[UserActions]
-    val props: UserPanelProps = getUserPanelProps(dispatch, userActions = userActions)
+    val props: UserPanelProps = {
+      val props = getUserPanelProps(dispatch, userActions = userActions)
+      props.copy(data = props.data.copy(showEditPopup = true))
+    }
     val data = props.data.userDetails.get
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val editPopupProps = findProps(comp, UserEditPopup)(1)
+    val editPopupProps = findComponentProps(comp, UserEditPopup)
     val action = UserUpdateAction(
       FutureTask("Updating", Future.successful(UserDetailsResp(data)))
     )
@@ -159,9 +168,12 @@ class UserPanelSpec extends AsyncTestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val userActions = mock[UserActions]
-    val props = getUserPanelProps(dispatch, userActions = userActions)
+    val props = {
+      val props = getUserPanelProps(dispatch, userActions = userActions)
+      props.copy(data = props.data.copy(showEditPopup = true))
+    }
     val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val editPopupProps = findProps(comp, UserEditPopup)(1)
+    val editPopupProps = findComponentProps(comp, UserEditPopup)
 
     //then
     dispatch.expects(UserUpdateRequestAction(update = false))
@@ -414,7 +426,7 @@ class UserPanelSpec extends AsyncTestSpec
 
     def assertComponents(buttonsPanel: ShallowInstance,
                          tablePanel: ShallowInstance,
-                         createPopup: ShallowInstance,
+                         createPopup: Option[ShallowInstance],
                          detailsPanel: Option[ShallowInstance],
                          editPopup: Option[ShallowInstance]): Assertion = {
 
@@ -433,27 +445,29 @@ class UserPanelSpec extends AsyncTestSpec
           selectedUserId shouldBe props.selectedParams.userId
       }
 
-      assertComponent(createPopup, UserEditPopup) {
-        case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
-          dispatch shouldBe props.dispatch
-          actions shouldBe props.companyActions
-          show shouldBe props.data.showCreatePopup
-          title shouldBe "New User"
-          initialData shouldBe UserDetailsData(
-            user = UserData(
-              id = None,
-              company = UserCompanyData(-1, ""),
-              login = "",
-              password = "",
-              active = true
-            ),
-            profile = UserProfileData(
-              email = "",
-              firstName = "",
-              lastName = "",
-              phone = None
+      if (props.data.showCreatePopup) {
+        createPopup.isDefined shouldBe true
+        assertComponent(createPopup.get, UserEditPopup) {
+          case UserEditPopupProps(dispatch, actions, title, initialData, _, _) =>
+            dispatch shouldBe props.dispatch
+            actions shouldBe props.companyActions
+            title shouldBe "New User"
+            initialData shouldBe UserDetailsData(
+              user = UserData(
+                id = None,
+                company = UserCompanyData(-1, ""),
+                login = "",
+                password = "",
+                active = true
+              ),
+              profile = UserProfileData(
+                email = "",
+                firstName = "",
+                lastName = "",
+                phone = None
+              )
             )
-          )
+        }
       }
 
       detailsPanel.isEmpty shouldBe selectedData.isEmpty
@@ -467,13 +481,12 @@ class UserPanelSpec extends AsyncTestSpec
         }
       }
       
-      editPopup.isEmpty shouldBe selectedData.isEmpty
+      editPopup.isEmpty shouldBe (selectedData.isEmpty && !props.data.showEditPopup)
       selectedData.foreach { data =>
         assertComponent(editPopup.get, UserEditPopup) {
-          case UserEditPopupProps(dispatch, actions, show, title, initialData, _, _) =>
+          case UserEditPopupProps(dispatch, actions, title, initialData, _, _) =>
             dispatch shouldBe props.dispatch
             actions shouldBe props.companyActions
-            show shouldBe props.data.showEditPopup
             title shouldBe "Edit User"
             initialData shouldBe data
         }
@@ -483,10 +496,14 @@ class UserPanelSpec extends AsyncTestSpec
     
     assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
       inside(children) {
-        case List(bp, tp, createPopup) =>
-          assertComponents(bp, tp, createPopup, None, None)
-        case List(bp, tp, createPopup, details, editPopup) =>
-          assertComponents(bp, tp, createPopup, Some(details), Some(editPopup))
+        case List(bp, tp) =>
+          assertComponents(bp, tp, None, None, None)
+        case List(bp, tp, createPopup) if props.data.showCreatePopup =>
+          assertComponents(bp, tp, Some(createPopup), None, None)
+        case List(bp, tp, details, editPopup) if props.data.showEditPopup =>
+          assertComponents(bp, tp, None, Some(details), Some(editPopup))
+        case List(bp, tp, details) if props.data.showEditPopup =>
+          assertComponents(bp, tp, None, Some(details), None)
       }
     })
   }

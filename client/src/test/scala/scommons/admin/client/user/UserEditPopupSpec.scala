@@ -55,7 +55,6 @@ class UserEditPopupSpec extends TestSpec with ShallowRendererUtils {
 
   private def getUserEditPopupProps(dispatch: Dispatch = mock[Dispatch],
                                     companyActions: CompanyActions = mock[CompanyActions],
-                                    show: Boolean = true,
                                     title: String = "test title",
                                     initialData: UserDetailsData = UserDetailsData(
                                       user = UserData(
@@ -78,7 +77,6 @@ class UserEditPopupSpec extends TestSpec with ShallowRendererUtils {
     UserEditPopupProps(
       dispatch = dispatch,
       actions = companyActions,
-      show = show,
       title = title,
       initialData = initialData,
       onSave = onSave,

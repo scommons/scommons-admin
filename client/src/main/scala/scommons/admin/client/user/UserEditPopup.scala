@@ -8,7 +8,6 @@ import scommons.react._
 
 case class UserEditPopupProps(dispatch: Dispatch,
                               actions: CompanyActions,
-                              show: Boolean,
                               title: String,
                               initialData: UserDetailsData,
                               onSave: UserDetailsData => Unit,

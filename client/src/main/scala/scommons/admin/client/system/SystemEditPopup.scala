@@ -5,8 +5,7 @@ import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import scommons.admin.client.api.system.SystemData
 import scommons.client.ui.popup.{SaveCancelPopup, SaveCancelPopupProps}
 
-case class SystemEditPopupProps(show: Boolean,
-                                title: String,
+case class SystemEditPopupProps(title: String,
                                 initialData: SystemData,
                                 onSave: SystemData => Unit,
                                 onCancel: () => Unit) extends SaveCancelPopupProps {

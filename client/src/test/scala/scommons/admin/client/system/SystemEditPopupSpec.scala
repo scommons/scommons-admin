@@ -1,7 +1,7 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.React
 import scommons.admin.client.api.system.SystemData
+import scommons.react._
 import scommons.react.test.TestSpec
 import scommons.react.test.util.ShallowRendererUtils
 
@@ -26,10 +26,12 @@ class SystemEditPopupSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[SystemData, Unit]
     val onSave = mockFunction[Unit]
     val props = getSystemEditPopupProps()
-    val wrapper = React.createClass[Unit, Unit] { _ =>
-      props.render(props.initialData, requestFocus = true, onChange, onSave)
+    val wrapper = new FunctionComponent[Unit] {
+      protected def render(compProps: Props): ReactElement = {
+        props.render(props.initialData, requestFocus = true, onChange, onSave)
+      }
     }
-    val component = <(wrapper)()()
+    val component = <(wrapper())()()
 
     //when
     val result = shallowRender(component)
@@ -45,8 +47,7 @@ class SystemEditPopupSpec extends TestSpec with ShallowRendererUtils {
     }
   }
 
-  private def getSystemEditPopupProps(show: Boolean = true,
-                                      title: String = "test title",
+  private def getSystemEditPopupProps(title: String = "test title",
                                       initialData: SystemData = SystemData(
                                         id = Some(11),
                                         name = "test name",
@@ -59,7 +60,6 @@ class SystemEditPopupSpec extends TestSpec with ShallowRendererUtils {
                                       onCancel: () => Unit = () => ()): SystemEditPopupProps = {
 
     SystemEditPopupProps(
-      show = show,
       title = title,
       initialData = initialData,
       onSave = onSave,

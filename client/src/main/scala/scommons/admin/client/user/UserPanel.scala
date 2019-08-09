@@ -79,34 +79,35 @@ object UserPanel extends ClassComponent[UserPanelProps] {
             props.dispatch(props.userActions.userListFetch(props.dispatch, offset, symbols))
           }
         ))(),
-  
-        <(UserEditPopup())(^.wrapped := UserEditPopupProps(
-          dispatch = props.dispatch,
-          actions = props.companyActions,
-          show = props.data.showCreatePopup,
-          title = "New User",
-          initialData = UserDetailsData(
-            user = UserData(
-              id = None,
-              company = UserCompanyData(-1, ""),
-              login = "",
-              password = "",
-              active = true
+        
+        if (props.data.showCreatePopup) Some(
+          <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+            dispatch = props.dispatch,
+            actions = props.companyActions,
+            title = "New User",
+            initialData = UserDetailsData(
+              user = UserData(
+                id = None,
+                company = UserCompanyData(-1, ""),
+                login = "",
+                password = "",
+                active = true
+              ),
+              profile = UserProfileData(
+                email = "",
+                firstName = "",
+                lastName = "",
+                phone = None
+              )
             ),
-            profile = UserProfileData(
-              email = "",
-              firstName = "",
-              lastName = "",
-              phone = None
-            )
-          ),
-          onSave = { data =>
-            props.dispatch(props.userActions.userCreate(props.dispatch, data))
-          },
-          onCancel = { () =>
-            props.dispatch(UserCreateRequestAction(create = false))
-          }
-        ))(),
+            onSave = { data =>
+              props.dispatch(props.userActions.userCreate(props.dispatch, data))
+            },
+            onCancel = { () =>
+              props.dispatch(UserCreateRequestAction(create = false))
+            }
+          ))()
+        ) else None,
         
         userDetailsData.toList.flatMap { data =>
           List(
@@ -128,20 +129,21 @@ object UserPanel extends ClassComponent[UserPanelProps] {
                 props.onChangeParams(props.selectedParams.copy(tab = tab))
               }
             ))(),
-  
-            <(UserEditPopup())(^.wrapped := UserEditPopupProps(
-              dispatch = props.dispatch,
-              actions = props.companyActions,
-              show = props.data.showEditPopup,
-              title = "Edit User",
-              initialData = data,
-              onSave = { updatedData =>
-                props.dispatch(props.userActions.userUpdate(props.dispatch, updatedData))
-              },
-              onCancel = { () =>
-                props.dispatch(UserUpdateRequestAction(update = false))
-              }
-            ))()
+
+            if (props.data.showEditPopup) Some(
+              <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+                dispatch = props.dispatch,
+                actions = props.companyActions,
+                title = "Edit User",
+                initialData = data,
+                onSave = { updatedData =>
+                  props.dispatch(props.userActions.userUpdate(props.dispatch, updatedData))
+                },
+                onCancel = { () =>
+                  props.dispatch(UserUpdateRequestAction(update = false))
+                }
+              ))()
+            ) else None
           )
         }
       )

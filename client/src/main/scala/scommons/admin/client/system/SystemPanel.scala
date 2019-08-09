@@ -28,25 +28,26 @@ object SystemPanel extends FunctionComponent[SystemPanelProps] {
     }
     
     <.>()(
-      props.selectedParentId.map { parentId =>
-        <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
-          show = props.state.showCreatePopup,
-          title = "New Application",
-          initialData = SystemData(
-            id = None,
-            name = "",
-            password = "",
-            title = "",
-            url = "",
-            parentId = parentId
-          ),
-          onSave = { data =>
-            props.dispatch(props.actions.systemCreate(props.dispatch, data))
-          },
-          onCancel = { () =>
-            props.dispatch(SystemCreateRequestAction(create = false))
-          }
-        ))()
+      props.selectedParentId.flatMap { parentId =>
+        if (props.state.showCreatePopup) Some(
+          <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
+            title = "New Application",
+            initialData = SystemData(
+              id = None,
+              name = "",
+              password = "",
+              title = "",
+              url = "",
+              parentId = parentId
+            ),
+            onSave = { data =>
+              props.dispatch(props.actions.systemCreate(props.dispatch, data))
+            },
+            onCancel = { () =>
+              props.dispatch(SystemCreateRequestAction(create = false))
+            }
+          ))()
+        ) else None
       },
       selectedData.map { data =>
         <(SystemEditPanel())(^.wrapped := SystemEditPanelProps(
@@ -57,18 +58,19 @@ object SystemPanel extends FunctionComponent[SystemPanelProps] {
           onEnter = () => ()
         ))()
       },
-      selectedData.map { data =>
-        <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
-          show = props.state.showEditPopup,
-          title = "Edit Application",
-          initialData = data,
-          onSave = { updatedData =>
-            props.dispatch(props.actions.systemUpdate(props.dispatch, updatedData))
-          },
-          onCancel = { () =>
-            props.dispatch(SystemUpdateRequestAction(update = false))
-          }
-        ))()
+      selectedData.flatMap { data =>
+        if (props.state.showEditPopup) Some(
+          <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
+            title = "Edit Application",
+            initialData = data,
+            onSave = { updatedData =>
+              props.dispatch(props.actions.systemUpdate(props.dispatch, updatedData))
+            },
+            onCancel = { () =>
+              props.dispatch(SystemUpdateRequestAction(update = false))
+            }
+          ))()
+        ) else None
       }
     )
   }
