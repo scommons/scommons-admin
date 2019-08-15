@@ -25,30 +25,32 @@ object SystemGroupPanel extends FunctionComponent[SystemGroupPanelProps] {
     val selectedData = props.state.dataList.find(_.id == props.selectedId)
     
     <.>()(
-      <(InputPopup())(^.wrapped := InputPopupProps(
-        props.state.showCreatePopup,
-        "Enter Environment name:",
-        onOk = { text =>
-          props.dispatch(props.actions.systemGroupCreate(props.dispatch, text))
-        },
-        onCancel = { () =>
-          props.dispatch(SystemGroupCreateRequestAction(create = false))
-        },
-        initialValue = "New Environment"
-      ))(),
-      
-      selectedData.map { data =>
+      if (props.state.showCreatePopup) Some(
         <(InputPopup())(^.wrapped := InputPopupProps(
-          props.state.showEditPopup,
-          "Enter new Environment name:",
+          message = "Enter Environment name:",
           onOk = { text =>
-            props.dispatch(props.actions.systemGroupUpdate(props.dispatch, data.copy(name = text)))
+            props.dispatch(props.actions.systemGroupCreate(props.dispatch, text))
           },
           onCancel = { () =>
-            props.dispatch(SystemGroupUpdateRequestAction(update = false))
+            props.dispatch(SystemGroupCreateRequestAction(create = false))
           },
-          initialValue = data.name
+          initialValue = "New Environment"
         ))()
+      ) else None,
+      
+      selectedData.flatMap { data =>
+        if (props.state.showEditPopup) Some(
+          <(InputPopup())(^.wrapped := InputPopupProps(
+            message = "Enter new Environment name:",
+            onOk = { text =>
+              props.dispatch(props.actions.systemGroupUpdate(props.dispatch, data.copy(name = text)))
+            },
+            onCancel = { () =>
+              props.dispatch(SystemGroupUpdateRequestAction(update = false))
+            },
+            initialValue = data.name
+          ))()
+        ) else None
       }
     )
   }

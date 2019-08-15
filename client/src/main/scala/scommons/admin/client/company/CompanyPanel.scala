@@ -44,30 +44,32 @@ object CompanyPanel extends ClassComponent[CompanyPanelProps] {
           }
         ))(),
         
-        <(InputPopup())(^.wrapped := InputPopupProps(
-          props.data.showCreatePopup,
-          "Enter Company name:",
-          onOk = { text =>
-            props.dispatch(props.actions.companyCreate(props.dispatch, text))
-          },
-          onCancel = { () =>
-            props.dispatch(CompanyCreateRequestAction(create = false))
-          },
-          initialValue = "New Company"
-        ))(),
-  
-        selectedData.map { data =>
+        if (props.data.showCreatePopup) Some(
           <(InputPopup())(^.wrapped := InputPopupProps(
-            props.data.showEditPopup,
-            "Enter new Company name:",
+            message = "Enter Company name:",
             onOk = { text =>
-              props.dispatch(props.actions.companyUpdate(props.dispatch, data.copy(name = text)))
+              props.dispatch(props.actions.companyCreate(props.dispatch, text))
             },
             onCancel = { () =>
-              props.dispatch(CompanyUpdateRequestAction(update = false))
+              props.dispatch(CompanyCreateRequestAction(create = false))
             },
-            initialValue = data.name
+            initialValue = "New Company"
           ))()
+        ) else None,
+  
+        selectedData.flatMap { data =>
+          if (props.data.showEditPopup) Some(
+            <(InputPopup())(^.wrapped := InputPopupProps(
+              message = "Enter new Company name:",
+              onOk = { text =>
+                props.dispatch(props.actions.companyUpdate(props.dispatch, data.copy(name = text)))
+              },
+              onCancel = { () =>
+                props.dispatch(CompanyUpdateRequestAction(update = false))
+              },
+              initialValue = data.name
+            ))()
+          ) else None
         }
       )
     }

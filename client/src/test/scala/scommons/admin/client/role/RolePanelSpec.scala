@@ -21,7 +21,7 @@ class RolePanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RoleActions]
-    val state = RoleState()
+    val state = RoleState(showCreatePopup = true)
     val props = RolePanelProps(dispatch, actions, state, Some(2), None)
     val comp = shallowRender(<(RolePanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, InputPopup)
@@ -43,7 +43,7 @@ class RolePanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RoleActions]
-    val state = RoleState()
+    val state = RoleState(showCreatePopup = true)
     val props = RolePanelProps(dispatch, actions, state, Some(2), None)
     val comp = shallowRender(<(RolePanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, InputPopup)
@@ -59,13 +59,16 @@ class RolePanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RoleActions]
-    val state = RoleState(List(
-      RoleData(Some(1), 3, "test role 1"),
-      RoleData(Some(2), 3, "test role 2")
-    ).groupBy(_.systemId))
+    val state = RoleState(
+      rolesBySystemId = List(
+        RoleData(Some(1), 3, "test role 1"),
+        RoleData(Some(2), 3, "test role 2")
+      ).groupBy(_.systemId),
+      showEditPopup = true
+    )
     val props = RolePanelProps(dispatch, actions, state, Some(3), Some(1))
     val comp = shallowRender(<(RolePanel())(^.wrapped := props)())
-    val editPopupProps = findProps(comp, InputPopup)(1)
+    val editPopupProps = findComponentProps(comp, InputPopup)
     val data = RoleData(Some(1), 3, "updated role")
     val action = RoleUpdateAction(
       FutureTask("Updating", Future.successful(RoleResp(data)))
@@ -84,13 +87,16 @@ class RolePanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[RoleActions]
-    val state = RoleState(List(
-      RoleData(Some(1), 3, "test role 1"),
-      RoleData(Some(2), 3, "test role 2")
-    ).groupBy(_.systemId))
+    val state = RoleState(
+      rolesBySystemId = List(
+        RoleData(Some(1), 3, "test role 1"),
+        RoleData(Some(2), 3, "test role 2")
+      ).groupBy(_.systemId),
+      showEditPopup = true
+    )
     val props = RolePanelProps(dispatch, actions, state, Some(3), Some(1))
     val comp = shallowRender(<(RolePanel())(^.wrapped := props)())
-    val editPopupProps = findProps(comp, InputPopup)(1)
+    val editPopupProps = findComponentProps(comp, InputPopup)
 
     //then
     dispatch.expects(RoleUpdateRequestAction(update = false))
@@ -207,25 +213,28 @@ class RolePanelSpec extends TestSpec
         .find(_.id == props.selectedId)
     }
 
-    def assertComponents(createPopup: ShallowInstance,
+    def assertComponents(createPopup: Option[ShallowInstance],
                          editPopup: Option[ShallowInstance]): Assertion = {
 
-      assertComponent(createPopup, InputPopup) {
-        case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
-          show shouldBe props.state.showCreatePopup
-          message shouldBe "Enter Role title:"
-          placeholder shouldBe None
-          initialValue shouldBe "NEW_ROLE"
+      createPopup.isDefined shouldBe props.state.showCreatePopup
+      createPopup.foreach { cp =>
+        assertComponent(cp, InputPopup) {
+          case InputPopupProps(message, _, _, placeholder, initialValue) =>
+            message shouldBe "Enter Role title:"
+            placeholder shouldBe None
+            initialValue shouldBe "NEW_ROLE"
+        }
       }
       
-      editPopup.isEmpty shouldBe selectedData.isEmpty
+      editPopup.isDefined shouldBe (selectedData.isDefined && props.state.showEditPopup)
       selectedData.foreach { data =>
-        assertComponent(editPopup.get, InputPopup) {
-          case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
-            show shouldBe props.state.showEditPopup
-            message shouldBe "Enter new Role title:"
-            placeholder shouldBe None
-            initialValue shouldBe data.title
+        editPopup.foreach { ep =>
+          assertComponent(ep, InputPopup) {
+            case InputPopupProps(message, _, _, placeholder, initialValue) =>
+              message shouldBe "Enter new Role title:"
+              placeholder shouldBe None
+              initialValue shouldBe data.title
+          }
         }
       }
       Succeeded
@@ -233,8 +242,9 @@ class RolePanelSpec extends TestSpec
     
     assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
       children match {
-        case List(createPopup) => assertComponents(createPopup, None)
-        case List(createPopup, editPopup) => assertComponents(createPopup, Some(editPopup))
+        case List(createPopup) if props.state.showCreatePopup => assertComponents(Some(createPopup), None)
+        case List(editPopup) if props.state.showEditPopup => assertComponents(None, Some(editPopup))
+        case Nil => assertComponents(None, None)
       }
     })
   }

@@ -54,7 +54,7 @@ class CompanyPanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[CompanyActions]
-    val state = CompanyState()
+    val state = CompanyState(showCreatePopup = true)
     val props = CompanyPanelProps(dispatch, actions, state)
     val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, InputPopup)
@@ -76,7 +76,7 @@ class CompanyPanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[CompanyActions]
-    val state = CompanyState()
+    val state = CompanyState(showCreatePopup = true)
     val props = CompanyPanelProps(dispatch, actions, state)
     val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, InputPopup)
@@ -97,11 +97,12 @@ class CompanyPanelSpec extends TestSpec
         CompanyData(Some(1), "test comp 1"),
         CompanyData(Some(2), "test comp 2")
       ),
-      selectedId = Some(1)
+      selectedId = Some(1),
+      showEditPopup = true
     )
     val props = CompanyPanelProps(dispatch, actions, state)
     val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val editPopupProps = findProps(comp, InputPopup)(1)
+    val editPopupProps = findComponentProps(comp, InputPopup)
     val text = "updated comp"
     val data = CompanyData(Some(1), text)
     val action = CompanyUpdateAction(
@@ -126,11 +127,12 @@ class CompanyPanelSpec extends TestSpec
         CompanyData(Some(1), "test comp 1"),
         CompanyData(Some(2), "test comp 2")
       ),
-      selectedId = Some(1)
+      selectedId = Some(1),
+      showEditPopup = true
     )
     val props = CompanyPanelProps(dispatch, actions, state)
     val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val editPopupProps = findProps(comp, InputPopup)(1)
+    val editPopupProps = findComponentProps(comp, InputPopup)
 
     //then
     dispatch.expects(CompanyUpdateRequestAction(update = false))
@@ -291,7 +293,7 @@ class CompanyPanelSpec extends TestSpec
 
     def assertComponents(buttonsPanel: ShallowInstance,
                          tablePanel: ShallowInstance,
-                         createPopup: ShallowInstance,
+                         createPopup: Option[ShallowInstance],
                          editPopup: Option[ShallowInstance]): Assertion = {
 
       assertComponent(buttonsPanel, ButtonsPanel) {
@@ -307,19 +309,21 @@ class CompanyPanelSpec extends TestSpec
         case CompanyTablePanelProps(data, _, _) =>
           data shouldBe props.data
       }
-      
-      assertComponent(createPopup, InputPopup) {
-        case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
-          show shouldBe props.data.showCreatePopup
-          message shouldBe "Enter Company name:"
-          placeholder shouldBe None
-          initialValue shouldBe "New Company"
+
+      createPopup.isDefined shouldBe props.data.showCreatePopup
+      createPopup.foreach { cp =>
+        assertComponent(cp, InputPopup) {
+          case InputPopupProps(message, _, _, placeholder, initialValue) =>
+            message shouldBe "Enter Company name:"
+            placeholder shouldBe None
+            initialValue shouldBe "New Company"
+        }
       }
-      editPopup.isEmpty shouldBe selectedData.isEmpty
+      
+      editPopup.isEmpty shouldBe (selectedData.isEmpty && !props.data.showEditPopup)
       selectedData.foreach { data =>
         assertComponent(editPopup.get, InputPopup) {
-          case InputPopupProps(show, message, _, _, placeholder, initialValue) =>
-            show shouldBe props.data.showEditPopup
+          case InputPopupProps(message, _, _, placeholder, initialValue) =>
             message shouldBe "Enter new Company name:"
             placeholder shouldBe None
             initialValue shouldBe data.name
@@ -330,8 +334,9 @@ class CompanyPanelSpec extends TestSpec
     
     assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
       children match {
-        case List(bp, tp, createPopup) => assertComponents(bp, tp, createPopup, None)
-        case List(bp, tp, createPopup, editPopup) => assertComponents(bp, tp, createPopup, Some(editPopup))
+        case List(bp, tp, createPopup) if props.data.showCreatePopup => assertComponents(bp, tp, Some(createPopup), None)
+        case List(bp, tp, editPopup) if props.data.showEditPopup => assertComponents(bp, tp, None, Some(editPopup))
+        case List(bp, tp) => assertComponents(bp, tp, None, None)
       }
     })
   }

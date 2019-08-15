@@ -30,35 +30,38 @@ object RolePanel extends FunctionComponent[RolePanelProps] {
     }
     
     <.>()(
-      props.selectedSystemId.map { systemId =>
-        <(InputPopup())(^.wrapped := InputPopupProps(
-          props.state.showCreatePopup,
-          "Enter Role title:",
-          onOk = { text =>
-            props.dispatch(props.actions.roleCreate(props.dispatch, RoleData(
-              id = None,
-              systemId = systemId,
-              title = text
-            )))
-          },
-          onCancel = { () =>
-            props.dispatch(RoleCreateRequestAction(create = false))
-          },
-          initialValue = "NEW_ROLE"
-        ))()
+      props.selectedSystemId.flatMap { systemId =>
+        if (props.state.showCreatePopup) Some(
+          <(InputPopup())(^.wrapped := InputPopupProps(
+            message = "Enter Role title:",
+            onOk = { text =>
+              props.dispatch(props.actions.roleCreate(props.dispatch, RoleData(
+                id = None,
+                systemId = systemId,
+                title = text
+              )))
+            },
+            onCancel = { () =>
+              props.dispatch(RoleCreateRequestAction(create = false))
+            },
+            initialValue = "NEW_ROLE"
+          ))()
+        ) else None
       },
-      selectedData.map { data =>
-        <(InputPopup())(^.wrapped := InputPopupProps(
-          props.state.showEditPopup,
-          "Enter new Role title:",
-          onOk = { text =>
-            props.dispatch(props.actions.roleUpdate(props.dispatch, data.copy(title = text)))
-          },
-          onCancel = { () =>
-            props.dispatch(RoleUpdateRequestAction(update = false))
-          },
-          initialValue = data.title
-        ))()
+      
+      selectedData.flatMap { data =>
+        if (props.state.showEditPopup) Some(
+          <(InputPopup())(^.wrapped := InputPopupProps(
+            message = "Enter new Role title:",
+            onOk = { text =>
+              props.dispatch(props.actions.roleUpdate(props.dispatch, data.copy(title = text)))
+            },
+            onCancel = { () =>
+              props.dispatch(RoleUpdateRequestAction(update = false))
+            },
+            initialValue = data.title
+          ))()
+        ) else None
       }
     )
   }
