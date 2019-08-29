@@ -1,6 +1,5 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
@@ -10,6 +9,7 @@ import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
+import scommons.react._
 import scommons.react.test.TestSpec
 
 class RoleControllerSpec extends TestSpec {
@@ -105,9 +105,11 @@ class RoleControllerSpec extends TestSpec {
     val expectedActions = Map(
       Buttons.EDIT.command -> roleUpdateRequestAction
     )
-    val roleControllerReactClass = React.createClass[Unit, Unit]({ _ =>
-      <.div()("test")
-    })
+    val roleControllerReactClass = new FunctionComponent[Unit] {
+      protected def render(props: Props): ReactElement = {
+        <.div()("test")
+      }
+    }.apply()
     val rolePermissionController = mock[RolePermissionController]
     (rolePermissionController.apply _).expects()
       .returning(roleControllerReactClass)

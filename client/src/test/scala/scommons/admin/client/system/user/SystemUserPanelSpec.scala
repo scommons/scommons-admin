@@ -1,6 +1,5 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.React
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.joda.time.DateTime
@@ -256,10 +255,12 @@ class SystemUserPanelSpec extends AsyncTestSpec
     val systemId = props.selectedParams.systemId.get
 
     def assertSystemUserRolePanel(component: ReactElement): Assertion = {
-      val wrapped = React.createClass[Unit, Unit] { _ =>
-        <.div()(component)
+      val wrapped = new FunctionComponent[Unit] {
+        protected def render(props: Props): ReactElement = {
+          <.div()(component)
+        }
       }
-      val result = shallowRender(<(wrapped)()())
+      val result = shallowRender(<(wrapped())()())
 
       assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
         val List(comp) = children
