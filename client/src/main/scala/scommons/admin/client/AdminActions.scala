@@ -10,7 +10,7 @@ import scommons.admin.client.system.group.SystemGroupActions
 import scommons.admin.client.system.user.SystemUserActions
 import scommons.admin.client.user.UserActions
 import scommons.admin.client.user.system.UserSystemActions
-import scommons.api.http.js.JsApiHttpClient
+import scommons.api.http.dom.DomApiHttpClient
 
 object AdminActions extends CompanyActions
   with SystemGroupActions
@@ -27,6 +27,6 @@ object AdminActions extends CompanyActions
   }
 
   protected val client: AdminUiApiClient = {
-    new AdminUiApiClient(new JsApiHttpClient(baseUrl))
+    new AdminUiApiClient(new DomApiHttpClient(baseUrl))
   }
 }
