@@ -179,9 +179,12 @@ class UserTablePanelSpec extends TestSpec with ShallowRendererUtils {
 
     assertNativeComponent(result, <.div()(), { case List(tablePanel, paginationPanel) =>
       assertComponent(tablePanel, TablePanel) {
-        case TablePanelProps(header, rows, selectedIds, _) =>
+        case TablePanelProps(header, rows, keyExtractor, rowClassExtractor, cellRenderer, selectedIds, _) =>
           header shouldBe tableHeader
           rows shouldBe tableRows
+          keyExtractor(rows.head) shouldBe rows.head.id
+          rowClassExtractor shouldBe TablePanelProps.defaultRowClassExtractor
+          cellRenderer(rows.head, 0) shouldBe rows.head.cells.head
           selectedIds shouldBe props.selectedUserId.map(_.toString).toSet
       }
       assertComponent(paginationPanel, PaginationPanel) {
