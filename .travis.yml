@@ -21,7 +21,7 @@ script:
 - sbt coveralls
 - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" -o "$TRAVIS_BRANCH" == "$TRAVIS_TAG" ]; then
     if [ -z "$TRAVIS_TAG" ]; then
-      echo "//TODO: Publish a snapshot";
+      echo "Publish a snapshot";
     else
       VERSION="$(echo "${TRAVIS_TAG}" | cut -d'v' -f 2)";
       echo "Publish a release version=$VERSION for tag $TRAVIS_TAG";
