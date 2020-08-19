@@ -7,17 +7,34 @@ jdk:
 dist: trusty
 env:
   global:
-  - TRAVIS_NODE_VERSION="8"
   - TRAVIS_SBT_VERSION="1.2.8"
+  - secure: P6pqQ7MBUsAmR86HA2rmA1ZEhJSHnGnYcxSt07dbneugPyD8QvwnTe0j6GTVSY2CaPNfrXNWDvRIKkXfgz8ZGG6uxnLtPY5CtBX+vgGomKaC+uiDb9x2eY9lvrgVVR7alLQp4LiVBZrJUSa0lByLXMeQq03qebnf/58Et6/9CfEBG0tVKwHm7Bq8YSj8nri2NNxrCemPbRkZkLqf+fr2Qf3V3Qn7eOHWy4OjmBO14wLezwtvT3UhiyNYxrt1LF+HFkZ0CUzfizGx65q2N/84vbCn0tm8dSVE0Bv5WZbdzGiaE4QCVqNPOyrdqMVGlzKpEK21KZ1Z5/CsaxnnY0UpV1So3Ba3chA8Bnexzv6QsVGQEJnbyMQtCdJ6sDychDACJ3DPxrYDmxh9H7IsPlpXFUvpqGtumBJT1/vnXrHcwpk72VeMzHlJ4y8WwW2ZDUAtSM9GEDHE5QoMhiQaiQTWRNoXzL4CBbT22n5AO5nm80UDtv7lTlFyoQWFLbBhuuZHnQvgdMVy4ONNOjOVZY84WitAj4JnYl2Q+grc/6Lem+3RHYobK20sqLSMUIBxaxhlAA+YEVI0Jn4GnrETO7WaqXMMrj2pBi7Ih/yA/P6sIPF8P+axkFpWEVRfjZyYMmTOUkzP6ClYHJMFWdOPbUQqv4uQ2SH2gF39VaG5kC0wz5M=
+  - secure: X6jP89YAjb55zs+B8IjQNPlHzoduY3r6Q1xVVEeeM5E8LuFFXs4ZTIzqTLBxvhzTsJR+lzwyOGtWlHlH9yu30nPSHGtJrMNsdKoum8Y1pAuR1d0ef4y0PNtmQcy0PRvBE3eYY3eNUbYsU9Xt963gtdSi5wnt1Z8GR9xYbmPqilBwqdgGlB2vFKVfEgqPVTBC8pYkAOUuzJPPDOjGQdiH/L+873NMwGR4dS4Y6P0WWKnH7AfGIKqLWrnenUrT6P7JzbGMqJ5UUzRYkZifFvbLIIIFxJTIFNLMnr5E4dMNAqUtFjjTXuMSSqjDLOXRkzS3+SdCFenVG/kzyY6kY05Fj1FfhX/xt/+QXN1RbO8V7TwpYg0GKQr881fnLajRsnFnqTorLGOfnF0IglXVE4k0XL7//N1NEpVZjs6BKRVVsa42P8FSUSzpcRP+vQbJHBiFZPUC/Dllh2aLff5Xi4IM3OMSqL88K9Eg30BdmUAA6iqFXQyQzHJ8P6nED1K8yqVEzfDaEZpCuI7YSJ/JFH5Am63RNEVo0AKCF/EuTXOTr7KeNhZOvJlQ7fMhmo0Xadtl9Ukt34ZCv/hh3Vu77DKmW62+YH8SSlpZPul9n2x6plGPYW7coo7zVjXgYht6efbkaj4qdJs5Oif0UYUktS+BDvIqrKVrPOTpfscgCKk5D7s=
 before_install:
-- nvm install 6
-- nvm use 6
-- node --version
+- nvm install 10 &&
+  nvm use 10
+- node --version &&
+  npm --version
 script:
 - sbt clean coverage test it:test coverageReport &&
   sbt coverageAggregate
-after_success:
 - sbt coveralls
+- if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" -o "$TRAVIS_BRANCH" == "$TRAVIS_TAG" ]; then
+    if [ -z "$TRAVIS_TAG" ]; then
+      echo "//TODO: Publish a snapshot";
+    else
+      VERSION="$(echo "${TRAVIS_TAG}" | cut -d'v' -f 2)";
+      echo "Publish a release version=$VERSION for tag $TRAVIS_TAG";
+      version=$VERSION sbt clean "project scommons-admin-server" docker:publishLocal;
+      docker tag scommons-admin-server:$VERSION scommons/admin:$VERSION;
+      docker tag scommons/admin:$VERSION scommons/admin:latest;
+      docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN;
+      docker push scommons/admin:$VERSION;
+      docker push scommons/admin:latest;
+    fi
+  else
+    echo "This is not a master branch commit. Skipping the publish/release step";
+  fi
 cache:
   directories:
   - "$HOME/.ivy2/cache"

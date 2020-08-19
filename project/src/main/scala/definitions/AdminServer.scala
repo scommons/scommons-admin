@@ -1,11 +1,18 @@
 package definitions
 
+import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
+import com.typesafe.sbt.packager.docker.Cmd
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
+import com.typesafe.sbt.packager.universal.UniversalDeployPlugin
 import common.Libs
+import sbt.Keys._
 import sbt._
 import scommons.sbtplugin.project.CommonPlayModule
 import webscalajs.WebScalaJS.autoImport._
 
 object AdminServer extends AdminModule with CommonPlayModule {
+
+  val port = Seq(9000)
 
   override val id: String = "scommons-admin-server"
 
@@ -13,8 +20,29 @@ object AdminServer extends AdminModule with CommonPlayModule {
 
   override def definition: Project = {
     super.definition
+      .enablePlugins(
+        JavaAppPackaging,
+        UniversalDeployPlugin
+      )
       .settings(
-        scalaJSProjects := Seq(AdminClient.definition)
+        scalaJSProjects := Seq(AdminClient.definition),
+
+        mainClass in Compile := Some("play.core.server.ProdServerStart"),
+        dockerExposedPorts := port,
+
+        //dockerImageCreationTask := (publishLocal in Docker).value,
+        dockerBaseImage := "openjdk:9-slim",
+        mappings in (Compile, packageDoc) := Seq(),
+
+        dockerCommands := (dockerCommands.value match {
+          case Seq(from@Cmd("FROM", _), rest@_*) =>
+            Seq(
+              from,
+              //set JVM TTL, see https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-jvm-ttl.html
+              Cmd("RUN", "mkdir", "-p", "$JAVA_HOME/jre/lib/security"),
+              Cmd("RUN", "echo", "networkaddress.cache.ttl=60", ">>", "$JAVA_HOME/jre/lib/security/java.security")
+            ) ++ rest
+        })
       )
   }
 

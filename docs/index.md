@@ -4,6 +4,20 @@ layout: default
 
 Welcome to the **Scala Commons Admin** documentation page!
 
+## Screenshots
+
+### Assign users to applications
+
+![Screenshot](images/screenshots/user-apps.png)
+
+### Assign roles to users
+
+![Screenshot](images/screenshots/user-roles.png)
+
+### Assign permissions to roles
+
+![Screenshot](images/screenshots/role-permissions.png)
+
 ## Overview
 
 ![Overview](drawio/overview.svg)
