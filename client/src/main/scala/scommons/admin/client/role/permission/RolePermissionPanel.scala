@@ -14,6 +14,8 @@ case class RolePermissionPanelProps(dispatch: Dispatch,
                                     selectedRoleId: Int)
 
 object RolePermissionPanel extends FunctionComponent[RolePermissionPanelProps] {
+  
+  private[permission] var checkBoxTreeComp: UiComponent[CheckBoxTreeProps] = CheckBoxTree
 
   protected def render(selfProps: Props): ReactElement = {
     val props = selfProps.wrapped
@@ -26,7 +28,7 @@ object RolePermissionPanel extends FunctionComponent[RolePermissionPanelProps] {
 
     val roots = buildTree(props.state.permissionsByParentId)
 
-    <(CheckBoxTree())(^.wrapped := CheckBoxTreeProps(
+    <(checkBoxTreeComp())(^.wrapped := CheckBoxTreeProps(
       roots = roots,
       onChange = { (data, value) =>
         val permissionId = data.key.toInt

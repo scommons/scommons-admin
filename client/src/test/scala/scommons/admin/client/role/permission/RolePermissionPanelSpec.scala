@@ -8,15 +8,15 @@ import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.admin.client.role.permission.RolePermissionPanel._
 import scommons.client.ui.TriState._
 import scommons.client.ui.tree._
+import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.TestSpec
-import scommons.react.test.dom.util.TestDOMUtils
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with TestDOMUtils {
+class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
+
+  RolePermissionPanel.checkBoxTreeComp = () => "CheckBoxTree".asInstanceOf[ReactClass]
 
   it should "dispatch RolePermissionAddAction if Selected when onChange" in {
     //given
@@ -34,8 +34,8 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
       role = Some(respData.role)
     )
     val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
-    val comp = shallowRender(<(RolePermissionPanel())(^.wrapped := props)())
-    val checkBoxTreeProps = findComponentProps(comp, CheckBoxTree)
+    val comp = testRender(<(RolePermissionPanel())(^.wrapped := props)())
+    val checkBoxTreeProps = findComponentProps(comp, checkBoxTreeComp)
     val data = RolePermissionUpdateReq(Set(1), version)
     val action = RolePermissionAddAction(
       FutureTask("Test", Future.successful(RolePermissionResp(respData)))
@@ -66,8 +66,8 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
       role = Some(respData.role)
     )
     val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
-    val comp = shallowRender(<(RolePermissionPanel())(^.wrapped := props)())
-    val checkBoxTreeProps = findComponentProps(comp, CheckBoxTree)
+    val comp = testRender(<(RolePermissionPanel())(^.wrapped := props)())
+    val checkBoxTreeProps = findComponentProps(comp, checkBoxTreeComp)
     val data = RolePermissionUpdateReq(Set(1), version)
     val action = RolePermissionRemoveAction(
       FutureTask("Test", Future.successful(RolePermissionResp(respData)))
@@ -105,7 +105,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(action)
 
     //when
-    domRender(component)
+    testRender(component)
   }
 
   it should "not dispatch RolePermissionFetchAction if same selected role when mount" in {
@@ -129,7 +129,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(*).never()
 
     //when
-    domRender(component)
+    testRender(component)
   }
 
   it should "dispatch RolePermissionFetchAction if different selected role when update" in {
@@ -147,7 +147,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
       role = Some(respData.role)
     )
     val prevProps = RolePermissionPanelProps(dispatch, actions, state, respData.role.id.get)
-    domRender(<(RolePermissionPanel())(^.wrapped := prevProps)())
+    val renderer = createTestRenderer(<(RolePermissionPanel())(^.wrapped := prevProps)())
     val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
     props.selectedRoleId should not be prevProps.selectedRoleId
     
@@ -161,7 +161,9 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(action)
 
     //when
-    domRender(<(RolePermissionPanel())(^.wrapped := props)())
+    TestRenderer.act { () =>
+      renderer.update(<(RolePermissionPanel())(^.wrapped := props)())
+    }
   }
 
   it should "not dispatch RolePermissionFetchAction if same selected role when update" in {
@@ -179,7 +181,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
       role = Some(respData.role)
     )
     val prevProps = RolePermissionPanelProps(dispatch, actions, state, respData.role.id.get)
-    domRender(<(RolePermissionPanel())(^.wrapped := prevProps)())
+    val renderer = createTestRenderer(<(RolePermissionPanel())(^.wrapped := prevProps)())
     val props = RolePermissionPanelProps(dispatch, mock[RolePermissionActions], state, roleId)
     props should not be prevProps
     props.selectedRoleId shouldBe prevProps.selectedRoleId
@@ -188,7 +190,9 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     dispatch.expects(*).never()
 
     //when
-    domRender(<(RolePermissionPanel())(^.wrapped := props)())
+    TestRenderer.act { () =>
+      renderer.update(<(RolePermissionPanel())(^.wrapped := props)())
+    }
   }
 
   it should "render component" in {
@@ -210,7 +214,7 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     val component = <(RolePermissionPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertRolePermissionPanel(result, props)
@@ -264,10 +268,10 @@ class RolePermissionPanelSpec extends TestSpec with ShallowRendererUtils with Te
     )
   }
 
-  private def assertRolePermissionPanel(result: ShallowInstance, props: RolePermissionPanelProps): Unit = {
+  private def assertRolePermissionPanel(result: TestInstance, props: RolePermissionPanelProps): Unit = {
     val roots = buildTree(props.state.permissionsByParentId)
     
-    assertComponent(result, CheckBoxTree) {
+    assertTestComponent(result, checkBoxTreeComp) {
       case CheckBoxTreeProps(resultRoots, _, readOnly, openNodes, closeNodes) =>
         resultRoots shouldBe roots
         readOnly shouldBe false
