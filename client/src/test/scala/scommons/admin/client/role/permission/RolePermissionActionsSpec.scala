@@ -5,8 +5,8 @@ import scommons.admin.client.api.role.permission._
 import scommons.admin.client.role.RoleActions.RoleUpdatedAction
 import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.admin.client.role.permission.RolePermissionActionsSpec._
+import scommons.nodejs.test.AsyncTestSpec
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future
 

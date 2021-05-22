@@ -8,15 +8,14 @@ import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.client.ui.tab._
+import scommons.nodejs.test.AsyncTestSpec
 import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.dom.AsyncTestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class SystemUserPanelSpec extends AsyncTestSpec
+class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
   with ShallowRendererUtils
   with TestRendererUtils {
 

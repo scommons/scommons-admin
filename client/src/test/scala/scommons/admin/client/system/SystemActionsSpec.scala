@@ -3,8 +3,8 @@ package scommons.admin.client.system
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.SystemActionsSpec._
+import scommons.nodejs.test.AsyncTestSpec
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.dom.AsyncTestSpec
 
 import scala.concurrent.Future
 

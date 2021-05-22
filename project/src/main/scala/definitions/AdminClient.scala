@@ -1,5 +1,6 @@
 package definitions
 
+import common.TestLibs
 import sbt._
 import scommons.sbtplugin.project.CommonClientModule
 import scoverage.ScoverageKeys._
@@ -32,6 +33,7 @@ object AdminClient extends AdminModule with CommonClientModule {
   override def testDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {
     super.testDependencies.value ++ Seq[ModuleID](
       // specify your custom test dependencies here
+      TestLibs.scommonsNodejsTest.value
     ).map(_ % "test")
   }
 }

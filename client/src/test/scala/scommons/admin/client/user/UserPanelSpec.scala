@@ -8,15 +8,14 @@ import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system._
 import scommons.client.ui._
+import scommons.nodejs.test.AsyncTestSpec
 import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.dom.AsyncTestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class UserPanelSpec extends AsyncTestSpec
+class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
   with ShallowRendererUtils
   with TestRendererUtils {
 
