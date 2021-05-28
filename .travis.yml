@@ -17,11 +17,11 @@ before_install:
   npm --version
 script:
 - sbt clean coverage test it:test coverageReport &&
-  sbt coverageAggregate
-- sbt coveralls
-- if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" -o "$TRAVIS_BRANCH" == "$TRAVIS_TAG" ]; then
+  sbt coverageAggregate &&
+  sbt coveralls &&
+  if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" -o "$TRAVIS_BRANCH" == "$TRAVIS_TAG" ]; then
     if [ -z "$TRAVIS_TAG" ]; then
-      echo "Publish a snapshot";
+      echo "Publish latest version";
     else
       VERSION="$(echo "${TRAVIS_TAG}" | cut -d'v' -f 2)";
       echo "Publish a release version=$VERSION for tag $TRAVIS_TAG";
@@ -37,6 +37,7 @@ script:
   fi
 cache:
   directories:
+  - ~/.npm
   - "$HOME/.ivy2/cache"
   - "$HOME/.sbt"
 before_cache:

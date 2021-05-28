@@ -10,6 +10,7 @@ trait AdminModule extends CommonModule {
   override val repoName = "scommons-admin"
 
   val scommonsServiceVersion: String = Libs.scommonsServiceVersion
+  val scommonsNodejsVersion: String = Libs.scommonsNodejsVersion
   val scommonsReactVersion: String = Libs.scommonsReactVersion
   val scommonsClientVersion: String = Libs.scommonsClientVersion
   val scommonsApiVersion: String = Libs.scommonsApiVersion
