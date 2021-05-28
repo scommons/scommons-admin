@@ -6,11 +6,11 @@ import scommons.sbtplugin.project.CommonLibs
 
 object Libs extends CommonLibs {
 
-  val scommonsNodejsVersion = "0.3.1"
+  val scommonsNodejsVersion = "1.0.0-SNAPSHOT"
   val scommonsApiVersion = "1.0.0-SNAPSHOT"
-  val scommonsServiceVersion = "0.3.0"
-  val scommonsReactVersion = "0.3.0"
-  val scommonsClientVersion = "0.3.0"
+  val scommonsServiceVersion = "1.0.0-SNAPSHOT"
+  val scommonsReactVersion = "1.0.0-SNAPSHOT"
+  val scommonsClientVersion = "1.0.0-SNAPSHOT"
 
   //////////////////////////////////////////////////////////////////////////////
   // shared dependencies
