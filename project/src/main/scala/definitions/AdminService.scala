@@ -25,6 +25,6 @@ object AdminService extends AdminModule {
 
   override val testDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting(Seq(
     TestLibs.scalaTest.value,
-    TestLibs.mockito.value
+    TestLibs.scalaTestPlusMockito.value
   ).map(_ % "test"))
 }

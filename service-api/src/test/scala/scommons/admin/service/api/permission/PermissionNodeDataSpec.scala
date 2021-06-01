@@ -1,9 +1,10 @@
 package scommons.admin.service.api.permission
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 
-class PermissionNodeDataSpec extends FlatSpec
+class PermissionNodeDataSpec extends AnyFlatSpec
   with Matchers {
 
   private val data = PermissionNodeData(
