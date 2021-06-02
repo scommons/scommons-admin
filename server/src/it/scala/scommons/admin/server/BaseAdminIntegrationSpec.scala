@@ -5,6 +5,8 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import org.scalatest._
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.ConfiguredServer
 import scommons.admin.client.api.AdminUiApiClient
@@ -25,7 +27,7 @@ import scommons.api.ApiStatus
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
-trait BaseAdminIntegrationSpec extends FlatSpec
+trait BaseAdminIntegrationSpec extends AnyFlatSpec
   with Matchers
   with ConfiguredServer
   with ScalaFutures

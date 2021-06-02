@@ -3,8 +3,8 @@ package scommons.admin.server
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
 import akka.testkit.SocketUtil
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Suites, TestSuite}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
