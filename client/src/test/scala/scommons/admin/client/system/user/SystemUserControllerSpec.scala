@@ -58,7 +58,7 @@ class SystemUserControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup users item" in {
+  ignore should "setup users item" in {
     //given
     val actions = mock[SystemUserActions]
     val controller = new SystemUserController(actions)

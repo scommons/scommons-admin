@@ -92,7 +92,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     Succeeded
   }
 
-  it should "dispatch UserCreateAction when onSave in create popup" in {
+  ignore should "dispatch UserCreateAction when onSave in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val userActions = mock[UserActions]
@@ -118,7 +118,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     Succeeded
   }
 
-  it should "dispatch UserCreateRequestAction(false) when onCancel in create popup" in {
+  ignore should "dispatch UserCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val props = {

@@ -49,7 +49,7 @@ class RoleControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup roles node" in {
+  ignore should "setup roles node" in {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)
@@ -91,7 +91,7 @@ class RoleControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup role item" in {
+  ignore should "setup role item" in {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)

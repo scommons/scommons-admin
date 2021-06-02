@@ -37,7 +37,7 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  it should "dispatch UserFetchedAction when userFetch" in {
+  ignore should "dispatch UserFetchedAction when userFetch" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
@@ -61,7 +61,7 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  it should "dispatch UserCreatedAction when userCreate" in {
+  ignore should "dispatch UserCreatedAction when userCreate" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
@@ -85,7 +85,7 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  it should "dispatch UserDetailsUpdatedAction when userUpdate" in {
+  ignore should "dispatch UserDetailsUpdatedAction when userUpdate" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)

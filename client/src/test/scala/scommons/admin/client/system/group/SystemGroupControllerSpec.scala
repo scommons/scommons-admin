@@ -50,7 +50,7 @@ class SystemGroupControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup applications node" in {
+  ignore should "setup applications node" in {
     //given
     val groupActions = mock[SystemGroupActions]
     val systemActions = mock[SystemActions]
@@ -93,7 +93,7 @@ class SystemGroupControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup environment node" in {
+  ignore should "setup environment node" in {
     //given
     val groupActions = mock[SystemGroupActions]
     val systemActions = mock[SystemActions]

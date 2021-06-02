@@ -41,7 +41,7 @@ class CompanyControllerSpec extends TestSpec {
     }
   }
 
-  it should "setup companies item" in {
+  ignore should "setup companies item" in {
     //given
     val apiActions = mock[CompanyActions]
     val controller = new CompanyController(apiActions)

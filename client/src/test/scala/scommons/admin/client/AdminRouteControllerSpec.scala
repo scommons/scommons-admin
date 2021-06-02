@@ -39,7 +39,7 @@ class AdminRouteControllerSpec extends TestSpec {
     controller.uiComponent shouldBe AppBrowseController
   }
   
-  it should "map state to props" in {
+  ignore should "map state to props" in {
     //given
     val companyController = mock[CompanyController]
     val userController = mock[UserController]
