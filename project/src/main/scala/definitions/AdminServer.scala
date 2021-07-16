@@ -5,9 +5,9 @@ import com.typesafe.sbt.packager.docker.Cmd
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
 import com.typesafe.sbt.packager.universal.UniversalDeployPlugin
 import common.Libs
+import common.CommonPlayModule
 import sbt.Keys._
 import sbt._
-import scommons.sbtplugin.project.CommonPlayModule
 import webscalajs.WebScalaJS.autoImport._
 
 object AdminServer extends AdminModule with CommonPlayModule {

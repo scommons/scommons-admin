@@ -1,8 +1,10 @@
 package definitions
 
+import com.typesafe.sbt.web.SbtWeb
 import sbt._
 import scommons.sbtplugin.project.CommonClientModule
 import scoverage.ScoverageKeys._
+import webscalajs.ScalaJSWeb
 
 object AdminClient extends AdminModule with CommonClientModule {
 
@@ -12,6 +14,7 @@ object AdminClient extends AdminModule with CommonClientModule {
 
   override def definition: Project = {
     super.definition
+      .enablePlugins(ScalaJSWeb, SbtWeb)
       .settings(
         coverageExcludedPackages := coverageExcludedPackages.value +
           ";.*AdminMain" +
