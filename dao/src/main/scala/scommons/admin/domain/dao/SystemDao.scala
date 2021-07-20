@@ -35,7 +35,7 @@ class SystemDao(val ctx: AdminDBContext)
       .leftJoin(systemsUsers.filter(su => su.userId == lift(userId)))
       .on((s, su) => s.id == su.systemId)
       .sortBy { case (s, _) => s.name }
-      .map { case (s, su) => (s, su.nonEmpty) }
+      .map { case (s, su) => (s, su.map(_.userId).isDefined) }
     )
   }
 

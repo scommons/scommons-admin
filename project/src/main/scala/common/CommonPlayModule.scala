@@ -52,6 +52,7 @@ trait CommonPlayModule extends CommonModule {
     "org.scommons.client" %% "scommons-client-assets" % scommonsClientVersion,
 
     PlayImport.guice,
+    PlayImport.jdbc,
     CommonLibs.play.value,
     CommonLibs.scaldiPlay.value,
 

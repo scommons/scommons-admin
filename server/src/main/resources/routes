@@ -8,7 +8,7 @@ GET     /scommons-admin/admin.html                  scommons.admin.server.AdminC
 
 ################################################################################
 # swagger
-GET     /scommons-admin/api-docs                    controllers.ApiHelpController.getResources
+#GET     /scommons-admin/api-docs                    controllers.ApiHelpController.getResources
 GET     /scommons-admin/swagger.html                scommons.play.controllers.CommonSwaggerController.swaggerUi(prefix = "/scommons-admin")
 
 ################################################################################

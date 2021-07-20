@@ -10,6 +10,7 @@
   <logger name="akka" level="WARN" />
   <logger name="io.getquill" level="WARN" />
   <logger name="liquibase" level="INFO" />
+  <logger name="liquibase.executor" level="WARN" />
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>

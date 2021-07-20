@@ -55,9 +55,10 @@ object AdminServer extends AdminModule with CommonPlayModule {
   override def runtimeDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {
     super.runtimeDependencies.value ++ Seq(
       Libs.postgresJdbc.value,
-      Libs.playLiquibase.value,
+      Libs.liquibaseCore.value,
+      Libs.liquibaseSlf4j.value,
       
-      Libs.swaggerPlay.value,
+//      Libs.swaggerPlay.value,
       Libs.swaggerAnnotations.value,
       Libs.swaggerUi.value
     )

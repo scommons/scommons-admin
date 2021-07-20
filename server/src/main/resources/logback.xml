@@ -1,7 +1,7 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{HH:mm:ss.SSS} %t %highlight(%-5level) %cyan(%logger{0}) - %m%n</pattern>
+      <pattern>%d{HH:mm:ss.SSS} %t %highlight(%-5level) %cyan(%logger{36}) - %m%n</pattern>
     </encoder>
   </appender>
 
@@ -10,8 +10,8 @@
     change to INFO to show the SQL queries
   -->
   <logger name="io.getquill" level="WARN" />
-
   <logger name="liquibase" level="INFO" />
+  <logger name="liquibase.executor" level="WARN" />
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>

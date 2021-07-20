@@ -11,6 +11,7 @@ import scommons.admin.server.system.group.SystemGroupModule
 import scommons.admin.server.system.user.SystemUserModule
 import scommons.admin.server.user.UserModule
 import scommons.admin.server.user.system.UserSystemModule
+import scommons.play.controllers.CommonSwaggerController
 
 class AdminModule extends Module
   with CompanyModule
@@ -25,4 +26,7 @@ class AdminModule extends Module
   bind[AdminDBContext] to new AdminDBContext(
     inject[Configuration].get[Configuration]("quill.db").underlying
   )
+  
+  bind[AdminController] to injected[AdminController]
+  bind[CommonSwaggerController] to injected[CommonSwaggerController]
 }

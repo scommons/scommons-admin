@@ -1,12 +1,10 @@
 package scommons.admin.server
 
 import akka.actor.ActorSystem
-import akka.testkit.SocketUtil
-import com.ticketfly.play.liquibase.PlayLiquibaseModule
 import org.scalatest.{Suites, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.Application
 import play.api.mvc.ControllerComponents
+import play.api.{Application, OptionalDevContext}
 import scaldi.Module
 import scaldi.play.ScaldiApplicationBuilder
 import scommons.admin.server.company.CompanyController
@@ -26,20 +24,16 @@ class ControllersSpec extends Suites(
 ) with TestSuite
   with GuiceOneServerPerSuite {
 
-  override lazy val port: Int = {
-    val (_, serverPort) = SocketUtil.temporaryServerHostnameAndPort()
-    serverPort
-  }
-
   implicit override lazy val app: Application = new ScaldiApplicationBuilder(
     disabled = List(
       classOf[AdminModule],
-      classOf[PlayLiquibaseModule]
+      classOf[LiquibaseModule]
     ),
     modules = List(new Module {
       private implicit lazy val ec: ExecutionContext = inject[ActorSystem].dispatcher
       private implicit lazy val components: ControllerComponents = inject[ControllerComponents]
       
+      bind[OptionalDevContext] to new OptionalDevContext(None)
       //test-only
       bind[CompanyController] to new CompanyController(null)
       bind[SystemGroupController] to new SystemGroupController(null)

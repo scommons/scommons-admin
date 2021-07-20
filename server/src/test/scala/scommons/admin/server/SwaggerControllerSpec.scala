@@ -5,7 +5,7 @@ import org.scalatest.DoNotDiscover
 @DoNotDiscover
 class SwaggerControllerSpec extends BaseControllersSpec {
 
-  it should "return api-docs json" in {
+  ignore should "return api-docs json" in {
     //given
     val request = wsUrl(s"$baseUrl/api-docs")
 

@@ -26,8 +26,9 @@ object Libs extends CommonLibs {
   lazy val scommonsServiceDao = Def.setting("org.scommons.service" %% "scommons-service-dao" % scommonsServiceVersion)
   
   lazy val postgresJdbc = Def.setting("org.postgresql" % "postgresql" % "42.2.5")
-  lazy val playLiquibase = Def.setting("com.ticketfly" %% "play-liquibase" % "1.4")
-  lazy val quillAsyncPostgres = Def.setting("io.getquill" %% "quill-async-postgres" % "1.4.0" /*exclude("io.netty", "netty-all")*/)
+  lazy val liquibaseCore = Def.setting("org.liquibase" % "liquibase-core" % "3.6.2")
+  lazy val liquibaseSlf4j = Def.setting("com.mattbertolini" % "liquibase-slf4j" % "2.0.0")
+  lazy val quillAsyncPostgres = Def.setting("io.getquill" %% "quill-async-postgres" % "3.7.2" /*exclude("io.netty", "netty-all")*/)
 
   //////////////////////////////////////////////////////////////////////////////
   // js dependencies
