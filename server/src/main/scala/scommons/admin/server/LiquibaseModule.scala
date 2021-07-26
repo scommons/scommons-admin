@@ -12,8 +12,8 @@ import play.api._
 import play.api.db.{DBApi, DatabaseConfig, DefaultDatabase}
 import play.api.inject._
 
+import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**

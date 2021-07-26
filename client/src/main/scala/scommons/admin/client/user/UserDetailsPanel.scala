@@ -28,7 +28,7 @@ object UserDetailsPanel extends FunctionComponent[UserDetailsPanelProps] {
     <(TabPanel())(^.wrapped := TabPanelProps(
       items = tabItems.map(_._2),
       selectedIndex = props.selectedTab.map { t =>
-        tabItems.prefixLength { case (tab, _) => t != tab }
+        tabItems.segmentLength({ case (tab, _) => t != tab }, from = 0)
       }.getOrElse(0),
       onSelect = { (_, index) =>
         props.onChangeTab(Some(tabItems(index)._1))

@@ -110,7 +110,7 @@ object UserPanel extends ClassComponent[UserPanelProps] {
         ) else None,
         
         userDetailsData.toList.flatMap { data =>
-          List(
+          val res = List(
             <(UserDetailsPanel())(^.wrapped := UserDetailsPanelProps(
               renderSystems = { _ =>
                 <(UserSystemPanel())(^.wrapped := UserSystemPanelProps(
@@ -128,23 +128,23 @@ object UserPanel extends ClassComponent[UserPanelProps] {
               onChangeTab = { tab =>
                 props.onChangeParams(props.selectedParams.copy(tab = tab))
               }
-            ))(),
-
-            if (props.data.showEditPopup) Some(
-              <(UserEditPopup())(^.wrapped := UserEditPopupProps(
-                dispatch = props.dispatch,
-                actions = props.companyActions,
-                title = "Edit User",
-                initialData = data,
-                onSave = { updatedData =>
-                  props.dispatch(props.userActions.userUpdate(props.dispatch, updatedData))
-                },
-                onCancel = { () =>
-                  props.dispatch(UserUpdateRequestAction(update = false))
-                }
-              ))()
-            ) else None
+            ))()
           )
+
+          if (props.data.showEditPopup) {
+            res :+ <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+              dispatch = props.dispatch,
+              actions = props.companyActions,
+              title = "Edit User",
+              initialData = data,
+              onSave = { updatedData =>
+                props.dispatch(props.userActions.userUpdate(props.dispatch, updatedData))
+              },
+              onCancel = { () =>
+                props.dispatch(UserUpdateRequestAction(update = false))
+              }
+            ))()
+          } else res
         }
       )
     }

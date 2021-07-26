@@ -382,7 +382,9 @@ class SystemUserApiIntegrationSpec extends BaseAdminIntegrationSpec {
     val user = createRandomUser(company).user
     callUserSystemAdd(user.id.get, UserSystemUpdateReq(Set(systemId), user.version.get))
 
-    val Some(su) = systemUserDao.getById(systemId, user.id.get).futureValue
+    val su = inside(systemUserDao.getById(systemId, user.id.get).futureValue) {
+      case Some(su) => su
+    }
     if (roleIds.nonEmpty) {
       val bitIndexes = roleDao.listBySystemId(systemId).futureValue.collect {
         case role if roleIds.contains(role.id) => role.bitIndex
@@ -390,7 +392,9 @@ class SystemUserApiIntegrationSpec extends BaseAdminIntegrationSpec {
       val roles = bitIndexes.foldLeft(0L)((roles, bit) => roles | (1L << bit))
       systemUserDao.update(su.copy(roles = roles)).futureValue shouldBe true
 
-      val Some(updated) = systemUserDao.getById(systemId, user.id.get).futureValue
+      val updated = inside(systemUserDao.getById(systemId, user.id.get).futureValue) {
+        case Some(updated) => updated
+      }
       updated.roles shouldBe roles
       updated
     }

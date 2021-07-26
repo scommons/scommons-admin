@@ -424,7 +424,9 @@ class UserApiIntegrationSpec extends BaseAdminIntegrationSpec {
     //given
     val (existing, user) = {
       val userId = createRandomUser(createRandomCompany()).user.id.get
-      val Some(user) = userDao.getById(userId).futureValue
+      val user = inside(userDao.getById(userId).futureValue) {
+        case Some(user) => user
+      }
       userDao.update(user.copy(
         lastLoginDate = Some(new DateTime())
       )).futureValue shouldBe true
