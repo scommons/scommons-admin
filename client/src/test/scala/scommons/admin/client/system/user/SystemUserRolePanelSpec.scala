@@ -6,16 +6,19 @@ import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.role.permission.RolePermissionPanel
 import scommons.admin.client.system.user.SystemUserActions._
+import scommons.admin.client.system.user.SystemUserRolePanel._
 import scommons.client.ui.list._
 import scommons.client.ui.tree._
+import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
+class SystemUserRolePanelSpec extends TestSpec with TestRendererUtils {
+
+  SystemUserRolePanel.pickListComp = () => "PickList".asInstanceOf[ReactClass]
+  SystemUserRolePanel.checkBoxTree = () => "CheckBoxTree".asInstanceOf[ReactClass]
 
   it should "dispatch SystemUserRoleAddAction if add item(s) when onSelectChange" in {
     //given
@@ -39,8 +42,8 @@ class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId)
     )
     val props = getSystemUserRolePanelProps(dispatch, actions, data = state, systemId = systemId)
-    val comp = shallowRender(<(SystemUserRolePanel())(^.wrapped := props)())
-    val pickListProps = findComponentProps(comp, PickList)
+    val comp = testRender(<(SystemUserRolePanel())(^.wrapped := props)())
+    val pickListProps = findComponentProps(comp, pickListComp)
     val data = SystemUserRoleUpdateReq(Set(1), userData.version)
     val action = SystemUserRoleAddAction(
       FutureTask("Test", Future.successful(SystemUserRoleResp(respData)))
@@ -77,8 +80,8 @@ class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId)
     )
     val props = getSystemUserRolePanelProps(dispatch, actions, data = state, systemId = systemId)
-    val comp = shallowRender(<(SystemUserRolePanel())(^.wrapped := props)())
-    val pickListProps = findComponentProps(comp, PickList)
+    val comp = testRender(<(SystemUserRolePanel())(^.wrapped := props)())
+    val pickListProps = findComponentProps(comp, pickListComp)
     val data = SystemUserRoleUpdateReq(Set(1), userData.version)
     val action = SystemUserRoleRemoveAction(
       FutureTask("Test", Future.successful(SystemUserRoleResp(respData)))
@@ -99,7 +102,7 @@ class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemUserRolePanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertSystemUserRolePanel(result, props)
@@ -143,12 +146,12 @@ class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertSystemUserRolePanel(result: ShallowInstance, props: SystemUserRolePanelProps): Unit = {
+  private def assertSystemUserRolePanel(result: TestInstance, props: SystemUserRolePanelProps): Unit = {
     val roots = RolePermissionPanel.buildTree(props.data.permissionsByParentId)
 
-    assertNativeComponent(result, <.div(^.className := "row-fluid")(), { case List(col1, col2) =>
-      assertNativeComponent(col1, <.div(^.className := "span6")(), { case List(pickList) =>
-        assertComponent(pickList, PickList) {
+    assertNativeComponent(result, <.div(^.className := "row-fluid")(), inside(_) { case List(col1, col2) =>
+      assertNativeComponent(col1, <.div(^.className := "span6")(), inside(_) { case List(pickList) =>
+        assertTestComponent(pickList, pickListComp) {
           case PickListProps(items, selectedIds, preSelectedIds, _, sourceTitle, destTitle) =>
             items shouldBe props.data.userRoles.map { r =>
               ListBoxData(r.id.toString, r.title, Some(AdminImagesCss.role))
@@ -159,8 +162,8 @@ class SystemUserRolePanelSpec extends TestSpec with ShallowRendererUtils {
             destTitle shouldBe "Assigned Roles"
         }
       })
-      assertNativeComponent(col2, <.div(^.className := "span6")(), { case List(checkBoxTree) =>
-        assertComponent(checkBoxTree, CheckBoxTree) {
+      assertNativeComponent(col2, <.div(^.className := "span6")(), inside(_) { case List(resCheckBoxTree) =>
+        assertTestComponent(resCheckBoxTree, checkBoxTree) {
           case CheckBoxTreeProps(resultRoots, _, readOnly, openNodes, closeNodes) =>
             resultRoots shouldBe roots
             readOnly shouldBe true

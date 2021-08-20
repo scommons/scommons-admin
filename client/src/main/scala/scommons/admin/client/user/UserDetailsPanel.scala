@@ -13,6 +13,8 @@ case class UserDetailsPanelProps(renderSystems: Props[_] => ReactElement,
 
 object UserDetailsPanel extends FunctionComponent[UserDetailsPanelProps] {
 
+  private[user] var tabPanelComp: UiComponent[TabPanelProps] = TabPanel
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
     
@@ -25,7 +27,7 @@ object UserDetailsPanel extends FunctionComponent[UserDetailsPanelProps] {
       })
     )
 
-    <(TabPanel())(^.wrapped := TabPanelProps(
+    <(tabPanelComp())(^.wrapped := TabPanelProps(
       items = tabItems.map(_._2),
       selectedIndex = props.selectedTab.map { t =>
         tabItems.segmentLength({ case (tab, _) => t != tab }, from = 0)

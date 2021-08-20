@@ -1,21 +1,23 @@
 package scommons.admin.client.system
 
 import scommons.admin.client.api.system.SystemData
+import scommons.admin.client.system.SystemEditPanel._
 import scommons.client.ui._
 import scommons.react._
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
-class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
+class SystemEditPanelSpec extends TestSpec with TestRendererUtils {
+
+  SystemEditPanel.textFieldComp = () => "TextField".asInstanceOf[ReactClass]
+  SystemEditPanel.passwordFieldComp = () => "PasswordField".asInstanceOf[ReactClass]
   
   it should "call onChange, onEnter when in name field" in {
     //given
     val onChange = mockFunction[SystemData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getSystemEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(SystemEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField).head
+    val comp = createTestRenderer(<(SystemEditPanel())(^.wrapped := props)()).root
+    val fieldProps = findProps(comp, textFieldComp).head
     val value = "updated"
     val data = props.initialData.copy(
       name = value
@@ -35,8 +37,8 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[SystemData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getSystemEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(SystemEditPanel())(^.wrapped := props)())
-    val fieldProps = findComponentProps(comp, PasswordField)
+    val comp = createTestRenderer(<(SystemEditPanel())(^.wrapped := props)()).root
+    val fieldProps = findComponentProps(comp, passwordFieldComp)
     val password = "updated"
     val data = props.initialData.copy(
       password = password
@@ -56,8 +58,8 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[SystemData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getSystemEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(SystemEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField)(1)
+    val comp = createTestRenderer(<(SystemEditPanel())(^.wrapped := props)()).root
+    val fieldProps = findProps(comp, textFieldComp)(1)
     val value = "updated"
     val data = props.initialData.copy(
       title = value
@@ -77,8 +79,8 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[SystemData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getSystemEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(SystemEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField)(2)
+    val comp = createTestRenderer(<(SystemEditPanel())(^.wrapped := props)()).root
+    val fieldProps = findProps(comp, textFieldComp)(2)
     val value = "updated"
     val data = props.initialData.copy(
       url = value
@@ -99,7 +101,7 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemEditPanel())(^.wrapped := props)()
 
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
 
     //then
     assertSystemEditPanel(result, props)
@@ -111,7 +113,7 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemEditPanel())(^.wrapped := props)()
 
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
 
     //then
     assertSystemEditPanel(result, props)
@@ -139,13 +141,13 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertSystemEditPanel(result: ShallowInstance, props: SystemEditPanelProps): Unit = {
+  private def assertSystemEditPanel(result: TestInstance, props: SystemEditPanelProps): Unit = {
     val data = props.initialData
 
-    assertNativeComponent(result, <.>()(), { case List(nameComp, passwordComp, titleComp, urlComp) =>
-      assertNativeComponent(nameComp, <.div()(), { case List(labelComp, fieldComp) =>
+    inside(result.children.toList) { case List(nameComp, passwordComp, titleComp, urlComp) =>
+      assertNativeComponent(nameComp, <.div()(), inside(_) { case List(labelComp, fieldComp) =>
         assertNativeComponent(labelComp, <.label()("Name"))
-        assertComponent(fieldComp, TextField) {
+        assertTestComponent(fieldComp, textFieldComp) {
           case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             text shouldBe data.name
             requestFocus shouldBe props.requestFocus
@@ -155,9 +157,9 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
             readOnly shouldBe props.readOnly
         }
       })
-      assertNativeComponent(passwordComp, <.div()(), { case List(labelComp, fieldComp) =>
+      assertNativeComponent(passwordComp, <.div()(), inside(_) { case List(labelComp, fieldComp) =>
         assertNativeComponent(labelComp, <.label()("Password"))
-        assertComponent(fieldComp, PasswordField) {
+        assertTestComponent(fieldComp, passwordFieldComp) {
           case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             password shouldBe data.password
             requestFocus shouldBe false
@@ -167,9 +169,9 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
             readOnly shouldBe props.readOnly
         }
       })
-      assertNativeComponent(titleComp, <.div()(), { case List(labelComp, fieldComp) =>
+      assertNativeComponent(titleComp, <.div()(), inside(_) { case List(labelComp, fieldComp) =>
         assertNativeComponent(labelComp, <.label()("Title"))
-        assertComponent(fieldComp, TextField) {
+        assertTestComponent(fieldComp, textFieldComp) {
           case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             text shouldBe data.title
             requestFocus shouldBe false
@@ -179,9 +181,9 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
             readOnly shouldBe props.readOnly
         }
       })
-      assertNativeComponent(urlComp, <.div()(), { case List(labelComp, fieldComp) =>
+      assertNativeComponent(urlComp, <.div()(), inside(_) { case List(labelComp, fieldComp) =>
         assertNativeComponent(labelComp, <.label()("URL"))
-        assertComponent(fieldComp, TextField) {
+        assertTestComponent(fieldComp, textFieldComp) {
           case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
             text shouldBe data.url
             requestFocus shouldBe false
@@ -191,6 +193,6 @@ class SystemEditPanelSpec extends TestSpec with ShallowRendererUtils {
             readOnly shouldBe props.readOnly
         }
       })
-    })
+    }
   }
 }

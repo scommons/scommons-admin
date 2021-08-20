@@ -1,11 +1,13 @@
 package scommons.admin.client.system
 
 import scommons.admin.client.api.system.SystemData
+import scommons.admin.client.system.SystemEditPopup.systemEditPanel
 import scommons.react._
-import scommons.react.test.TestSpec
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
-class SystemEditPopupSpec extends TestSpec with ShallowRendererUtils {
+class SystemEditPopupSpec extends TestSpec with TestRendererUtils {
+
+  SystemEditPopup.systemEditPanel = () => "SystemEditPanel".asInstanceOf[ReactClass]
 
   it should "enable save button if all required fields are filled" in {
     //given
@@ -31,13 +33,12 @@ class SystemEditPopupSpec extends TestSpec with ShallowRendererUtils {
         props.render(props.initialData, requestFocus = true, onChange, onSave)
       }
     }
-    val component = <(wrapper())()()
 
     //when
-    val result = shallowRender(component)
+    val result = testRender(<(wrapper())()())
 
     //then
-    assertComponent(result, SystemEditPanel) {
+    assertTestComponent(result, systemEditPanel) {
       case SystemEditPanelProps(readOnly, initialData, requestFocus, pOnChange, pOnEnter) =>
         readOnly shouldBe false
         initialData shouldBe props.initialData

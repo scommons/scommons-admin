@@ -4,19 +4,20 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.company._
 import scommons.admin.client.company.CompanyActions._
+import scommons.admin.client.company.CompanyPanel._
 import scommons.client.ui._
 import scommons.client.ui.popup._
 import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class CompanyPanelSpec extends TestSpec
-  with ShallowRendererUtils
-  with TestRendererUtils {
+class CompanyPanelSpec extends TestSpec with TestRendererUtils {
+
+  CompanyPanel.buttonsPanel = () => "ButtonsPanel".asInstanceOf[ReactClass]
+  CompanyPanel.companyTablePanel = () => "CompanyTablePanel".asInstanceOf[ReactClass]
+  CompanyPanel.inputPopup = () => "InputPopup".asInstanceOf[ReactClass]
 
   it should "dispatch CompanyCreateRequestAction when ADD command" in {
     //given
@@ -24,8 +25,17 @@ class CompanyPanelSpec extends TestSpec
     val actions = mock[CompanyActions]
     val state = CompanyState()
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val bpProps = findComponentProps(comp, ButtonsPanel)
+    val offset = None
+    val symbols = None
+    val action = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      offset
+    )
+    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(action)
+    dispatch.expects(action)
+    
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val bpProps = findComponentProps(comp, buttonsPanel)
 
     //then
     dispatch.expects(CompanyCreateRequestAction(create = true))
@@ -40,8 +50,17 @@ class CompanyPanelSpec extends TestSpec
     val actions = mock[CompanyActions]
     val state = CompanyState()
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val bpProps = findComponentProps(comp, ButtonsPanel)
+    val offset = None
+    val symbols = None
+    val action = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      offset
+    )
+    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(action)
+    dispatch.expects(action)
+
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val bpProps = findComponentProps(comp, buttonsPanel)
 
     //then
     dispatch.expects(CompanyUpdateRequestAction(update = true))
@@ -56,14 +75,22 @@ class CompanyPanelSpec extends TestSpec
     val actions = mock[CompanyActions]
     val state = CompanyState(showCreatePopup = true)
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, InputPopup)
+    val offset = None
+    val symbols = None
+    val fetchAction = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      offset
+    )
+    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(fetchAction)
+    dispatch.expects(fetchAction)
+
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val createPopupProps = findComponentProps(comp, inputPopup)
     val text = "new comp"
     val action = CompanyCreateAction(
       FutureTask("Creating", Future.successful(CompanyResp(CompanyData(Some(1), text))))
     )
-    (actions.companyCreate _).expects(dispatch, text)
-      .returning(action)
+    (actions.companyCreate _).expects(dispatch, text).returning(action)
 
     //then
     dispatch.expects(action)
@@ -78,8 +105,17 @@ class CompanyPanelSpec extends TestSpec
     val actions = mock[CompanyActions]
     val state = CompanyState(showCreatePopup = true)
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, InputPopup)
+    val offset = None
+    val symbols = None
+    val fetchAction = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      offset
+    )
+    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(fetchAction)
+    dispatch.expects(fetchAction)
+
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val createPopupProps = findComponentProps(comp, inputPopup)
 
     //then
     dispatch.expects(CompanyCreateRequestAction(create = false))
@@ -101,8 +137,8 @@ class CompanyPanelSpec extends TestSpec
       showEditPopup = true
     )
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, InputPopup)
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val editPopupProps = findComponentProps(comp, inputPopup)
     val text = "updated comp"
     val data = CompanyData(Some(1), text)
     val action = CompanyUpdateAction(
@@ -131,8 +167,8 @@ class CompanyPanelSpec extends TestSpec
       showEditPopup = true
     )
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, InputPopup)
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val editPopupProps = findComponentProps(comp, inputPopup)
 
     //then
     dispatch.expects(CompanyUpdateRequestAction(update = false))
@@ -147,8 +183,17 @@ class CompanyPanelSpec extends TestSpec
     val actions = mock[CompanyActions]
     val state = CompanyState()
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val tpProps = findComponentProps(comp, CompanyTablePanel)
+    val offset = None
+    val symbols = None
+    val fetchAction = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      offset
+    )
+    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(fetchAction)
+    dispatch.expects(fetchAction)
+
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val tpProps = findComponentProps(comp, companyTablePanel)
     val companyId = 1
 
     //then
@@ -164,8 +209,15 @@ class CompanyPanelSpec extends TestSpec
     val actions = mock[CompanyActions]
     val state = CompanyState()
     val props = CompanyPanelProps(dispatch, actions, state)
-    val comp = shallowRender(<(CompanyPanel())(^.wrapped := props)())
-    val tpProps = findComponentProps(comp, CompanyTablePanel)
+    val fetchAction = CompanyListFetchAction(
+      FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
+      None
+    )
+    (actions.companyListFetch _).expects(dispatch, None, None).returning(fetchAction)
+    dispatch.expects(fetchAction)
+
+    val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
+    val tpProps = findComponentProps(comp, companyTablePanel)
     val offset = Some(10)
     val symbols = None
     val action = CompanyListFetchAction(
@@ -239,7 +291,7 @@ class CompanyPanelSpec extends TestSpec
     val component = <(CompanyPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertCompanyPanel(result, props)
@@ -260,7 +312,7 @@ class CompanyPanelSpec extends TestSpec
     val component = <(CompanyPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertCompanyPanel(result, props)
@@ -282,21 +334,21 @@ class CompanyPanelSpec extends TestSpec
     val component = <(CompanyPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertCompanyPanel(result, props)
   }
 
-  private def assertCompanyPanel(result: ShallowInstance, props: CompanyPanelProps): Unit = {
+  private def assertCompanyPanel(result: TestInstance, props: CompanyPanelProps): Unit = {
     val selectedData = props.data.dataList.find(_.id == props.data.selectedId)
 
-    def assertComponents(buttonsPanel: ShallowInstance,
-                         tablePanel: ShallowInstance,
-                         createPopup: Option[ShallowInstance],
-                         editPopup: Option[ShallowInstance]): Assertion = {
+    def assertComponents(resButtonsPanel: TestInstance,
+                         tablePanel: TestInstance,
+                         createPopup: Option[TestInstance],
+                         editPopup: Option[TestInstance]): Assertion = {
 
-      assertComponent(buttonsPanel, ButtonsPanel) {
+      assertTestComponent(resButtonsPanel, buttonsPanel) {
         case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>
           buttons shouldBe List(Buttons.ADD, Buttons.EDIT)
           actions.enabledCommands shouldBe {
@@ -305,14 +357,14 @@ class CompanyPanelSpec extends TestSpec
           dispatch shouldBe props.dispatch
           group shouldBe false
       }
-      assertComponent(tablePanel, CompanyTablePanel) {
+      assertTestComponent(tablePanel, companyTablePanel) {
         case CompanyTablePanelProps(data, _, _) =>
           data shouldBe props.data
       }
 
       createPopup.isDefined shouldBe props.data.showCreatePopup
       createPopup.foreach { cp =>
-        assertComponent(cp, InputPopup) {
+        assertTestComponent(cp, inputPopup) {
           case InputPopupProps(message, _, _, placeholder, initialValue) =>
             message shouldBe "Enter Company name:"
             placeholder shouldBe None
@@ -322,7 +374,7 @@ class CompanyPanelSpec extends TestSpec
       
       editPopup.isEmpty shouldBe (selectedData.isEmpty && !props.data.showEditPopup)
       selectedData.foreach { data =>
-        assertComponent(editPopup.get, InputPopup) {
+        assertTestComponent(editPopup.get, inputPopup) {
           case InputPopupProps(message, _, _, placeholder, initialValue) =>
             message shouldBe "Enter new Company name:"
             placeholder shouldBe None
@@ -332,12 +384,10 @@ class CompanyPanelSpec extends TestSpec
       Succeeded
     }
     
-    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
-      children match {
-        case List(bp, tp, createPopup) if props.data.showCreatePopup => assertComponents(bp, tp, Some(createPopup), None)
-        case List(bp, tp, editPopup) if props.data.showEditPopup => assertComponents(bp, tp, None, Some(editPopup))
-        case List(bp, tp) => assertComponents(bp, tp, None, None)
-      }
-    })
+    inside(result.children.toList) {
+      case List(bp, tp, createPopup) if props.data.showCreatePopup => assertComponents(bp, tp, Some(createPopup), None)
+      case List(bp, tp, editPopup) if props.data.showEditPopup => assertComponents(bp, tp, None, Some(editPopup))
+      case List(bp, tp) => assertComponents(bp, tp, None, None)
+    }
   }
 }

@@ -18,6 +18,10 @@ case class UserEditPanelProps(dispatch: Dispatch,
 
 object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
 
+  private[user] var textFieldComp: UiComponent[TextFieldProps] = TextField
+  private[user] var passwordFieldComp: UiComponent[PasswordFieldProps] = PasswordField
+  private[user] var searchSelectComp: UiComponent[SearchSelectProps] = SearchSelect
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
     val data = props.initialData
@@ -26,7 +30,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("*Login"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(textFieldComp())(^.wrapped := TextFieldProps(
             text = data.user.login,
             onChange = { value =>
               props.onChange(data.copy(user = data.user.copy(login = value)))
@@ -40,7 +44,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("*Password"),
         <.div(^.className := "controls")(
-          <(PasswordField())(^.wrapped := PasswordFieldProps(
+          <(passwordFieldComp())(^.wrapped := PasswordFieldProps(
             password = data.user.password,
             onChange = { value =>
               props.onChange(data.copy(user = data.user.copy(password = value)))
@@ -52,7 +56,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("*Company"),
         <.div(^.className := "controls")(
-          <(SearchSelect())(^.wrapped := SearchSelectProps(
+          <(searchSelectComp())(^.wrapped := SearchSelectProps(
             selected =
               if (data.user.company.id == -1) None
               else Some(SelectData(data.user.company.id.toString, data.user.company.name)),
@@ -77,7 +81,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("*First Name"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(textFieldComp())(^.wrapped := TextFieldProps(
             text = data.profile.firstName,
             onChange = { value =>
               props.onChange(data.copy(profile = data.profile.copy(firstName = value)))
@@ -89,7 +93,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("*Last Name"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(textFieldComp())(^.wrapped := TextFieldProps(
             text = data.profile.lastName,
             onChange = { value =>
               props.onChange(data.copy(profile = data.profile.copy(lastName = value)))
@@ -101,7 +105,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("*E-mail"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(textFieldComp())(^.wrapped := TextFieldProps(
             text = data.profile.email,
             onChange = { value =>
               props.onChange(data.copy(profile = data.profile.copy(email = value)))
@@ -113,7 +117,7 @@ object UserEditPanel extends FunctionComponent[UserEditPanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("Phone"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(textFieldComp())(^.wrapped := TextFieldProps(
             text = data.profile.phone.getOrElse(""),
             onChange = { value =>
               props.onChange(data.copy(profile = data.profile.copy(

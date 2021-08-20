@@ -4,20 +4,21 @@ import io.github.shogowada.scalajs.reactjs.React.Props
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user._
+import scommons.admin.client.user.UserDetailsPanel._
 import scommons.client.ui.tab._
 import scommons.react._
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
-class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
+class UserDetailsPanelSpec extends TestSpec with TestRendererUtils {
+
+  UserDetailsPanel.tabPanelComp = () => "TabPanel".asInstanceOf[ReactClass]
   
   it should "call onChangeTab when select tab" in {
     //given
     val onChangeTab = mockFunction[Option[UserDetailsTab], Unit]
     val props = getUserDetailsPanelProps(onChangeTab = onChangeTab)
-    val comp = shallowRender(<(UserDetailsPanel())(^.wrapped := props)())
-    val tabPanelProps = findComponentProps(comp, TabPanel)
+    val comp = testRender(<(UserDetailsPanel())(^.wrapped := props)())
+    val tabPanelProps = findComponentProps(comp, tabPanelComp)
     tabPanelProps.selectedIndex shouldBe 0
     
     //then
@@ -33,7 +34,7 @@ class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(UserDetailsPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertUserDetailsPanel(result, props)
@@ -45,7 +46,7 @@ class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(UserDetailsPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertUserDetailsPanel(result, props)
@@ -57,7 +58,7 @@ class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(UserDetailsPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertUserDetailsPanel(result, props)
@@ -82,25 +83,16 @@ class UserDetailsPanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertUserDetailsPanel(result: ShallowInstance, props: UserDetailsPanelProps): Unit = {
+  private def assertUserDetailsPanel(result: TestInstance, props: UserDetailsPanelProps): Unit = {
     
     def assertUserProfilePanel(component: ReactElement, data: UserProfileData): Assertion = {
-      val wrapped = new FunctionComponent[Unit] {
-        protected def render(props: Props): ReactElement = {
-          <.div()(component)
-        }
+      assertTestComponent(createTestRenderer(component).root, UserProfilePanel) {
+        case UserProfilePanelProps(resultData) =>
+          resultData shouldBe data
       }
-      val result = shallowRender(<(wrapped())()())
-
-      assertNativeComponent(result, <.div()(), { case List(comp) =>
-        assertComponent(comp, UserProfilePanel) {
-          case UserProfilePanelProps(resultData) =>
-            resultData shouldBe data
-        }
-      })
     }
 
-    assertComponent(result, TabPanel) {
+    assertTestComponent(result, tabPanelComp) {
       case TabPanelProps(List(systemsItem, profileItem), selectedIndex, _, direction) =>
         selectedIndex shouldBe props.selectedTab.map {
           case UserDetailsTab.`apps` => 0

@@ -15,6 +15,9 @@ case class SystemUserRolePanelProps(dispatch: Dispatch,
 
 object SystemUserRolePanel extends FunctionComponent[SystemUserRolePanelProps] {
 
+  private[user] var pickListComp: UiComponent[PickListProps] = PickList
+  private[user] var checkBoxTree: UiComponent[CheckBoxTreeProps] = CheckBoxTree
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
     
@@ -22,7 +25,7 @@ object SystemUserRolePanel extends FunctionComponent[SystemUserRolePanelProps] {
     
     <.div(^.className := "row-fluid")(
       <.div(^.className := "span6")(
-        <(PickList())(^.wrapped := PickListProps(
+        <(pickListComp())(^.wrapped := PickListProps(
           items = props.data.userRoles.map { r =>
             ListBoxData(r.id.toString, r.title, Some(AdminImagesCss.role))
           },
@@ -52,7 +55,7 @@ object SystemUserRolePanel extends FunctionComponent[SystemUserRolePanelProps] {
         ))()
       ),
       <.div(^.className := "span6")(
-        <(CheckBoxTree())(^.wrapped := CheckBoxTreeProps(
+        <(checkBoxTree())(^.wrapped := CheckBoxTreeProps(
           roots = roots,
           readOnly = true,
           openNodes = roots.map(_.key).toSet

@@ -4,6 +4,7 @@ import io.github.shogowada.scalajs.reactjs.VirtualDOM._
 import io.github.shogowada.scalajs.reactjs.elements.ReactElement
 import scommons.admin.client.api.system.SystemData
 import scommons.client.ui.popup.{SaveCancelPopup, SaveCancelPopupProps}
+import scommons.react.UiComponent
 
 case class SystemEditPopupProps(title: String,
                                 initialData: SystemData,
@@ -24,7 +25,7 @@ case class SystemEditPopupProps(title: String,
              onChange: SystemData => Unit,
              onSave: () => Unit): ReactElement = {
 
-    <(SystemEditPanel())(^.wrapped := SystemEditPanelProps(
+    <(SystemEditPopup.systemEditPanel())(^.wrapped := SystemEditPanelProps(
       readOnly = false,
       initialData = data,
       requestFocus = requestFocus,
@@ -34,4 +35,7 @@ case class SystemEditPopupProps(title: String,
   }
 }
 
-object SystemEditPopup extends SaveCancelPopup[SystemEditPopupProps]
+object SystemEditPopup extends SaveCancelPopup[SystemEditPopupProps] {
+
+  private[system] var systemEditPanel: UiComponent[SystemEditPanelProps] = SystemEditPanel
+}

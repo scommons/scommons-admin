@@ -15,6 +15,10 @@ case class SystemUserPanelProps(dispatch: Dispatch,
 
 object SystemUserPanel extends ClassComponent[SystemUserPanelProps] {
 
+  private[user] var systemUserTablePanel: UiComponent[SystemUserTablePanelProps] = SystemUserTablePanel
+  private[user] var tabPanelComp: UiComponent[TabPanelProps] = TabPanel
+  private[user] var systemUserRolePanel: UiComponent[SystemUserRolePanelProps] = SystemUserRolePanel
+
   protected def create(): ReactClass = createClass[Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
@@ -54,7 +58,7 @@ object SystemUserPanel extends ClassComponent[SystemUserPanelProps] {
       val props = self.props.wrapped
 
       <.>()(props.selectedParams.systemId.toList.flatMap { systemId =>
-        <(SystemUserTablePanel())(^.wrapped := SystemUserTablePanelProps(
+        <(systemUserTablePanel())(^.wrapped := SystemUserTablePanelProps(
           data = props.data,
           selectedUserId = props.selectedParams.userId,
           onChangeSelect = { userId =>
@@ -69,10 +73,10 @@ object SystemUserPanel extends ClassComponent[SystemUserPanelProps] {
             props.dispatch(props.actions.systemUserListFetch(props.dispatch, systemId, offset, symbols))
           }
         ))() +: props.data.selectedUser.toList.map { _ =>
-          <(TabPanel())(^.wrapped := TabPanelProps(
+          <(tabPanelComp())(^.wrapped := TabPanelProps(
             items = List(
               TabItemData("Permissions", image = Some(AdminImagesCss.key), render = Some({ _ =>
-                <(SystemUserRolePanel())(^.wrapped := SystemUserRolePanelProps(
+                <(systemUserRolePanel())(^.wrapped := SystemUserRolePanelProps(
                   dispatch = props.dispatch,
                   actions = props.actions,
                   data = props.data,

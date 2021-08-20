@@ -5,24 +5,28 @@ import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.company.CompanyActions.CompanyListFetchAction
-import scommons.client.ui.select.{SearchSelect, SearchSelectProps, SelectData}
-import scommons.client.ui.{PasswordField, PasswordFieldProps, TextField, TextFieldProps}
+import scommons.admin.client.user.UserEditPanel._
+import scommons.client.ui.select.{SearchSelectProps, SelectData}
+import scommons.client.ui.{PasswordFieldProps, TextFieldProps}
+import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
+class UserEditPanelSpec extends TestSpec with TestRendererUtils {
+
+  UserEditPanel.textFieldComp = () => "TextField".asInstanceOf[ReactClass]
+  UserEditPanel.passwordFieldComp = () => "PasswordField".asInstanceOf[ReactClass]
+  UserEditPanel.searchSelectComp = () => "SearchSelect".asInstanceOf[ReactClass]
   
   it should "call onChange, onEnter when in login field" in {
     //given
     val onChange = mockFunction[UserDetailsData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getUserEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField).head
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findProps(comp, textFieldComp).head
     val value = "updated"
     val data = props.initialData.copy(
       user = props.initialData.user.copy(
@@ -44,8 +48,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getUserEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findComponentProps(comp, PasswordField)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, passwordFieldComp)
     val password = "updated"
     val data = props.initialData.copy(
       user = props.initialData.user.copy(
@@ -66,8 +70,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     //given
     val companyActions = mock[CompanyActions]
     val props = getUserEditPanelProps(companyActions = companyActions)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findComponentProps(comp, SearchSelect)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, searchSelectComp)
     val inputValue = "some input"
     val action = CompanyListFetchAction(FutureTask("Fetching",
       Future.successful(CompanyListResp(Nil))), Some(0))
@@ -85,8 +89,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val companyActions = mock[CompanyActions]
     val props = getUserEditPanelProps(companyActions = companyActions, onChange = onChange)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findComponentProps(comp, SearchSelect)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, searchSelectComp)
     val value = SelectData("2", "Comp 2")
     val data = props.initialData.copy(
       user = props.initialData.user.copy(
@@ -106,8 +110,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val companyActions = mock[CompanyActions]
     val props = getUserEditPanelProps(companyActions = companyActions, onChange = onChange)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findComponentProps(comp, SearchSelect)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findComponentProps(comp, searchSelectComp)
     val data = props.initialData.copy(
       user = props.initialData.user.copy(
         company = UserCompanyData(-1, "")
@@ -126,8 +130,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getUserEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField)(1)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findProps(comp, textFieldComp)(1)
     val value = "updated"
     val data = props.initialData.copy(
       profile = props.initialData.profile.copy(
@@ -149,8 +153,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getUserEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField)(2)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findProps(comp, textFieldComp)(2)
     val value = "updated"
     val data = props.initialData.copy(
       profile = props.initialData.profile.copy(
@@ -172,8 +176,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getUserEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField)(3)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findProps(comp, textFieldComp)(3)
     val value = "updated"
     val data = props.initialData.copy(
       profile = props.initialData.profile.copy(
@@ -195,8 +199,8 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val onChange = mockFunction[UserDetailsData, Unit]
     val onEnter = mockFunction[Unit]
     val props = getUserEditPanelProps(onChange = onChange, onEnter = onEnter)
-    val comp = shallowRender(<(UserEditPanel())(^.wrapped := props)())
-    val fieldProps = findProps(comp, TextField)(4)
+    val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
+    val fieldProps = findProps(comp, textFieldComp)(4)
     val value = "updated"
     val data = props.initialData.copy(
       profile = props.initialData.profile.copy(
@@ -219,7 +223,7 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(UserEditPanel())(^.wrapped := props)()
 
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
 
     //then
     assertUserEditPanel(result, props)
@@ -231,7 +235,7 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(UserEditPanel())(^.wrapped := props)()
 
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
 
     //then
     assertUserEditPanel(result, props)
@@ -268,7 +272,7 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
 
-  private def assertUserEditPanel(result: ShallowInstance, props: UserEditPanelProps): Unit = {
+  private def assertUserEditPanel(result: TestInstance, props: UserEditPanelProps): Unit = {
     val data = props.initialData
 
     assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
@@ -282,10 +286,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
       phoneComp,
       noteComp
       ) =>
-        assertNativeComponent(loginComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(loginComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Login"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, textFieldComp) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.user.login
                 requestFocus shouldBe props.requestFocus
@@ -296,10 +300,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
             }
           })
         })
-        assertNativeComponent(passwordComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(passwordComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Password"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, PasswordField) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, passwordFieldComp) {
               case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 password shouldBe data.user.password
                 requestFocus shouldBe false
@@ -310,10 +314,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
             }
           })
         })
-        assertNativeComponent(companyComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(companyComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Company"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, SearchSelect) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, searchSelectComp) {
               case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
                 selected shouldBe {
                   if (data.user.company.id == -1) None
@@ -324,10 +328,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
             }
           })
         })
-        assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("*First Name"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, textFieldComp) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.firstName
                 requestFocus shouldBe false
@@ -338,10 +342,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
             }
           })
         })
-        assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Last Name"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, textFieldComp) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.lastName
                 requestFocus shouldBe false
@@ -352,10 +356,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
             }
           })
         })
-        assertNativeComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(emailComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("*E-mail"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, textFieldComp) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.email
                 requestFocus shouldBe false
@@ -366,10 +370,10 @@ class UserEditPanelSpec extends TestSpec with ShallowRendererUtils {
             }
           })
         })
-        assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
+        assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
           assertNativeComponent(labelComp, <.label(^.className := "control-label")("Phone"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertComponent(fieldComp, TextField) {
+          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
+            assertTestComponent(fieldComp, textFieldComp) {
               case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
                 text shouldBe data.profile.phone.getOrElse("")
                 requestFocus shouldBe false

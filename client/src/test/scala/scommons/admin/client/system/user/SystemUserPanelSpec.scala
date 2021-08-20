@@ -7,6 +7,7 @@ import org.scalatest._
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
 import scommons.admin.client.system.user.SystemUserActions._
+import scommons.admin.client.system.user.SystemUserPanel._
 import scommons.client.ui.tab._
 import scommons.nodejs.test.AsyncTestSpec
 import scommons.react._
@@ -15,9 +16,11 @@ import scommons.react.test._
 
 import scala.concurrent.Future
 
-class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
-  with ShallowRendererUtils
-  with TestRendererUtils {
+class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUtils {
+
+  SystemUserPanel.systemUserTablePanel = () => "SystemUserTablePanel".asInstanceOf[ReactClass]
+  SystemUserPanel.tabPanelComp = () => "TabPanel".asInstanceOf[ReactClass]
+  SystemUserPanel.systemUserRolePanel = () => "SystemUserRolePanel".asInstanceOf[ReactClass]
 
   it should "dispatch actions when select user" in {
     //given
@@ -29,8 +32,8 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
     }
     val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
     val systemId = props.selectedParams.systemId.get
-    val comp = shallowRender(<(SystemUserPanel())(^.wrapped := props)())
-    val tablePanelProps = findComponentProps(comp, SystemUserTablePanel)
+    val comp = createTestRenderer(<(SystemUserPanel())(^.wrapped := props)()).root
+    val tablePanelProps = findComponentProps(comp, systemUserTablePanel)
     val userId = 22
     val params = props.selectedParams.copy(userId = Some(userId))
     val respData = mock[SystemUserRoleRespData]
@@ -56,8 +59,8 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val onChangeParams = mockFunction[SystemUserParams, Unit]
     val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
     val systemId = props.selectedParams.systemId.get
-    val comp = shallowRender(<(SystemUserPanel())(^.wrapped := props)())
-    val tablePanelProps = findComponentProps(comp, SystemUserTablePanel)
+    val comp = createTestRenderer(<(SystemUserPanel())(^.wrapped := props)()).root
+    val tablePanelProps = findComponentProps(comp, systemUserTablePanel)
     val params = props.selectedParams.copy(userId = None)
     val offset = Some(10)
     val symbols = Some("test")
@@ -197,7 +200,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val component = <(SystemUserPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemUserPanel(result, props)
@@ -219,7 +222,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val component = <(SystemUserPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemUserPanel(result, props)
@@ -250,33 +253,23 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
     )
   }
 
-  private def assertSystemUserPanel(result: ShallowInstance, props: SystemUserPanelProps): Assertion = {
+  private def assertSystemUserPanel(result: TestInstance, props: SystemUserPanelProps): Assertion = {
     val systemId = props.selectedParams.systemId.get
 
     def assertSystemUserRolePanel(component: ReactElement): Assertion = {
-      val wrapped = new FunctionComponent[Unit] {
-        protected def render(props: Props): ReactElement = {
-          <.div()(component)
-        }
+      assertTestComponent(createTestRenderer(component).root, systemUserRolePanel) {
+        case SystemUserRolePanelProps(dispatch, actions, data, resSystemId) =>
+          dispatch shouldBe props.dispatch
+          actions shouldBe props.actions
+          data shouldBe props.data
+          resSystemId shouldBe systemId
       }
-      val result = shallowRender(<(wrapped())()())
-
-      assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
-        val List(comp) = children
-        assertComponent(comp, SystemUserRolePanel) {
-          case SystemUserRolePanelProps(dispatch, actions, data, resSystemId) =>
-            dispatch shouldBe props.dispatch
-            actions shouldBe props.actions
-            data shouldBe props.data
-            resSystemId shouldBe systemId
-        }
-      })
     }
 
-    def assertComponents(tablePanel: ShallowInstance,
-                         rolePanel: Option[ShallowInstance]): Assertion = {
+    def assertComponents(tablePanel: TestInstance,
+                         rolePanel: Option[TestInstance]): Assertion = {
       
-      assertComponent(tablePanel, SystemUserTablePanel) {
+      assertTestComponent(tablePanel, systemUserTablePanel) {
         case SystemUserTablePanelProps(data, selectedUserId, _, _) =>
           data shouldBe props.data
           selectedUserId shouldBe props.selectedParams.userId
@@ -284,7 +277,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
       
       rolePanel.size shouldBe props.data.selectedUser.size
       props.data.selectedUser.foreach { _ =>
-        assertComponent(rolePanel.get, TabPanel) {
+        assertTestComponent(rolePanel.get, tabPanelComp) {
           case TabPanelProps(items, selectedIndex, _, direction) =>
             items.size shouldBe 1
             selectedIndex shouldBe 0
@@ -304,11 +297,9 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec
       Succeeded
     }
     
-    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
-      children match {
-        case List(tb) => assertComponents(tb, None)
-        case List(tb, rolePanel) => assertComponents(tb, Some(rolePanel))
-      }
-    })
+    inside(result.children.toList) {
+      case List(tb) => assertComponents(tb, None)
+      case List(tb, rolePanel) => assertComponents(tb, Some(rolePanel))
+    }
   }
 }

@@ -13,6 +13,8 @@ case class SystemGroupPanelProps(dispatch: Dispatch,
 
 object SystemGroupPanel extends FunctionComponent[SystemGroupPanelProps] {
 
+  private[group] var inputPopupComp: UiComponent[InputPopupProps] = InputPopup
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
     
@@ -26,7 +28,7 @@ object SystemGroupPanel extends FunctionComponent[SystemGroupPanelProps] {
     
     <.>()(
       if (props.state.showCreatePopup) Some(
-        <(InputPopup())(^.wrapped := InputPopupProps(
+        <(inputPopupComp())(^.wrapped := InputPopupProps(
           message = "Enter Environment name:",
           onOk = { text =>
             props.dispatch(props.actions.systemGroupCreate(props.dispatch, text))
@@ -40,7 +42,7 @@ object SystemGroupPanel extends FunctionComponent[SystemGroupPanelProps] {
       
       selectedData.flatMap { data =>
         if (props.state.showEditPopup) Some(
-          <(InputPopup())(^.wrapped := InputPopupProps(
+          <(inputPopupComp())(^.wrapped := InputPopupProps(
             message = "Enter new Environment name:",
             onOk = { text =>
               props.dispatch(props.actions.systemGroupUpdate(props.dispatch, data.copy(name = text)))

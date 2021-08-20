@@ -4,27 +4,32 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system.group._
 import scommons.admin.client.system.group.SystemGroupActions._
+import scommons.admin.client.system.group.SystemGroupPanel._
 import scommons.client.ui.popup._
 import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class SystemGroupPanelSpec extends TestSpec
-  with ShallowRendererUtils
-  with TestRendererUtils {
+class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
+
+  SystemGroupPanel.inputPopupComp = () => "InputPopup".asInstanceOf[ReactClass]
 
   it should "dispatch SystemGroupCreateAction when onOk in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemGroupActions]
-    val state = SystemGroupState(showCreatePopup = true)
+    val state = SystemGroupState(
+      dataList = List(
+        SystemGroupData(Some(1), "test env 1"),
+        SystemGroupData(Some(2), "test env 2")
+      ),
+      showCreatePopup = true
+    )
     val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
-    val comp = shallowRender(<(SystemGroupPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, InputPopup)
+    val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
+    val createPopupProps = findComponentProps(comp, inputPopupComp)
     val text = "new env"
     val action = SystemGroupCreateAction(
       FutureTask("Creating", Future.successful(SystemGroupResp(SystemGroupData(Some(1), text))))
@@ -43,10 +48,16 @@ class SystemGroupPanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemGroupActions]
-    val state = SystemGroupState(showCreatePopup = true)
+    val state = SystemGroupState(
+      dataList = List(
+        SystemGroupData(Some(1), "test env 1"),
+        SystemGroupData(Some(2), "test env 2")
+      ),
+      showCreatePopup = true
+    )
     val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
-    val comp = shallowRender(<(SystemGroupPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, InputPopup)
+    val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
+    val createPopupProps = findComponentProps(comp, inputPopupComp)
 
     //then
     dispatch.expects(SystemGroupCreateRequestAction(create = false))
@@ -67,8 +78,8 @@ class SystemGroupPanelSpec extends TestSpec
       showEditPopup = true
     )
     val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
-    val comp = shallowRender(<(SystemGroupPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, InputPopup)
+    val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
+    val editPopupProps = findComponentProps(comp, inputPopupComp)
     val text = "updated env"
     val data = SystemGroupData(Some(1), text)
     val action = SystemGroupUpdateAction(
@@ -96,8 +107,8 @@ class SystemGroupPanelSpec extends TestSpec
       showEditPopup = true
     )
     val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
-    val comp = shallowRender(<(SystemGroupPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, InputPopup)
+    val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
+    val editPopupProps = findComponentProps(comp, inputPopupComp)
 
     //then
     dispatch.expects(SystemGroupUpdateRequestAction(update = false))
@@ -160,7 +171,7 @@ class SystemGroupPanelSpec extends TestSpec
     val component = <(SystemGroupPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemGroupPanel(result, props)
@@ -181,7 +192,7 @@ class SystemGroupPanelSpec extends TestSpec
     val component = <(SystemGroupPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemGroupPanel(result, props)
@@ -202,21 +213,21 @@ class SystemGroupPanelSpec extends TestSpec
     val component = <(SystemGroupPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemGroupPanel(result, props)
   }
 
-  private def assertSystemGroupPanel(result: ShallowInstance, props: SystemGroupPanelProps): Unit = {
+  private def assertSystemGroupPanel(result: TestInstance, props: SystemGroupPanelProps): Unit = {
     val selectedData = props.state.dataList.find(_.id == props.selectedId)
 
-    def assertComponents(createPopup: Option[ShallowInstance],
-                         editPopup: Option[ShallowInstance]): Assertion = {
+    def assertComponents(createPopup: Option[TestInstance],
+                         editPopup: Option[TestInstance]): Assertion = {
 
       createPopup.isDefined shouldBe props.state.showCreatePopup
       createPopup.foreach { cp =>
-        assertComponent(cp, InputPopup) {
+        assertTestComponent(cp, inputPopupComp) {
           case InputPopupProps(message, _, _, placeholder, initialValue) =>
             message shouldBe "Enter Environment name:"
             placeholder shouldBe None
@@ -227,7 +238,7 @@ class SystemGroupPanelSpec extends TestSpec
       editPopup.isDefined shouldBe (selectedData.isDefined && props.state.showEditPopup)
       selectedData.foreach { data =>
         editPopup.foreach { ep =>
-          assertComponent(ep, InputPopup) {
+          assertTestComponent(ep, inputPopupComp) {
             case InputPopupProps(message, _, _, placeholder, initialValue) =>
               message shouldBe "Enter new Environment name:"
               placeholder shouldBe None
@@ -238,12 +249,10 @@ class SystemGroupPanelSpec extends TestSpec
       Succeeded
     }
     
-    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
-      children match {
-        case List(createPopup) if props.state.showCreatePopup => assertComponents(Some(createPopup), None)
-        case List(editPopup) if props.state.showEditPopup => assertComponents(None, Some(editPopup))
-        case Nil => assertComponents(None, None)
-      }
-    })
+    inside(result.children.toList) {
+      case List(createPopup) if props.state.showCreatePopup => assertComponents(Some(createPopup), None)
+      case List(editPopup) if props.state.showEditPopup => assertComponents(None, Some(editPopup))
+      case Nil => assertComponents(None, None)
+    }
   }
 }

@@ -3,11 +3,13 @@ package scommons.admin.client.user
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
+import scommons.admin.client.user.UserEditPopup._
 import scommons.react._
-import scommons.react.test.TestSpec
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
-class UserEditPopupSpec extends TestSpec with ShallowRendererUtils {
+class UserEditPopupSpec extends TestSpec with TestRendererUtils {
+
+  UserEditPopup.userEditPanelComp = () => "UserEditPanel".asInstanceOf[ReactClass]
 
   it should "enable save button if all required fields are filled" in {
     //given
@@ -39,10 +41,10 @@ class UserEditPopupSpec extends TestSpec with ShallowRendererUtils {
     val component = <(wrapper())()()
 
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
 
     //then
-    assertComponent(result, UserEditPanel) {
+    assertTestComponent(result, userEditPanelComp) {
       case UserEditPanelProps(disp, act, initialData, requestFocus, pOnChange, pOnEnter) =>
         disp shouldBe props.dispatch
         act shouldBe props.actions

@@ -29,7 +29,7 @@ case class UserEditPopupProps(dispatch: Dispatch,
              onChange: UserDetailsData => Unit,
              onSave: () => Unit): ReactElement = {
     
-    <(UserEditPanel())(^.wrapped := UserEditPanelProps(
+    <(UserEditPopup.userEditPanelComp())(^.wrapped := UserEditPanelProps(
       dispatch = dispatch,
       actions = actions,
       initialData = data,
@@ -40,4 +40,7 @@ case class UserEditPopupProps(dispatch: Dispatch,
   }
 }
 
-object UserEditPopup extends SaveCancelPopup[UserEditPopupProps]
+object UserEditPopup extends SaveCancelPopup[UserEditPopupProps] {
+
+  private[user] var userEditPanelComp: UiComponent[UserEditPanelProps] = UserEditPanel
+}

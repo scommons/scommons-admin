@@ -2,23 +2,25 @@ package scommons.admin.client.system.user
 
 import org.joda.time.DateTime
 import scommons.admin.client.api.system.user._
+import scommons.admin.client.system.user.SystemUserTablePanel._
 import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
 import scommons.react._
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.ShallowRendererUtils
+import scommons.react.test._
 
-class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
+class SystemUserTablePanelSpec extends TestSpec with TestRendererUtils {
+
+  SystemUserTablePanel.tablePanelComp = () => "TablePanel".asInstanceOf[ReactClass]
+  SystemUserTablePanel.paginationPanel = () => "PaginationPanel".asInstanceOf[ReactClass]
 
   it should "call onChangeSelect when select row" in {
     //given
     val onChangeSelect = mockFunction[Int, Unit]
     val state = SystemUserState()
     val props = getSystemUserTablePanelProps(state, onChangeSelect = onChangeSelect)
-    val comp = shallowRender(<(SystemUserTablePanel())(^.wrapped := props)())
-    val tpProps = findComponentProps(comp, TablePanel)
+    val comp = createTestRenderer(<(SystemUserTablePanel())(^.wrapped := props)()).root
+    val tpProps = findComponentProps(comp, tablePanelComp)
     val id = 1
     val row = TableRowData(id.toString, List("1", "test user 1"))
     
@@ -34,8 +36,8 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val onLoadData = mockFunction[Option[Int], Option[String], Unit]
     val state = SystemUserState()
     val props = getSystemUserTablePanelProps(state, onLoadData = onLoadData)
-    val comp = shallowRender(<(SystemUserTablePanel())(^.wrapped := props)())
-    val ppProps = findComponentProps(comp, PaginationPanel)
+    val comp = createTestRenderer(<(SystemUserTablePanel())(^.wrapped := props)()).root
+    val ppProps = findComponentProps(comp, paginationPanel)
     val page = 2
     val offset = Some(10)
 
@@ -53,7 +55,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemUserTablePanel(result, props)
@@ -69,7 +71,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemUserTablePanel(result, props.copy(
@@ -87,7 +89,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemUserTablePanel(result, props.copy(
@@ -102,7 +104,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
 
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
 
     //then
     assertSystemUserTablePanel(result, props)
@@ -118,7 +120,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val component = <(SystemUserTablePanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemUserTablePanel(result, props)
@@ -163,7 +165,7 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     )
   }
   
-  private def assertSystemUserTablePanel(result: ShallowInstance, props: SystemUserTablePanelProps): Unit = {
+  private def assertSystemUserTablePanel(result: TestInstance, props: SystemUserTablePanelProps): Unit = {
     val tableHeader = List(
       TableColumnData("Login"),
       TableColumnData("Logged-in at"),
@@ -184,8 +186,8 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
     val expectedTotalPages = toTotalPages(props.data.totalCount.getOrElse(0), limit)
     val expectedSelectedPage = math.min(expectedTotalPages, toPage(props.data.offset.getOrElse(0), limit))
 
-    assertNativeComponent(result, <.>()(), { case List(tablePanel, paginationPanel) =>
-      assertComponent(tablePanel, TablePanel) {
+    inside(result.children.toList) { case List(resTablePanel, resPaginationPanel) =>
+      assertTestComponent(resTablePanel, tablePanelComp) {
         case TablePanelProps(header, rows, keyExtractor, rowClassExtractor, cellRenderer, selectedIds, _) =>
           header shouldBe tableHeader
           rows shouldBe tableRows
@@ -194,12 +196,12 @@ class SystemUserTablePanelSpec extends TestSpec with ShallowRendererUtils {
           cellRenderer(rows.head, 0) shouldBe rows.head.cells.head
           selectedIds shouldBe props.selectedUserId.map(_.toString).toSet
       }
-      assertComponent(paginationPanel, PaginationPanel) {
+      assertTestComponent(resPaginationPanel, paginationPanel) {
         case PaginationPanelProps(totalPages, selectedPage, _, alignment) =>
           totalPages shouldBe expectedTotalPages
           selectedPage shouldBe expectedSelectedPage
           alignment shouldBe PaginationAlignment.Centered
       }
-    })
+    }
   }
 }

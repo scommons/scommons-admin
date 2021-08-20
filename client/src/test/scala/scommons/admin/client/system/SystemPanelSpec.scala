@@ -4,29 +4,36 @@ import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
+import scommons.admin.client.system.SystemPanel._
 import scommons.react._
 import scommons.react.redux.task.FutureTask
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.ShallowInstance
-import scommons.react.test.util.{ShallowRendererUtils, TestRendererUtils}
+import scommons.react.test._
 
 import scala.concurrent.Future
 
-class SystemPanelSpec extends TestSpec
-  with ShallowRendererUtils
-  with TestRendererUtils {
+class SystemPanelSpec extends TestSpec with TestRendererUtils {
+
+  SystemPanel.systemEditPopup = () => "SystemEditPopup".asInstanceOf[ReactClass]
+  SystemPanel.systemEditPanel = () => "SystemEditPanel".asInstanceOf[ReactClass]
 
   it should "dispatch SystemCreateAction when onSave in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemActions]
-    val state = SystemState()
+    val state = SystemState(List(SystemData(
+      id = Some(11),
+      name = "test name",
+      password = "test password",
+      title = "test title",
+      url = "http://test.com",
+      parentId = 1
+    )).groupBy(_.parentId))
     val props = {
       val props = SystemPanelProps(dispatch, actions, state, Some(1), None)
       props.copy(state = props.state.copy(showCreatePopup = true))
     }
-    val comp = shallowRender(<(SystemPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, SystemEditPopup)
+    val comp = createTestRenderer(<(SystemPanel())(^.wrapped := props)()).root
+    val createPopupProps = findComponentProps(comp, systemEditPopup)
     val data = SystemData(
       id = None,
       name = "test name",
@@ -52,13 +59,20 @@ class SystemPanelSpec extends TestSpec
     //given
     val dispatch = mockFunction[Any, Any]
     val actions = mock[SystemActions]
-    val state = SystemState()
+    val state = SystemState(List(SystemData(
+      id = Some(11),
+      name = "test name",
+      password = "test password",
+      title = "test title",
+      url = "http://test.com",
+      parentId = 1
+    )).groupBy(_.parentId))
     val props = {
       val props = SystemPanelProps(dispatch, actions, state, Some(1), None)
       props.copy(state = props.state.copy(showCreatePopup = true))
     }
-    val comp = shallowRender(<(SystemPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, SystemEditPopup)
+    val comp = createTestRenderer(<(SystemPanel())(^.wrapped := props)()).root
+    val createPopupProps = findComponentProps(comp, systemEditPopup)
 
     //then
     dispatch.expects(SystemCreateRequestAction(create = false))
@@ -81,8 +95,8 @@ class SystemPanelSpec extends TestSpec
     )
     val state = SystemState(List(existingData).groupBy(_.parentId))
     val props = SystemPanelProps(dispatch, actions, state.copy(showEditPopup = true), Some(1), Some(11))
-    val comp = shallowRender(<(SystemPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, SystemEditPopup)
+    val comp = createTestRenderer(<(SystemPanel())(^.wrapped := props)()).root
+    val editPopupProps = findComponentProps(comp, systemEditPopup)
     val data = existingData.copy(name = "updated name")
     val action = SystemUpdateAction(
       FutureTask("Updating", Future.successful(SystemResp(data)))
@@ -110,8 +124,8 @@ class SystemPanelSpec extends TestSpec
       parentId = 1
     )).groupBy(_.parentId))
     val props = SystemPanelProps(dispatch, actions, state.copy(showEditPopup = true), Some(1), Some(11))
-    val comp = shallowRender(<(SystemPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, SystemEditPopup)
+    val comp = createTestRenderer(<(SystemPanel())(^.wrapped := props)()).root
+    val editPopupProps = findComponentProps(comp, systemEditPopup)
 
     //then
     dispatch.expects(SystemUpdateRequestAction(update = false))
@@ -182,7 +196,7 @@ class SystemPanelSpec extends TestSpec
     val component = <(SystemPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemPanel(result, props)
@@ -207,7 +221,7 @@ class SystemPanelSpec extends TestSpec
     val component = <(SystemPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemPanel(result, props)
@@ -232,26 +246,26 @@ class SystemPanelSpec extends TestSpec
     val component = <(SystemPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = createTestRenderer(component).root
     
     //then
     assertSystemPanel(result, props)
   }
 
-  private def assertSystemPanel(result: ShallowInstance, props: SystemPanelProps): Unit = {
+  private def assertSystemPanel(result: TestInstance, props: SystemPanelProps): Unit = {
     val selectedData = props.selectedParentId.flatMap { parentId =>
       props.state.systemsByParentId.getOrElse(parentId, Nil)
         .find(_.id == props.selectedId)
     }
 
-    def assertComponents(createPopup: Option[ShallowInstance],
-                         editPanel: Option[ShallowInstance],
-                         editPopup: Option[ShallowInstance]): Assertion = {
+    def assertComponents(createPopup: Option[TestInstance],
+                         editPanel: Option[TestInstance],
+                         editPopup: Option[TestInstance]): Assertion = {
       
       createPopup.isDefined shouldBe (props.selectedParentId.isDefined && props.state.showCreatePopup)
       props.selectedParentId.foreach { parentId =>
         if (props.state.showCreatePopup) {
-          assertComponent(createPopup.get, SystemEditPopup) {
+          assertTestComponent(createPopup.get, systemEditPopup) {
             case SystemEditPopupProps(title, initialData, _, _) =>
               title shouldBe "New Application"
               initialData shouldBe SystemData(
@@ -268,7 +282,7 @@ class SystemPanelSpec extends TestSpec
       
       editPopup.isDefined shouldBe (selectedData.isDefined && props.state.showEditPopup)
       selectedData.foreach { data =>
-        assertComponent(editPanel.get, SystemEditPanel) {
+        assertTestComponent(editPanel.get, systemEditPanel) {
           case SystemEditPanelProps(readOnly, initialData, requestFocus, _, _) =>
             readOnly shouldBe true
             initialData shouldBe data
@@ -276,7 +290,7 @@ class SystemPanelSpec extends TestSpec
         }
         
         if (props.state.showEditPopup) {
-          assertComponent(editPopup.get, SystemEditPopup) {
+          assertTestComponent(editPopup.get, systemEditPopup) {
             case SystemEditPopupProps(title, initialData, _, _) =>
               title shouldBe "Edit Application"
               initialData shouldBe data
@@ -286,16 +300,14 @@ class SystemPanelSpec extends TestSpec
       Succeeded
     }
     
-    assertNativeComponent(result, <.>()(), { children: List[ShallowInstance] =>
-      children match {
-        case List() => assertComponents(None, None, None)
-        case List(createPopup) if props.state.showCreatePopup =>
-          assertComponents(Some(createPopup), None, None)
-        case List(editPanel, editPopup) if props.state.showEditPopup =>
-          assertComponents(None, Some(editPanel), Some(editPopup))
-        case List(editPanel) =>
-          assertComponents(None, Some(editPanel), None)
-      }
-    })
+    inside(result.children.toList) {
+      case List() => assertComponents(None, None, None)
+      case List(createPopup) if props.state.showCreatePopup =>
+        assertComponents(Some(createPopup), None, None)
+      case List(editPanel, editPopup) if props.state.showEditPopup =>
+        assertComponents(None, Some(editPanel), Some(editPopup))
+      case List(editPanel) =>
+        assertComponents(None, Some(editPanel), None)
+    }
   }
 }

@@ -14,6 +14,9 @@ case class SystemPanelProps(dispatch: Dispatch,
 
 object SystemPanel extends FunctionComponent[SystemPanelProps] {
 
+  private[system] var systemEditPopup: UiComponent[SystemEditPopupProps] = SystemEditPopup
+  private[system] var systemEditPanel: UiComponent[SystemEditPanelProps] = SystemEditPanel
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
     
@@ -30,7 +33,7 @@ object SystemPanel extends FunctionComponent[SystemPanelProps] {
     <.>()(
       props.selectedParentId.flatMap { parentId =>
         if (props.state.showCreatePopup) Some(
-          <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
+          <(systemEditPopup())(^.wrapped := SystemEditPopupProps(
             title = "New Application",
             initialData = SystemData(
               id = None,
@@ -50,7 +53,7 @@ object SystemPanel extends FunctionComponent[SystemPanelProps] {
         ) else None
       },
       selectedData.map { data =>
-        <(SystemEditPanel())(^.wrapped := SystemEditPanelProps(
+        <(systemEditPanel())(^.wrapped := SystemEditPanelProps(
           readOnly = true,
           initialData = data,
           requestFocus = false,
@@ -60,7 +63,7 @@ object SystemPanel extends FunctionComponent[SystemPanelProps] {
       },
       selectedData.flatMap { data =>
         if (props.state.showEditPopup) Some(
-          <(SystemEditPopup())(^.wrapped := SystemEditPopupProps(
+          <(systemEditPopup())(^.wrapped := SystemEditPopupProps(
             title = "Edit Application",
             initialData = data,
             onSave = { updatedData =>

@@ -10,6 +10,9 @@ case class CompanyTablePanelProps(data: CompanyState,
 
 object CompanyTablePanel extends FunctionComponent[CompanyTablePanelProps] {
 
+  private[company] var tablePanel: UiComponent[TablePanelProps[String, TableRowData]] = TablePanel
+  private[company] var paginationPanel: UiComponent[PaginationPanelProps] = PaginationPanel
+
   protected def render(selfProps: Props): ReactElement = {
     val props = selfProps.wrapped
     
@@ -28,7 +31,7 @@ object CompanyTablePanel extends FunctionComponent[CompanyTablePanelProps] {
     val selectedPage = math.min(totalPages, PaginationPanel.toPage(props.data.offset.getOrElse(0), limit))
 
     <.>()(
-      <(TablePanel())(^.wrapped := TablePanelProps(
+      <(tablePanel())(^.wrapped := TablePanelProps(
         header = header,
         rows = rows,
         selectedIds = props.data.selectedId.map(_.toString).toSet,
@@ -37,7 +40,7 @@ object CompanyTablePanel extends FunctionComponent[CompanyTablePanelProps] {
         }
       ))(),
       
-      <(PaginationPanel())(^.wrapped := PaginationPanelProps(
+      <(paginationPanel())(^.wrapped := PaginationPanelProps(
         totalPages = totalPages,
         selectedPage = selectedPage,
         onPage = { page =>

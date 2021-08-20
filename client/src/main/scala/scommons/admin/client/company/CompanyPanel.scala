@@ -13,6 +13,10 @@ case class CompanyPanelProps(dispatch: Dispatch,
 
 object CompanyPanel extends ClassComponent[CompanyPanelProps] {
 
+  private[company] var buttonsPanel: UiComponent[ButtonsPanelProps] = ButtonsPanel
+  private[company] var companyTablePanel: UiComponent[CompanyTablePanelProps] = CompanyTablePanel
+  private[company] var inputPopup: UiComponent[InputPopupProps] = InputPopup
+
   protected def create(): ReactClass = createClass[Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
@@ -25,7 +29,7 @@ object CompanyPanel extends ClassComponent[CompanyPanelProps] {
       val selectedData = props.data.dataList.find(_.id == props.data.selectedId)
   
       <.>()(
-        <(ButtonsPanel())(^.wrapped := ButtonsPanelProps(
+        <(buttonsPanel())(^.wrapped := ButtonsPanelProps(
           List(Buttons.ADD, Buttons.EDIT),
           ActionsData(Set(Buttons.ADD.command) ++ selectedData.map(_ => Buttons.EDIT.command), dispatch => {
             case Buttons.ADD.command => dispatch(CompanyCreateRequestAction(create = true))
@@ -34,7 +38,7 @@ object CompanyPanel extends ClassComponent[CompanyPanelProps] {
           props.dispatch
         ))(),
   
-        <(CompanyTablePanel())(^.wrapped := CompanyTablePanelProps(
+        <(companyTablePanel())(^.wrapped := CompanyTablePanelProps(
           data = props.data,
           onChangeSelect = { companyId =>
             props.dispatch(CompanySelectedAction(companyId))
@@ -45,7 +49,7 @@ object CompanyPanel extends ClassComponent[CompanyPanelProps] {
         ))(),
         
         if (props.data.showCreatePopup) Some(
-          <(InputPopup())(^.wrapped := InputPopupProps(
+          <(inputPopup())(^.wrapped := InputPopupProps(
             message = "Enter Company name:",
             onOk = { text =>
               props.dispatch(props.actions.companyCreate(props.dispatch, text))
@@ -59,7 +63,7 @@ object CompanyPanel extends ClassComponent[CompanyPanelProps] {
   
         selectedData.flatMap { data =>
           if (props.data.showEditPopup) Some(
-            <(InputPopup())(^.wrapped := InputPopupProps(
+            <(inputPopup())(^.wrapped := InputPopupProps(
               message = "Enter new Company name:",
               onOk = { text =>
                 props.dispatch(props.actions.companyUpdate(props.dispatch, data.copy(name = text)))

@@ -22,6 +22,12 @@ case class UserPanelProps(dispatch: Dispatch,
 
 object UserPanel extends ClassComponent[UserPanelProps] {
 
+  private[user] var buttonsPanelComp: UiComponent[ButtonsPanelProps] = ButtonsPanel
+  private[user] var userTablePanelComp: UiComponent[UserTablePanelProps] = UserTablePanel
+  private[user] var userEditPopupComp: UiComponent[UserEditPopupProps] = UserEditPopup
+  private[user] var userDetailsPanelComp: UiComponent[UserDetailsPanelProps] = UserDetailsPanel
+  private[user] var userSystemPanelComp: UiComponent[UserSystemPanelProps] = UserSystemPanel
+
   protected def create(): ReactClass = createClass[Unit](
     componentDidMount = { self =>
       val props = self.props.wrapped
@@ -55,7 +61,7 @@ object UserPanel extends ClassComponent[UserPanelProps] {
       val userDetailsData = props.data.userDetails.filter(_ => props.selectedParams.userId.isDefined)
   
       <.div()(
-        <(ButtonsPanel())(^.wrapped := ButtonsPanelProps(
+        <(buttonsPanelComp())(^.wrapped := ButtonsPanelProps(
           List(Buttons.ADD, Buttons.EDIT),
           ActionsData(Set(Buttons.ADD.command) ++ userDetailsData.map(_ => Buttons.EDIT.command), dispatch => {
             case Buttons.ADD.command => dispatch(UserCreateRequestAction(create = true))
@@ -64,7 +70,7 @@ object UserPanel extends ClassComponent[UserPanelProps] {
           props.dispatch
         ))(),
         
-        <(UserTablePanel())(^.wrapped := UserTablePanelProps(
+        <(userTablePanelComp())(^.wrapped := UserTablePanelProps(
           data = props.data,
           selectedUserId = props.selectedParams.userId,
           onChangeSelect = { userId =>
@@ -81,7 +87,7 @@ object UserPanel extends ClassComponent[UserPanelProps] {
         ))(),
         
         if (props.data.showCreatePopup) Some(
-          <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+          <(userEditPopupComp())(^.wrapped := UserEditPopupProps(
             dispatch = props.dispatch,
             actions = props.companyActions,
             title = "New User",
@@ -111,9 +117,9 @@ object UserPanel extends ClassComponent[UserPanelProps] {
         
         userDetailsData.toList.flatMap { data =>
           val res = List(
-            <(UserDetailsPanel())(^.wrapped := UserDetailsPanelProps(
+            <(userDetailsPanelComp())(^.wrapped := UserDetailsPanelProps(
               renderSystems = { _ =>
-                <(UserSystemPanel())(^.wrapped := UserSystemPanelProps(
+                <(userSystemPanelComp())(^.wrapped := UserSystemPanelProps(
                   dispatch = props.dispatch,
                   actions = props.userSystemActions,
                   systemData = props.systemData,
@@ -132,7 +138,7 @@ object UserPanel extends ClassComponent[UserPanelProps] {
           )
 
           if (props.data.showEditPopup) {
-            res :+ <(UserEditPopup())(^.wrapped := UserEditPopupProps(
+            res :+ <(userEditPopupComp())(^.wrapped := UserEditPopupProps(
               dispatch = props.dispatch,
               actions = props.companyActions,
               title = "Edit User",

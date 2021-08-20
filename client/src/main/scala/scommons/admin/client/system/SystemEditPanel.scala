@@ -12,6 +12,9 @@ case class SystemEditPanelProps(readOnly: Boolean,
 
 object SystemEditPanel extends FunctionComponent[SystemEditPanelProps] {
 
+  private[system] var textFieldComp: UiComponent[TextFieldProps] = TextField
+  private[system] var passwordFieldComp: UiComponent[PasswordFieldProps] = PasswordField
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
     val data = props.initialData
@@ -19,7 +22,7 @@ object SystemEditPanel extends FunctionComponent[SystemEditPanelProps] {
     <.>()(
       <.div()(
         <.label()("Name"),
-        <(TextField())(^.wrapped := TextFieldProps(
+        <(textFieldComp())(^.wrapped := TextFieldProps(
           text = data.name,
           onChange = { value =>
             props.onChange(data.copy(name = value))
@@ -33,7 +36,7 @@ object SystemEditPanel extends FunctionComponent[SystemEditPanelProps] {
       ),
       <.div()(
         <.label()("Password"),
-        <(PasswordField())(^.wrapped := PasswordFieldProps(
+        <(passwordFieldComp())(^.wrapped := PasswordFieldProps(
           password = data.password,
           onChange = { value =>
             props.onChange(data.copy(password = value))
@@ -45,7 +48,7 @@ object SystemEditPanel extends FunctionComponent[SystemEditPanelProps] {
       ),
       <.div()(
         <.label()("Title"),
-        <(TextField())(^.wrapped := TextFieldProps(
+        <(textFieldComp())(^.wrapped := TextFieldProps(
           text = data.title,
           onChange = { value =>
             props.onChange(data.copy(title = value))
@@ -57,7 +60,7 @@ object SystemEditPanel extends FunctionComponent[SystemEditPanelProps] {
       ),
       <.div()(
         <.label()("URL"),
-        <(TextField())(^.wrapped := TextFieldProps(
+        <(textFieldComp())(^.wrapped := TextFieldProps(
           text = data.url,
           onChange = { value =>
             props.onChange(data.copy(url = value))

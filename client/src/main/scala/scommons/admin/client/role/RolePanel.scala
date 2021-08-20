@@ -15,6 +15,8 @@ case class RolePanelProps(dispatch: Dispatch,
 
 object RolePanel extends FunctionComponent[RolePanelProps] {
 
+  private[role] var inputPopupComp: UiComponent[InputPopupProps] = InputPopup
+
   protected def render(selfProps: Props): ReactElement = {
     val props = selfProps.wrapped
     
@@ -32,7 +34,7 @@ object RolePanel extends FunctionComponent[RolePanelProps] {
     <.>()(
       props.selectedSystemId.flatMap { systemId =>
         if (props.state.showCreatePopup) Some(
-          <(InputPopup())(^.wrapped := InputPopupProps(
+          <(inputPopupComp())(^.wrapped := InputPopupProps(
             message = "Enter Role title:",
             onOk = { text =>
               props.dispatch(props.actions.roleCreate(props.dispatch, RoleData(
@@ -51,7 +53,7 @@ object RolePanel extends FunctionComponent[RolePanelProps] {
       
       selectedData.flatMap { data =>
         if (props.state.showEditPopup) Some(
-          <(InputPopup())(^.wrapped := InputPopupProps(
+          <(inputPopupComp())(^.wrapped := InputPopupProps(
             message = "Enter new Role title:",
             onOk = { text =>
               props.dispatch(props.actions.roleUpdate(props.dispatch, data.copy(title = text)))

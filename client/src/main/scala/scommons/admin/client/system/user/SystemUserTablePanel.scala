@@ -11,6 +11,9 @@ case class SystemUserTablePanelProps(data: SystemUserState,
 
 object SystemUserTablePanel extends FunctionComponent[SystemUserTablePanelProps] {
 
+  private[user] var tablePanelComp: UiComponent[TablePanelProps[String, TableRowData]] = TablePanel
+  private[user] var paginationPanel: UiComponent[PaginationPanelProps] = PaginationPanel
+
   protected def render(compProps: Props): ReactElement = {
     val props = compProps.wrapped
 
@@ -53,7 +56,7 @@ object SystemUserTablePanel extends FunctionComponent[SystemUserTablePanelProps]
     val selectedPage = math.min(totalPages, PaginationPanel.toPage(props.data.offset.getOrElse(0), limit))
 
     <.>()(
-      <(TablePanel())(^.wrapped := TablePanelProps(
+      <(tablePanelComp())(^.wrapped := TablePanelProps(
         header = header,
         rows = rows,
         selectedIds = props.selectedUserId.map(_.toString).toSet,
@@ -62,7 +65,7 @@ object SystemUserTablePanel extends FunctionComponent[SystemUserTablePanelProps]
         }
       ))(),
 
-      <(PaginationPanel())(^.wrapped := PaginationPanelProps(
+      <(paginationPanel())(^.wrapped := PaginationPanelProps(
         totalPages = totalPages,
         selectedPage = selectedPage,
         onPage = { page =>

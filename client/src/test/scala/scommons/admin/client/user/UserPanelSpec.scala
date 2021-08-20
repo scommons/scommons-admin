@@ -6,6 +6,7 @@ import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system.UserSystemData
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
+import scommons.admin.client.user.UserPanel._
 import scommons.admin.client.user.system._
 import scommons.client.ui._
 import scommons.nodejs.test.AsyncTestSpec
@@ -15,9 +16,13 @@ import scommons.react.test._
 
 import scala.concurrent.Future
 
-class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
-  with ShallowRendererUtils
-  with TestRendererUtils {
+class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUtils {
+
+  UserPanel.buttonsPanelComp = () => "ButtonsPanel".asInstanceOf[ReactClass]
+  UserPanel.userTablePanelComp = () => "UserTablePanel".asInstanceOf[ReactClass]
+  UserPanel.userEditPopupComp = () => "UserEditPopup".asInstanceOf[ReactClass]
+  UserPanel.userDetailsPanelComp = () => "UserDetailsPanel".asInstanceOf[ReactClass]
+  UserPanel.userSystemPanelComp = () => "UserSystemPanel".asInstanceOf[ReactClass]
 
   it should "dispatch actions when select user" in {
     //given
@@ -29,8 +34,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     }
     val respData = mock[UserDetailsData]
     val props = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams)
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val tablePanelProps = findComponentProps(comp, UserTablePanel)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val tablePanelProps = findComponentProps(comp, userTablePanelComp)
     val userId = 22
     val params = props.selectedParams.copy(userId = Some(userId))
     val action = UserFetchAction(
@@ -54,8 +59,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val actions = mock[UserActions]
     val onChangeParams = mockFunction[UserParams, Unit]
     val props = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams)
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val tablePanelProps = findComponentProps(comp, UserTablePanel)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val tablePanelProps = findComponentProps(comp, userTablePanelComp)
     val params = props.selectedParams.copy(userId = None)
     val offset = Some(10)
     val symbols = Some("test")
@@ -79,8 +84,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     //given
     val onChangeParams = mockFunction[UserParams, Unit]
     val props = getUserPanelProps(onChangeParams = onChangeParams)
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val detailsPanelProps = findComponentProps(comp, UserDetailsPanel)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val detailsPanelProps = findComponentProps(comp, userDetailsPanelComp)
     val params = props.selectedParams.copy(tab = Some(UserDetailsTab.profile))
 
     //then
@@ -100,8 +105,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
       val props = getUserPanelProps(dispatch, userActions = userActions)
       props.copy(data = props.data.copy(showCreatePopup = true))
     }
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, UserEditPopup)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val createPopupProps = findComponentProps(comp, userEditPopupComp)
     val data = mock[UserDetailsData]
     val action = UserCreateAction(
       FutureTask("Creating", Future.successful(UserDetailsResp(data)))
@@ -125,8 +130,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
       val props = getUserPanelProps(dispatch)
       props.copy(data = props.data.copy(showCreatePopup = true))
     }
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val createPopupProps = findComponentProps(comp, UserEditPopup)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val createPopupProps = findComponentProps(comp, userEditPopupComp)
 
     //then
     dispatch.expects(UserCreateRequestAction(create = false))
@@ -146,8 +151,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
       props.copy(data = props.data.copy(showEditPopup = true))
     }
     val data = props.data.userDetails.get
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, UserEditPopup)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val editPopupProps = findComponentProps(comp, userEditPopupComp)
     val action = UserUpdateAction(
       FutureTask("Updating", Future.successful(UserDetailsResp(data)))
     )
@@ -171,8 +176,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
       val props = getUserPanelProps(dispatch, userActions = userActions)
       props.copy(data = props.data.copy(showEditPopup = true))
     }
-    val comp = shallowRender(<(UserPanel())(^.wrapped := props)())
-    val editPopupProps = findComponentProps(comp, UserEditPopup)
+    val comp = testRender(<(UserPanel())(^.wrapped := props)())
+    val editPopupProps = findComponentProps(comp, userEditPopupComp)
 
     //then
     dispatch.expects(UserUpdateRequestAction(update = false))
@@ -302,7 +307,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertUserPanel(result, props)
@@ -323,7 +328,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertUserPanel(result, props)
@@ -342,7 +347,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     val component = <(UserPanel())(^.wrapped := props)()
     
     //when
-    val result = shallowRender(component)
+    val result = testRender(component)
     
     //then
     assertUserPanel(result, props)
@@ -396,40 +401,29 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
     )
   }
 
-  private def assertUserPanel(result: ShallowInstance, props: UserPanelProps): Assertion = {
+  private def assertUserPanel(result: TestInstance, props: UserPanelProps): Assertion = {
     val selectedData = props.data.userDetails
 
     def assertUserSystemPanel(component: ReactElement, data: UserDetailsData): Assertion = {
-      val wrapped = new FunctionComponent[Unit] {
-        protected def render(compProps: Props): ReactElement = {
-          <.div()(component)
-        }
+      assertTestComponent(createTestRenderer(component).root, userSystemPanelComp) {
+        case UserSystemPanelProps(dispatch, actions, systemData, selectedUser) =>
+          dispatch shouldBe props.dispatch
+          actions shouldBe props.userSystemActions
+          systemData shouldBe props.systemData
+          selectedUser shouldBe (props.selectedParams.tab.getOrElse(UserDetailsTab.apps) match {
+            case UserDetailsTab.apps => Some(data.user)
+            case _ => None
+          })
       }
-      val result = shallowRender(<(wrapped())()())
-
-      assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
-        inside(children) { case List(comp) =>
-          assertComponent(comp, UserSystemPanel) {
-            case UserSystemPanelProps(dispatch, actions, systemData, selectedUser) =>
-              dispatch shouldBe props.dispatch
-              actions shouldBe props.userSystemActions
-              systemData shouldBe props.systemData
-              selectedUser shouldBe (props.selectedParams.tab.getOrElse(UserDetailsTab.apps) match {
-                case UserDetailsTab.apps => Some(data.user)
-                case _ => None
-              })
-          }
-        }
-      })
     }
 
-    def assertComponents(buttonsPanel: ShallowInstance,
-                         tablePanel: ShallowInstance,
-                         createPopup: Option[ShallowInstance],
-                         detailsPanel: Option[ShallowInstance],
-                         editPopup: Option[ShallowInstance]): Assertion = {
+    def assertComponents(buttonsPanel: TestInstance,
+                         tablePanel: TestInstance,
+                         createPopup: Option[TestInstance],
+                         detailsPanel: Option[TestInstance],
+                         editPopup: Option[TestInstance]): Assertion = {
 
-      assertComponent(buttonsPanel, ButtonsPanel) {
+      assertTestComponent(buttonsPanel, buttonsPanelComp) {
         case ButtonsPanelProps(buttons, actions, dispatch, group, _) =>
           buttons shouldBe List(Buttons.ADD, Buttons.EDIT)
           actions.enabledCommands shouldBe {
@@ -438,7 +432,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
           dispatch shouldBe props.dispatch
           group shouldBe false
       }
-      assertComponent(tablePanel, UserTablePanel) {
+      assertTestComponent(tablePanel, userTablePanelComp) {
         case UserTablePanelProps(data, selectedUserId, _, _) =>
           data shouldBe props.data
           selectedUserId shouldBe props.selectedParams.userId
@@ -446,7 +440,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
 
       if (props.data.showCreatePopup) {
         createPopup.isDefined shouldBe true
-        assertComponent(createPopup.get, UserEditPopup) {
+        assertTestComponent(createPopup.get, userEditPopupComp) {
           case UserEditPopupProps(dispatch, actions, title, initialData, _, _) =>
             dispatch shouldBe props.dispatch
             actions shouldBe props.companyActions
@@ -471,7 +465,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
 
       detailsPanel.isEmpty shouldBe selectedData.isEmpty
       selectedData.foreach { data =>
-        assertComponent(detailsPanel.get, UserDetailsPanel) {
+        assertTestComponent(detailsPanel.get, userDetailsPanelComp) {
           case UserDetailsPanelProps(renderSystems, profile, selectedTab, _) =>
             profile shouldBe data.profile
             selectedTab shouldBe props.selectedParams.tab
@@ -482,7 +476,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
       
       editPopup.isEmpty shouldBe (selectedData.isEmpty && !props.data.showEditPopup)
       selectedData.foreach { data =>
-        assertComponent(editPopup.get, UserEditPopup) {
+        assertTestComponent(editPopup.get, userEditPopupComp) {
           case UserEditPopupProps(dispatch, actions, title, initialData, _, _) =>
             dispatch shouldBe props.dispatch
             actions shouldBe props.companyActions
@@ -493,17 +487,15 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec
       Succeeded
     }
     
-    assertNativeComponent(result, <.div()(), { children: List[ShallowInstance] =>
-      inside(children) {
-        case List(bp, tp) =>
-          assertComponents(bp, tp, None, None, None)
-        case List(bp, tp, createPopup) if props.data.showCreatePopup =>
-          assertComponents(bp, tp, Some(createPopup), None, None)
-        case List(bp, tp, details, editPopup) if props.data.showEditPopup =>
-          assertComponents(bp, tp, None, Some(details), Some(editPopup))
-        case List(bp, tp, details) if props.data.showEditPopup =>
-          assertComponents(bp, tp, None, Some(details), None)
-      }
+    assertNativeComponent(result, <.div()(), inside(_) {
+      case List(bp, tp) =>
+        assertComponents(bp, tp, None, None, None)
+      case List(bp, tp, createPopup) if props.data.showCreatePopup =>
+        assertComponents(bp, tp, Some(createPopup), None, None)
+      case List(bp, tp, details, editPopup) if props.data.showEditPopup =>
+        assertComponents(bp, tp, None, Some(details), Some(editPopup))
+      case List(bp, tp, details) if props.data.showEditPopup =>
+        assertComponents(bp, tp, None, Some(details), None)
     })
   }
 }
