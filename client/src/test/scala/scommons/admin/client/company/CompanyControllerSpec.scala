@@ -3,11 +3,15 @@ package scommons.admin.client.company
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
+import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.company.CompanyActions._
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.util.BrowsePath
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
+
+import scala.concurrent.Future
 
 class CompanyControllerSpec extends TestSpec {
 
@@ -41,11 +45,12 @@ class CompanyControllerSpec extends TestSpec {
     }
   }
 
-  ignore should "setup companies item" in {
+  it should "setup companies item" in {
     //given
     val apiActions = mock[CompanyActions]
     val controller = new CompanyController(apiActions)
-    val companyListFetchAction = mock[CompanyListFetchAction]
+    val companyListFetchAction =
+      CompanyListFetchAction(FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))), None)
     val expectedActions = Map(
       Buttons.REFRESH.command -> companyListFetchAction
     )

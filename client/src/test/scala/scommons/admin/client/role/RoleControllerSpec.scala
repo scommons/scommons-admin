@@ -1,8 +1,9 @@
 package scommons.admin.client.role
 
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.api.role.RoleData
+import scommons.admin.client.api.role.{RoleData, RoleListResp}
 import scommons.admin.client.role.RoleActions._
+import scommons.admin.client.role.RoleControllerSpec._
 import scommons.admin.client.role.permission.RolePermissionController
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
@@ -10,7 +11,10 @@ import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
 import scommons.react._
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
+
+import scala.concurrent.Future
 
 class RoleControllerSpec extends TestSpec {
 
@@ -49,12 +53,13 @@ class RoleControllerSpec extends TestSpec {
     }
   }
 
-  ignore should "setup roles node" in {
+  it should "setup roles node" in {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)
     val rolesPath = BrowsePath("/some-path")
-    val roleListFetchAction = mock[RoleListFetchAction]
+    val roleListFetchAction =
+      RoleListFetchAction(FutureTask("Fetching", Future.successful(RoleListResp(Nil))))
     val roleCreateRequestAction = RoleCreateRequestAction(create = true)
     val expectedActions = Map(
       Buttons.REFRESH.command -> roleListFetchAction,
@@ -91,7 +96,7 @@ class RoleControllerSpec extends TestSpec {
     }
   }
 
-  ignore should "setup role item" in {
+  it should "setup role item" in {
     //given
     val apiActions = mock[RoleActions]
     val controller = new RoleController(apiActions)
@@ -110,9 +115,7 @@ class RoleControllerSpec extends TestSpec {
         <.div()("test")
       }
     }.apply()
-    val rolePermissionController = mock[RolePermissionController]
-    (rolePermissionController.apply _).expects()
-      .returning(roleControllerReactClass)
+    val rolePermissionController = new TestRolePermissionController(roleControllerReactClass)
     
     val dispatch = mockFunction[Any, Any]
     dispatch.expects(roleUpdateRequestAction).returning(*)
@@ -138,5 +141,14 @@ class RoleControllerSpec extends TestSpec {
           actions.onCommand(dispatch)(cmd) shouldBe action
         }
     }
+  }
+}
+
+object RoleControllerSpec {
+
+  class TestRolePermissionController(reactClass: ReactClass)
+    extends RolePermissionController(null) {
+
+    override def apply(): ReactClass = reactClass
   }
 }

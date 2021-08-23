@@ -1,7 +1,8 @@
 package scommons.admin.client.system.group
 
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
-import scommons.admin.client.api.system.group.SystemGroupData
+import scommons.admin.client.api.system.SystemListResp
+import scommons.admin.client.api.system.group.{SystemGroupData, SystemGroupListResp}
 import scommons.admin.client.system.SystemActions
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.group.SystemGroupActions._
@@ -10,7 +11,10 @@ import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.BrowsePath
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
+
+import scala.concurrent.Future
 
 class SystemGroupControllerSpec extends TestSpec {
 
@@ -50,12 +54,13 @@ class SystemGroupControllerSpec extends TestSpec {
     }
   }
 
-  ignore should "setup applications node" in {
+  it should "setup applications node" in {
     //given
     val groupActions = mock[SystemGroupActions]
     val systemActions = mock[SystemActions]
     val controller = new SystemGroupController(groupActions, systemActions)
-    val systemGroupListFetchAction = mock[SystemGroupListFetchAction]
+    val systemGroupListFetchAction =
+      SystemGroupListFetchAction(FutureTask("Fetching", Future.successful(SystemGroupListResp(Nil))))
     val systemGroupCreateRequestAction = SystemGroupCreateRequestAction(create = true)
     val expectedActions = Map(
       Buttons.REFRESH.command -> systemGroupListFetchAction,
@@ -93,13 +98,14 @@ class SystemGroupControllerSpec extends TestSpec {
     }
   }
 
-  ignore should "setup environment node" in {
+  it should "setup environment node" in {
     //given
     val groupActions = mock[SystemGroupActions]
     val systemActions = mock[SystemActions]
     val controller = new SystemGroupController(groupActions, systemActions)
     val data = SystemGroupData(Some(1), "env 1")
-    val systemListFetchAction = mock[SystemListFetchAction]
+    val systemListFetchAction =
+      SystemListFetchAction(FutureTask("Fetching", Future.successful(SystemListResp(Nil))))
     val systemCreateRequestAction = SystemCreateRequestAction(create = true)
     val systemGroupUpdateRequestAction = SystemGroupUpdateRequestAction(update = true)
     val expectedActions = Map(

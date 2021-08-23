@@ -1,13 +1,17 @@
 package scommons.admin.client.system.user
 
 import scommons.admin.client.AdminRouteController.buildAppsUsersPath
+import scommons.admin.client.api.system.user.SystemUserListResp
 import scommons.admin.client.system.user.SystemUserActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
 import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.util.BrowsePath
+import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
+
+import scala.concurrent.Future
 
 class SystemUserControllerSpec extends TestSpec {
 
@@ -58,11 +62,12 @@ class SystemUserControllerSpec extends TestSpec {
     }
   }
 
-  ignore should "setup users item" in {
+  it should "setup users item" in {
     //given
     val actions = mock[SystemUserActions]
     val controller = new SystemUserController(actions)
-    val systemUserListFetchAction = mock[SystemUserListFetchAction]
+    val systemUserListFetchAction =
+      SystemUserListFetchAction(FutureTask("Fetching", Future.successful(SystemUserListResp(Nil, None))), None)
     val expectedActions = Map(
       Buttons.REFRESH.command -> systemUserListFetchAction
     )

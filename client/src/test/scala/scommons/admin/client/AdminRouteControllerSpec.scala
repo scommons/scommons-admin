@@ -3,6 +3,7 @@ package scommons.admin.client
 import io.github.shogowada.scalajs.reactjs.React.Props
 import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
+import scommons.admin.client.AdminRouteControllerSpec._
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.api.system.group.SystemGroupData
@@ -39,19 +40,8 @@ class AdminRouteControllerSpec extends TestSpec {
     controller.uiComponent shouldBe AppBrowseController
   }
   
-  ignore should "map state to props" in {
+  it should "map state to props" in {
     //given
-    val companyController = mock[CompanyController]
-    val userController = mock[UserController]
-    val systemGroupController = mock[SystemGroupController]
-    val systemController = mock[SystemController]
-    val systemUserController = mock[SystemUserController]
-    val roleController = mock[RoleController]
-    val rolePermissionController = mock[RolePermissionController]
-    val controller = new AdminRouteController(
-      companyController, userController, systemGroupController, systemController, systemUserController,
-      roleController, rolePermissionController
-    )
     val props = mock[Props[Unit]]
     val expectedDispatch = mock[Dispatch]
     val userParams = UserParams(Some(123), Some(UserDetailsTab.profile))
@@ -82,31 +72,23 @@ class AdminRouteControllerSpec extends TestSpec {
     val applicationUsersItem = BrowseTreeItemData("Test App Users", BrowsePath("/users"))
     val rolesNode = BrowseTreeNodeData("Test Roles", BrowsePath("/roles"))
     val roleItem = BrowseTreeItemData("Test Role", BrowsePath("/3"))
-    (companyController.getCompaniesItem _).expects(companiesItem.path)
-      .returning(companiesItem)
-    (userController.getUsersItem _).expects(usersItem.path)
-      .returning(usersItem)
-    (systemGroupController.getApplicationsNode _).expects(BrowsePath("/apps"))
-      .returning(applicationsNode)
-    systemGroups.foreach { group =>
-      (systemGroupController.getEnvironmentNode _).expects(applicationsNode.path, group)
-        .returning(environmentNode)
-    }
-    systems.foreach { system =>
-      (systemController.getApplicationNode _).expects(environmentNode.path, system)
-        .returning(applicationNode)
-      (systemUserController.getUsersItem _).expects(buildAppsUsersPath(systemUserParams.copy(
-        groupId = Some(system.parentId),
-        systemId = system.id
-      )), system.id.get)
-        .returning(applicationUsersItem)
-      (roleController.getRolesNode _).expects(BrowsePath(s"${applicationNode.path}/roles"))
-        .returning(rolesNode)
-    }
-    roles.foreach { role =>
-      (roleController.getRoleItem _).expects(rolesNode.path, role, rolePermissionController)
-        .returning(roleItem)
-    }
+    val companyController = new TestCompanyController(companiesItem)(fail(_))
+    val userController = new TestUserController(usersItem)(fail(_))
+    val systemGroupController = new TestSystemGroupController(applicationsNode, environmentNode, systemGroups)(fail(_))
+    val systemController = new TestSystemController(environmentNode.path, applicationNode, systems)(fail(_))
+    val systemUserController = new TestSystemUserController(systemUserParams, applicationUsersItem, systems)(fail(_))
+    val rolePermissionController = mock[RolePermissionController]
+    val roleController = new TestRoleController(
+      rolesPath = BrowsePath(s"${applicationNode.path}/roles"),
+      rolesNode = rolesNode,
+      roleItem = roleItem,
+      expectedRolePermissionController = rolePermissionController,
+      roles = roles
+    )(fail(_))
+    val controller = new AdminRouteController(
+      companyController, userController, systemGroupController, systemController, systemUserController,
+      roleController, rolePermissionController
+    )
     val expectedTreeRoots = List(
       companiesItem,
       usersItem,
@@ -153,6 +135,134 @@ class AdminRouteControllerSpec extends TestSpec {
         treeRoots shouldBe expectedTreeRoots
         dispatch shouldBe expectedDispatch
         initiallyOpenedNodes shouldBe Set(applicationsNode.path)
+    }
+  }
+}
+
+object AdminRouteControllerSpec {
+  
+  class TestCompanyController(itemData: BrowseTreeItemData)(fail: String => Nothing)
+    extends CompanyController(null) {
+
+    override def getCompaniesItem(path: BrowsePath): BrowseTreeItemData = {
+      if (path != itemData.path) {
+        fail(s"companies path doesn't match: expected ${itemData.path}, but got: $path")
+      }
+      itemData
+    }
+  }
+
+  class TestUserController(itemData: BrowseTreeItemData)(fail: String => Nothing)
+    extends UserController(null, null, null) {
+
+    override def getUsersItem(path: BrowsePath): BrowseTreeItemData = {
+      if (path != itemData.path) {
+        fail(s"users path doesn't match: expected ${itemData.path}, but got: $path")
+      }
+      itemData
+    }
+  }
+
+  class TestSystemGroupController(
+                                   applicationsNode: BrowseTreeNodeData,
+                                   environmentNode: BrowseTreeNodeData,
+                                   systemGroups: List[SystemGroupData]
+                                 )(fail: String => Nothing)
+    extends SystemGroupController(null, null) {
+
+    override def getApplicationsNode(path: BrowsePath): BrowseTreeNodeData = {
+      val expectedPath = BrowsePath("/apps")
+      if (path != expectedPath) {
+        fail(s"applications path doesn't match: expected $expectedPath, but got: $path")
+      }
+      applicationsNode
+    }
+
+    override def getEnvironmentNode(path: BrowsePath, data: SystemGroupData): BrowseTreeNodeData = {
+      if (path != applicationsNode.path) {
+        fail(s"environment path doesn't match: expected ${applicationsNode.path}, but got: $path")
+      }
+      systemGroups.find(_ == data).getOrElse {
+        fail(s"cannot find SystemGroupData: $data")
+      }
+      environmentNode
+    }
+  }
+
+  class TestSystemController(
+                              envNodePath: BrowsePath,
+                              applicationNode: BrowseTreeNodeData,
+                              systems: List[SystemData]
+                            )(fail: String => Nothing)
+    extends SystemController(null) {
+
+    override def getApplicationNode(path: BrowsePath, data: SystemData): BrowseTreeNodeData = {
+      if (path != envNodePath) {
+        fail(s"system path doesn't match: expected $envNodePath, but got: $path")
+      }
+      systems.find(_ == data).getOrElse {
+        fail(s"cannot find SystemData: $data")
+      }
+      applicationNode
+    }
+  }
+
+  class TestSystemUserController(
+                                  systemUserParams: SystemUserParams,
+                                  applicationUsersItem: BrowseTreeItemData,
+                                  systems: List[SystemData]
+                                )(fail: String => Nothing)
+    extends SystemUserController(null) {
+
+    override def getUsersItem(path: BrowsePath, systemId: Int): BrowseTreeItemData = {
+      val system = systems.find(_.id.get == systemId).getOrElse {
+        fail(s"cannot find SystemData, systemId: $systemId")
+      }
+      val expectedPath = buildAppsUsersPath(systemUserParams.copy(
+        groupId = Some(system.parentId),
+        systemId = system.id
+      ))
+      if (path != expectedPath) {
+        fail(s"system users path doesn't match: expected $expectedPath, but got: $path")
+      }
+      applicationUsersItem
+    }
+  }
+
+  class TestRoleController(
+                            rolesPath: BrowsePath,
+                            rolesNode: BrowseTreeNodeData,
+                            roleItem: BrowseTreeItemData,
+                            expectedRolePermissionController: RolePermissionController,
+                            roles: List[RoleData]
+                          )(fail: String => Nothing)
+    extends RoleController(null) {
+
+    override def getRolesNode(path: BrowsePath): BrowseTreeNodeData = {
+      if (path != rolesPath) {
+        fail(s"system users path doesn't match: expected $rolesPath, but got: $path")
+      }
+      rolesNode
+    }
+
+    override def getRoleItem(path: BrowsePath,
+                             data: RoleData,
+                             rolePermissionController: RolePermissionController): BrowseTreeItemData = {
+      
+      if (path != rolesNode.path) {
+        fail(s"role path doesn't match: expected ${rolesNode.path}, but got: $path")
+      }
+      roles.find(_ == data).getOrElse {
+        fail(s"cannot find RoleData: $data")
+      }
+      if (rolePermissionController != expectedRolePermissionController) {
+        fail(
+          s"""rolePermissionController doesn't match:
+             |  expected $expectedRolePermissionController
+             |  actual: $rolePermissionController
+             |""".stripMargin)
+      }
+      roleItem
     }
   }
 }

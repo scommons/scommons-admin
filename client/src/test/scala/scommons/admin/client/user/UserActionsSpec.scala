@@ -37,13 +37,27 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  ignore should "dispatch UserFetchedAction when userFetch" in {
+  it should "dispatch UserFetchedAction when userFetch" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
     val dispatch = mockFunction[Any, Any]
     val id = 1
-    val respData = mock[UserDetailsData]
+    val respData = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    )
     val expectedResp = UserDetailsResp(respData)
 
     (api.getUserById _).expects(id)
@@ -61,13 +75,27 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  ignore should "dispatch UserCreatedAction when userCreate" in {
+  it should "dispatch UserCreatedAction when userCreate" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
     val dispatch = mockFunction[Any, Any]
-    val data = mock[UserDetailsData]
-    val respData = mock[UserDetailsData]
+    val data = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    )
+    val respData = data.copy(user = data.user.copy(active = false))
     val expectedResp = UserDetailsResp(respData)
 
     (api.createUser _).expects(data)
@@ -85,13 +113,27 @@ class UserActionsSpec extends AsyncTestSpec {
     }
   }
   
-  ignore should "dispatch UserDetailsUpdatedAction when userUpdate" in {
+  it should "dispatch UserDetailsUpdatedAction when userUpdate" in {
     //given
     val api = mock[UserApi]
     val actions = new UserActionsTest(api)
     val dispatch = mockFunction[Any, Any]
-    val data = mock[UserDetailsData]
-    val respData = mock[UserDetailsData]
+    val data = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    )
+    val respData = data.copy(user = data.user.copy(active = false))
     val expectedResp = UserDetailsResp(respData)
 
     (api.updateUser _).expects(data)

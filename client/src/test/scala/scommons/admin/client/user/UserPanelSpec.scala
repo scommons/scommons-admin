@@ -97,7 +97,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     Succeeded
   }
 
-  ignore should "dispatch UserCreateAction when onSave in create popup" in {
+  it should "dispatch UserCreateAction when onSave in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val userActions = mock[UserActions]
@@ -107,7 +107,21 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     }
     val comp = testRender(<(UserPanel())(^.wrapped := props)())
     val createPopupProps = findComponentProps(comp, userEditPopupComp)
-    val data = mock[UserDetailsData]
+    val data = UserDetailsData(
+      user = UserData(
+        id = Some(11),
+        company = UserCompanyData(1, "Test Company"),
+        login = "updated_login",
+        password = "updated_password",
+        active = true
+      ),
+      profile = UserProfileData(
+        email = "test@email.com",
+        firstName = "Firstname",
+        lastName = "Lastname",
+        phone = Some("0123 456 789")
+      )
+    )
     val action = UserCreateAction(
       FutureTask("Creating", Future.successful(UserDetailsResp(data)))
     )
@@ -123,7 +137,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     Succeeded
   }
 
-  ignore should "dispatch UserCreateRequestAction(false) when onCancel in create popup" in {
+  it should "dispatch UserCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
     val props = {
