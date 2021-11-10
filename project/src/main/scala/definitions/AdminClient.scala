@@ -1,8 +1,6 @@
 package definitions
 
 import com.typesafe.sbt.web.SbtWeb
-import org.scalajs.jsenv.nodejs.NodeJSEnv
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt._
 import scommons.sbtplugin.project.CommonClientModule
 import scoverage.ScoverageKeys._
@@ -20,15 +18,7 @@ object AdminClient extends AdminModule with CommonClientModule {
       .settings(
         coverageExcludedPackages := coverageExcludedPackages.value +
           ";.*AdminMain" +
-          ";.*AdminActions",
-
-        // required for node.js >= v12.12.0
-        // see:
-        //   https://github.com/nodejs/node/pull/29919
-        scalaJSLinkerConfig in Test ~= {
-          _.withSourceMap(true)
-        },
-        jsEnv in Test := new NodeJSEnv(NodeJSEnv.Config().withArgs(List("--enable-source-maps")))
+          ";.*AdminActions"
       )
   }
 
