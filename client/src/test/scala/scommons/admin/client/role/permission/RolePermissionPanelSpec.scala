@@ -1,6 +1,5 @@
 package scommons.admin.client.role.permission
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.api.role.permission._
@@ -8,7 +7,7 @@ import scommons.admin.client.role.permission.RolePermissionActions._
 import scommons.admin.client.role.permission.RolePermissionPanel._
 import scommons.client.ui.TriState._
 import scommons.client.ui.tree._
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -16,7 +15,7 @@ import scala.concurrent.Future
 
 class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
 
-  RolePermissionPanel.checkBoxTreeComp = () => "CheckBoxTree".asInstanceOf[ReactClass]
+  RolePermissionPanel.checkBoxTreeComp = mockUiComponent("CheckBoxTree")
 
   it should "dispatch RolePermissionAddAction if Selected when onChange" in {
     //given

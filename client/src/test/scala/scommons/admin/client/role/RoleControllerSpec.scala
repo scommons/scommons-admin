@@ -1,6 +1,5 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.{RoleData, RoleListResp}
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RoleControllerSpec._
@@ -11,6 +10,7 @@ import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
 import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 

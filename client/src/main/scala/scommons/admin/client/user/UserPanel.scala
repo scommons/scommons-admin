@@ -1,6 +1,5 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
@@ -8,6 +7,7 @@ import scommons.admin.client.user.system._
 import scommons.client.ui._
 import scommons.client.util.ActionsData
 import scommons.react._
+import scommons.react.redux.Dispatch
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

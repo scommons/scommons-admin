@@ -1,15 +1,15 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserEditPopup._
 import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.test._
 
 class UserEditPopupSpec extends TestSpec with TestRendererUtils {
 
-  UserEditPopup.userEditPanelComp = () => "UserEditPanel".asInstanceOf[ReactClass]
+  UserEditPopup.userEditPanelComp = mockUiComponent("UserEditPanel")
 
   it should "enable save button if all required fields are filled" in {
     //given

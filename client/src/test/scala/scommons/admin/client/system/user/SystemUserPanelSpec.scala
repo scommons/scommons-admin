@@ -1,7 +1,5 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.elements.ReactElement
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.joda.time.DateTime
 import org.scalatest._
 import scommons.admin.client.AdminImagesCss
@@ -10,7 +8,8 @@ import scommons.admin.client.system.user.SystemUserActions._
 import scommons.admin.client.system.user.SystemUserPanel._
 import scommons.client.ui.tab._
 import scommons.nodejs.test.AsyncTestSpec
-import scommons.react._
+import scommons.react.ReactElement
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -18,9 +17,9 @@ import scala.concurrent.Future
 
 class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUtils {
 
-  SystemUserPanel.systemUserTablePanel = () => "SystemUserTablePanel".asInstanceOf[ReactClass]
-  SystemUserPanel.tabPanelComp = () => "TabPanel".asInstanceOf[ReactClass]
-  SystemUserPanel.systemUserRolePanel = () => "SystemUserRolePanel".asInstanceOf[ReactClass]
+  SystemUserPanel.systemUserTablePanel = mockUiComponent("SystemUserTablePanel")
+  SystemUserPanel.tabPanelComp = mockUiComponent("TabPanel")
+  SystemUserPanel.systemUserRolePanel = mockUiComponent("SystemUserRolePanel")
 
   it should "dispatch actions when select user" in {
     //given

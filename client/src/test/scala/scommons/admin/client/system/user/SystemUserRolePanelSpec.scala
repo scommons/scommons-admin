@@ -1,6 +1,5 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.joda.time.DateTime
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user._
@@ -9,7 +8,7 @@ import scommons.admin.client.system.user.SystemUserActions._
 import scommons.admin.client.system.user.SystemUserRolePanel._
 import scommons.client.ui.list._
 import scommons.client.ui.tree._
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -17,8 +16,8 @@ import scala.concurrent.Future
 
 class SystemUserRolePanelSpec extends TestSpec with TestRendererUtils {
 
-  SystemUserRolePanel.pickListComp = () => "PickList".asInstanceOf[ReactClass]
-  SystemUserRolePanel.checkBoxTree = () => "CheckBoxTree".asInstanceOf[ReactClass]
+  SystemUserRolePanel.pickListComp = mockUiComponent("PickList")
+  SystemUserRolePanel.checkBoxTree = mockUiComponent("CheckBoxTree")
 
   it should "dispatch SystemUserRoleAddAction if add item(s) when onSelectChange" in {
     //given

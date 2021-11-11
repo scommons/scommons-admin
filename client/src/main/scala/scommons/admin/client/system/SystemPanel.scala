@@ -1,10 +1,10 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
 import scommons.react._
 import scommons.react.hooks._
+import scommons.react.redux.Dispatch
 
 case class SystemPanelProps(dispatch: Dispatch,
                             actions: SystemActions,

@@ -1,9 +1,9 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.client.ui.tab._
 import scommons.react._
+import scommons.react.redux.Dispatch
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

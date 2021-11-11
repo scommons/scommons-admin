@@ -1,6 +1,5 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.system.group.SystemGroupData
 import scommons.admin.client.system.SystemActions
@@ -12,6 +11,7 @@ import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.{ActionsData, BrowsePath}
 import scommons.react.UiComponent
+import scommons.react.redux.Dispatch
 
 class SystemGroupController(groupActions: SystemGroupActions, systemActions: SystemActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemGroupPanelProps] {

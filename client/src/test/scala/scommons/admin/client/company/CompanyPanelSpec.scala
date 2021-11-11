@@ -1,13 +1,12 @@
 package scommons.admin.client.company
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.company._
 import scommons.admin.client.company.CompanyActions._
 import scommons.admin.client.company.CompanyPanel._
 import scommons.client.ui._
 import scommons.client.ui.popup._
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -15,9 +14,9 @@ import scala.concurrent.Future
 
 class CompanyPanelSpec extends TestSpec with TestRendererUtils {
 
-  CompanyPanel.buttonsPanel = () => "ButtonsPanel".asInstanceOf[ReactClass]
-  CompanyPanel.companyTablePanel = () => "CompanyTablePanel".asInstanceOf[ReactClass]
-  CompanyPanel.inputPopup = () => "InputPopup".asInstanceOf[ReactClass]
+  CompanyPanel.buttonsPanel = mockUiComponent("ButtonsPanel")
+  CompanyPanel.companyTablePanel = mockUiComponent("CompanyTablePanel")
+  CompanyPanel.inputPopup = mockUiComponent("InputPopup")
 
   it should "dispatch CompanyCreateRequestAction when ADD command" in {
     //given

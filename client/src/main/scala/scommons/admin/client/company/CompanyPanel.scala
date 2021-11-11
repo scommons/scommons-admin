@@ -1,11 +1,11 @@
 package scommons.admin.client.company
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.company.CompanyActions._
 import scommons.client.ui._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 import scommons.client.util.ActionsData
 import scommons.react._
+import scommons.react.redux.Dispatch
 
 case class CompanyPanelProps(dispatch: Dispatch,
                              actions: CompanyActions,

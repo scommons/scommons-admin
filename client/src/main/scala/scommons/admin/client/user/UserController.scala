@@ -1,6 +1,5 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions.UserParamsChangedAction
@@ -11,6 +10,7 @@ import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.ui.Buttons
 import scommons.client.util.{ActionsData, BrowsePath}
 import scommons.react.UiComponent
+import scommons.react.redux.Dispatch
 
 class UserController(companyActions: CompanyActions,
                      userActions: UserActions,

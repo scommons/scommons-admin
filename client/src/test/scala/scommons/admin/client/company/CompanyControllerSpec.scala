@@ -1,13 +1,13 @@
 package scommons.admin.client.company
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminStateDef
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.company.CompanyActions._
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.util.BrowsePath
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 

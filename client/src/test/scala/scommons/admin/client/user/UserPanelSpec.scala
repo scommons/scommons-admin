@@ -1,6 +1,5 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.user._
 import scommons.admin.client.api.user.system.UserSystemData
@@ -11,6 +10,7 @@ import scommons.admin.client.user.system._
 import scommons.client.ui._
 import scommons.nodejs.test.AsyncTestSpec
 import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -18,11 +18,11 @@ import scala.concurrent.Future
 
 class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUtils {
 
-  UserPanel.buttonsPanelComp = () => "ButtonsPanel".asInstanceOf[ReactClass]
-  UserPanel.userTablePanelComp = () => "UserTablePanel".asInstanceOf[ReactClass]
-  UserPanel.userEditPopupComp = () => "UserEditPopup".asInstanceOf[ReactClass]
-  UserPanel.userDetailsPanelComp = () => "UserDetailsPanel".asInstanceOf[ReactClass]
-  UserPanel.userSystemPanelComp = () => "UserSystemPanel".asInstanceOf[ReactClass]
+  UserPanel.buttonsPanelComp = mockUiComponent("ButtonsPanel")
+  UserPanel.userTablePanelComp = mockUiComponent("UserTablePanel")
+  UserPanel.userEditPopupComp = mockUiComponent("UserEditPopup")
+  UserPanel.userDetailsPanelComp = mockUiComponent("UserDetailsPanel")
+  UserPanel.userSystemPanelComp = mockUiComponent("UserSystemPanel")
 
   it should "dispatch actions when select user" in {
     //given

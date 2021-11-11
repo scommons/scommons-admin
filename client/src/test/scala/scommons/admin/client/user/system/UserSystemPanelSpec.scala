@@ -1,11 +1,11 @@
 package scommons.admin.client.user.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user.system._
 import scommons.admin.client.api.user.{UserCompanyData, UserData}
 import scommons.admin.client.user.system.UserSystemActions._
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 import scommons.react.test.raw.TestInstance

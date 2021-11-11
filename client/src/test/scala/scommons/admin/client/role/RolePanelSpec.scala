@@ -1,12 +1,11 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.role._
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RolePanel._
 import scommons.client.ui.popup._
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -14,7 +13,7 @@ import scala.concurrent.Future
 
 class RolePanelSpec extends TestSpec with TestRendererUtils {
 
-  RolePanel.inputPopupComp = () => "InputPopup".asInstanceOf[ReactClass]
+  RolePanel.inputPopupComp = mockUiComponent("InputPopup")
 
   it should "dispatch RoleCreateAction when onOk in create popup" in {
     //given

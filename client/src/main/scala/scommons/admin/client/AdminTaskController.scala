@@ -1,10 +1,9 @@
 package scommons.admin.client
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.client.app.AppTaskManagerUi
 import scommons.react.UiComponent
-import scommons.react.redux.BaseStateController
+import scommons.react.redux._
 import scommons.react.redux.task.{TaskManager, TaskManagerProps}
 
 object AdminTaskController

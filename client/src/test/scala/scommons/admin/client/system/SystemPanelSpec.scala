@@ -1,11 +1,10 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.system.SystemPanel._
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -13,8 +12,8 @@ import scala.concurrent.Future
 
 class SystemPanelSpec extends TestSpec with TestRendererUtils {
 
-  SystemPanel.systemEditPopup = () => "SystemEditPopup".asInstanceOf[ReactClass]
-  SystemPanel.systemEditPanel = () => "SystemEditPanel".asInstanceOf[ReactClass]
+  SystemPanel.systemEditPopup = mockUiComponent("SystemEditPopup")
+  SystemPanel.systemEditPanel = mockUiComponent("SystemEditPanel")
 
   it should "dispatch SystemCreateAction when onSave in create popup" in {
     //given

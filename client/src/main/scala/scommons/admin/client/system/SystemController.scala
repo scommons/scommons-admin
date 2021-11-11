@@ -1,6 +1,5 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions.SystemUpdateRequestAction
@@ -10,6 +9,7 @@ import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.Buttons
 import scommons.client.util.{ActionsData, BrowsePath}
 import scommons.react.UiComponent
+import scommons.react.redux.Dispatch
 
 class SystemController(apiActions: SystemActions)
   extends BaseStateAndRouteController[AdminStateDef, SystemPanelProps] {

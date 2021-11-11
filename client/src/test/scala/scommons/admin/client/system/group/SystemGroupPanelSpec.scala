@@ -1,12 +1,11 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import org.scalatest._
 import scommons.admin.client.api.system.group._
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.admin.client.system.group.SystemGroupPanel._
 import scommons.client.ui.popup._
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -14,7 +13,7 @@ import scala.concurrent.Future
 
 class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
 
-  SystemGroupPanel.inputPopupComp = () => "InputPopup".asInstanceOf[ReactClass]
+  SystemGroupPanel.inputPopupComp = mockUiComponent("InputPopup")
 
   it should "dispatch SystemGroupCreateAction when onOk in create popup" in {
     //given

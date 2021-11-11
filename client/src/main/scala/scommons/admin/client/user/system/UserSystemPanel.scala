@@ -1,12 +1,12 @@
 package scommons.admin.client.user.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.user.UserData
 import scommons.admin.client.api.user.system.UserSystemUpdateReq
 import scommons.client.ui.list._
 import scommons.react._
 import scommons.react.hooks._
+import scommons.react.redux.Dispatch
 
 case class UserSystemPanelProps(dispatch: Dispatch,
                                 actions: UserSystemActions,

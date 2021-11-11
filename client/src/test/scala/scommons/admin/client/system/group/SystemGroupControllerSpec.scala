@@ -1,6 +1,5 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemListResp
 import scommons.admin.client.api.system.group.{SystemGroupData, SystemGroupListResp}
 import scommons.admin.client.system.SystemActions
@@ -11,6 +10,7 @@ import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.BrowsePath
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 

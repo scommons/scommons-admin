@@ -1,12 +1,12 @@
 package scommons.admin.client.role.permission
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.role.permission.{RolePermissionData, RolePermissionUpdateReq}
 import scommons.client.ui._
 import scommons.client.ui.tree._
 import scommons.react._
 import scommons.react.hooks._
+import scommons.react.redux._
 
 case class RolePermissionPanelProps(dispatch: Dispatch,
                                     actions: RolePermissionActions,

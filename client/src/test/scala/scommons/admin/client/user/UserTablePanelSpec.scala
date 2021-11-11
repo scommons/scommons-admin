@@ -5,13 +5,12 @@ import scommons.admin.client.user.UserTablePanel._
 import scommons.client.ui.page.PaginationPanel._
 import scommons.client.ui.page._
 import scommons.client.ui.table._
-import scommons.react._
 import scommons.react.test._
 
 class UserTablePanelSpec extends TestSpec with TestRendererUtils {
 
-  UserTablePanel.tablePanelComp = () => "TablePanel".asInstanceOf[ReactClass]
-  UserTablePanel.paginationPanelComp = () => "PaginationPanel".asInstanceOf[ReactClass]
+  UserTablePanel.tablePanelComp = mockUiComponent("TablePanel")
+  UserTablePanel.paginationPanelComp = mockUiComponent("PaginationPanel")
 
   it should "call onChangeSelect when select row" in {
     //given

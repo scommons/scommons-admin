@@ -7,7 +7,7 @@ import scommons.react.test._
 
 class SystemEditPopupSpec extends TestSpec with TestRendererUtils {
 
-  SystemEditPopup.systemEditPanel = () => "SystemEditPanel".asInstanceOf[ReactClass]
+  SystemEditPopup.systemEditPanel = mockUiComponent("SystemEditPanel")
 
   it should "enable save button if all required fields are filled" in {
     //given

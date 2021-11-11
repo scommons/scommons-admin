@@ -1,7 +1,6 @@
 package scommons.admin.client
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminRouteController._
 import scommons.admin.client.company.CompanyController
 import scommons.admin.client.role.RoleController
@@ -16,7 +15,7 @@ import scommons.client.ui.tree._
 import scommons.client.ui.Buttons
 import scommons.client.util.BrowsePath
 import scommons.react.UiComponent
-import scommons.react.redux.BaseStateController
+import scommons.react.redux._
 
 class AdminRouteController(companyController: CompanyController,
                            userController: UserController,

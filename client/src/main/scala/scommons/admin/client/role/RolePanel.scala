@@ -1,11 +1,11 @@
 package scommons.admin.client.role
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.role.RoleData
 import scommons.admin.client.role.RoleActions._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 import scommons.react._
 import scommons.react.hooks._
+import scommons.react.redux.Dispatch
 
 case class RolePanelProps(dispatch: Dispatch,
                           actions: RoleActions,

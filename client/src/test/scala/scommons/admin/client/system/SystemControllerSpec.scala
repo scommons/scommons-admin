@@ -1,6 +1,5 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
 import scommons.admin.client.{AdminImagesCss, AdminStateDef}
@@ -8,6 +7,7 @@ import scommons.client.controller.{PathParams, RouteParams}
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.util.BrowsePath
+import scommons.react.redux.Dispatch
 import scommons.react.test.TestSpec
 
 class SystemControllerSpec extends TestSpec {

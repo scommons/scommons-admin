@@ -1,12 +1,12 @@
 package scommons.admin.client.system.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.AdminImagesCss
 import scommons.admin.client.api.system.user.SystemUserRoleUpdateReq
 import scommons.admin.client.role.permission.RolePermissionPanel
 import scommons.client.ui.list.{ListBoxData, PickList, PickListProps}
 import scommons.client.ui.tree.{CheckBoxTree, CheckBoxTreeProps}
 import scommons.react._
+import scommons.react.redux.Dispatch
 
 case class SystemUserRolePanelProps(dispatch: Dispatch,
                                     actions: SystemUserActions,

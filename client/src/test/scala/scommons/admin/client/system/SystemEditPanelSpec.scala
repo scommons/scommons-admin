@@ -3,13 +3,12 @@ package scommons.admin.client.system
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemEditPanel._
 import scommons.client.ui._
-import scommons.react._
 import scommons.react.test._
 
 class SystemEditPanelSpec extends TestSpec with TestRendererUtils {
 
-  SystemEditPanel.textFieldComp = () => "TextField".asInstanceOf[ReactClass]
-  SystemEditPanel.passwordFieldComp = () => "PasswordField".asInstanceOf[ReactClass]
+  SystemEditPanel.textFieldComp = mockUiComponent("TextField")
+  SystemEditPanel.passwordFieldComp = mockUiComponent("PasswordField")
   
   it should "call onChange, onEnter when in name field" in {
     //given

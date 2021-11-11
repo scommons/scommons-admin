@@ -11,7 +11,7 @@ import scommons.react.test._
 
 class UserDetailsPanelSpec extends TestSpec with TestRendererUtils {
 
-  UserDetailsPanel.tabPanelComp = () => "TabPanel".asInstanceOf[ReactClass]
+  UserDetailsPanel.tabPanelComp = mockUiComponent("TabPanel")
   
   it should "call onChangeTab when select tab" in {
     //given

@@ -1,10 +1,10 @@
 package scommons.admin.client.system.group
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.system.group.SystemGroupActions._
 import scommons.client.ui.popup.{InputPopup, InputPopupProps}
 import scommons.react._
 import scommons.react.hooks._
+import scommons.react.redux.Dispatch
 
 case class SystemGroupPanelProps(dispatch: Dispatch,
                                  actions: SystemGroupActions,

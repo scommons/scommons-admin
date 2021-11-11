@@ -1,10 +1,10 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.user.UserDetailsData
 import scommons.admin.client.company.CompanyActions
 import scommons.client.ui.popup.{SaveCancelPopup, SaveCancelPopupProps}
 import scommons.react._
+import scommons.react.redux.Dispatch
 
 case class UserEditPopupProps(dispatch: Dispatch,
                               actions: CompanyActions,

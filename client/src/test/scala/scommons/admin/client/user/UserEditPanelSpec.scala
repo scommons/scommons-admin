@@ -1,6 +1,5 @@
 package scommons.admin.client.user
 
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.api.user._
 import scommons.admin.client.company.CompanyActions
@@ -8,7 +7,7 @@ import scommons.admin.client.company.CompanyActions.CompanyListFetchAction
 import scommons.admin.client.user.UserEditPanel._
 import scommons.client.ui.select.{SearchSelectProps, SelectData}
 import scommons.client.ui.{PasswordFieldProps, TextFieldProps}
-import scommons.react._
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test._
 
@@ -16,9 +15,9 @@ import scala.concurrent.Future
 
 class UserEditPanelSpec extends TestSpec with TestRendererUtils {
 
-  UserEditPanel.textFieldComp = () => "TextField".asInstanceOf[ReactClass]
-  UserEditPanel.passwordFieldComp = () => "PasswordField".asInstanceOf[ReactClass]
-  UserEditPanel.searchSelectComp = () => "SearchSelect".asInstanceOf[ReactClass]
+  UserEditPanel.textFieldComp = mockUiComponent("TextField")
+  UserEditPanel.passwordFieldComp = mockUiComponent("PasswordField")
+  UserEditPanel.searchSelectComp = mockUiComponent("SearchSelect")
   
   it should "call onChange, onEnter when in login field" in {
     //given

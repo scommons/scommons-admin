@@ -1,10 +1,9 @@
 package scommons.admin.client.system
 
-import io.github.shogowada.scalajs.reactjs.redux.Action
-import io.github.shogowada.scalajs.reactjs.redux.Redux.Dispatch
 import scommons.admin.client.api.system._
 import scommons.admin.client.system.SystemActions._
 import scommons.api.ApiStatus.Ok
+import scommons.react.redux._
 import scommons.react.redux.task.{FutureTask, TaskAction}
 
 import scala.concurrent.ExecutionContext.Implicits.global
