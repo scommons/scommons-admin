@@ -64,7 +64,7 @@ jobs:
 
       - name: Publish SNAPSHOT
         run:
-          echo "TODO: Publish latest version"
+          echo "TODO - Publish latest version"
         if: ${{ !github.event.pull_request && env.TAG_NAME == '' }}
 
       - name: Publish RELEASE
