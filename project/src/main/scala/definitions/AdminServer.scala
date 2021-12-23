@@ -4,8 +4,7 @@ import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.Cmd
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
 import com.typesafe.sbt.packager.universal.UniversalDeployPlugin
-import common.Libs
-import common.CommonPlayModule
+import common.{CommonPlayModule, Libs}
 import sbt.Keys._
 import sbt._
 import webscalajs.WebScalaJS.autoImport._
@@ -33,16 +32,23 @@ object AdminServer extends AdminModule with CommonPlayModule {
         //dockerImageCreationTask := (publishLocal in Docker).value,
         dockerBaseImage := "openjdk:9-slim",
         mappings in (Compile, packageDoc) := Seq(),
+        publishArtifact in (Compile, packageDoc) := false,
 
-        dockerCommands := (dockerCommands.value match {
-          case Seq(from@Cmd("FROM", _), rest@_*) =>
-            Seq(
-              from,
-              //set JVM TTL, see https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-jvm-ttl.html
-              Cmd("RUN", "mkdir", "-p", "$JAVA_HOME/jre/lib/security"),
-              Cmd("RUN", "echo", "networkaddress.cache.ttl=60", ">>", "$JAVA_HOME/jre/lib/security/java.security")
-            ) ++ rest
-        })
+        dockerCommands := {
+          val commands = dockerCommands.value
+          val lines = commands.map(_.makeContent)
+          val splitIndex = lines.indexWhere(_.startsWith("COPY --from=stage0"))
+          if (splitIndex < 0) {
+            throw new IllegalStateException(s"Expected COPY --from=stage0 command in Dockerfile:\n${lines.mkString}")
+          }
+
+          val (part1, part2) = commands.splitAt(splitIndex)
+          part1 ++ Seq(
+            //set JVM TTL, see https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-jvm-ttl.html
+            Cmd("RUN", "mkdir", "-p", "$JAVA_HOME/jre/lib/security"),
+            Cmd("RUN", "echo", "networkaddress.cache.ttl=60", ">>", "$JAVA_HOME/jre/lib/security/java.security")
+          ) ++ part2
+        }
       )
   }
 

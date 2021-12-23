@@ -134,7 +134,8 @@ class PlayLiquibase @Inject()(environment: Environment, config: Configuration, i
   protected def liquibase(): Option[Liquibase] = {
     var missingRequiredParam = false
 
-    /** get p parameter from cfg.
+    /*
+     * get p parameter from cfg.
      * If not found use defValue
      *
      * @param p         parameter get value for
