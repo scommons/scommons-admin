@@ -17,10 +17,23 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
 
   RolePermissionPanel.checkBoxTreeComp = mockUiComponent("CheckBoxTree")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val rolePermissionsFetch = mockFunction[Dispatch, Int, RolePermissionFetchAction]
+    val rolePermissionsAdd = mockFunction[Dispatch, Int, RolePermissionUpdateReq, RolePermissionAddAction]
+    val rolePermissionsRemove = mockFunction[Dispatch, Int, RolePermissionUpdateReq, RolePermissionRemoveAction]
+
+    val actions = new MockRolePermissionActions(
+      rolePermissionsFetchMock = rolePermissionsFetch,
+      rolePermissionsAddMock = rolePermissionsAdd,
+      rolePermissionsRemoveMock = rolePermissionsRemove
+    )
+  }
+
   it should "dispatch RolePermissionAddAction if Selected when onChange" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val roleId = 11
     val version = 123
     val respData = RolePermissionRespData(List(
@@ -32,14 +45,14 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId),
       role = Some(respData.role)
     )
-    val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
+    val props = RolePermissionPanelProps(dispatch, actions.actions, state, roleId)
     val comp = testRender(<(RolePermissionPanel())(^.wrapped := props)())
     val checkBoxTreeProps = findComponentProps(comp, checkBoxTreeComp)
     val data = RolePermissionUpdateReq(Set(1), version)
     val action = RolePermissionAddAction(
       FutureTask("Test", Future.successful(RolePermissionResp(respData)))
     )
-    (actions.rolePermissionsAdd _).expects(dispatch, roleId, data)
+    actions.rolePermissionsAdd.expects(dispatch, roleId, data)
       .returning(action)
 
     //then
@@ -52,7 +65,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RolePermissionRemoveAction if Deselected when onChange" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val roleId = 11
     val version = 123
     val respData = RolePermissionRespData(List(
@@ -64,14 +77,14 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId),
       role = Some(respData.role)
     )
-    val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
+    val props = RolePermissionPanelProps(dispatch, actions.actions, state, roleId)
     val comp = testRender(<(RolePermissionPanel())(^.wrapped := props)())
     val checkBoxTreeProps = findComponentProps(comp, checkBoxTreeComp)
     val data = RolePermissionUpdateReq(Set(1), version)
     val action = RolePermissionRemoveAction(
       FutureTask("Test", Future.successful(RolePermissionResp(respData)))
     )
-    (actions.rolePermissionsRemove _).expects(dispatch, roleId, data)
+    actions.rolePermissionsRemove.expects(dispatch, roleId, data)
       .returning(action)
 
     //then
@@ -84,7 +97,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RolePermissionFetchAction if different selected role when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val roleId = 11
     val respData = RolePermissionRespData(List(
       RolePermissionData(1, None, isNode = false, "test permission", isEnabled = true)
@@ -92,12 +105,12 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       RoleData(Some(roleId), 22, "test role", version = Some(123))
     )
     val state = RolePermissionState()
-    val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
+    val props = RolePermissionPanelProps(dispatch, actions.actions, state, roleId)
     val component = <(RolePermissionPanel())(^.wrapped := props)()
     val action = RolePermissionFetchAction(
       FutureTask("Fetching", Future.successful(RolePermissionResp(respData)))
     )
-    (actions.rolePermissionsFetch _).expects(dispatch, roleId)
+    actions.rolePermissionsFetch.expects(dispatch, roleId)
       .returning(action)
 
     //then
@@ -110,7 +123,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch RolePermissionFetchAction if same selected role when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val roleId = 11
     val respData = RolePermissionRespData(List(
       RolePermissionData(1, None, isNode = false, "test permission", isEnabled = true)
@@ -121,7 +134,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId),
       role = Some(respData.role)
     )
-    val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
+    val props = RolePermissionPanelProps(dispatch, actions.actions, state, roleId)
     val component = <(RolePermissionPanel())(^.wrapped := props)()
 
     //then
@@ -134,7 +147,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RolePermissionFetchAction if different selected role when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val roleId = 11
     val respData = RolePermissionRespData(List(
       RolePermissionData(1, None, isNode = false, "test permission", isEnabled = true)
@@ -145,15 +158,15 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId),
       role = Some(respData.role)
     )
-    val prevProps = RolePermissionPanelProps(dispatch, actions, state, respData.role.id.get)
+    val prevProps = RolePermissionPanelProps(dispatch, actions.actions, state, respData.role.id.get)
     val renderer = createTestRenderer(<(RolePermissionPanel())(^.wrapped := prevProps)())
-    val props = RolePermissionPanelProps(dispatch, actions, state, roleId)
+    val props = RolePermissionPanelProps(dispatch, actions.actions, state, roleId)
     props.selectedRoleId should not be prevProps.selectedRoleId
     
     val action = RolePermissionFetchAction(
       FutureTask("Fetching", Future.successful(RolePermissionResp(respData)))
     )
-    (actions.rolePermissionsFetch _).expects(dispatch, roleId)
+    actions.rolePermissionsFetch.expects(dispatch, roleId)
       .returning(action)
 
     //then
@@ -168,7 +181,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch RolePermissionFetchAction if same selected role when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val roleId = 11
     val respData = RolePermissionRespData(List(
       RolePermissionData(1, None, isNode = false, "test permission", isEnabled = true)
@@ -179,7 +192,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       permissionsByParentId = respData.permissions.groupBy(_.parentId),
       role = Some(respData.role)
     )
-    val prevProps = RolePermissionPanelProps(dispatch, actions, state, respData.role.id.get)
+    val prevProps = RolePermissionPanelProps(dispatch, actions.actions, state, respData.role.id.get)
     val renderer = createTestRenderer(<(RolePermissionPanel())(^.wrapped := prevProps)())
     val props = RolePermissionPanelProps(dispatch, mock[RolePermissionActions], state, roleId)
     props should not be prevProps
@@ -197,7 +210,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[RolePermissionActions]
+    val actions = new Actions
     val data = RolePermissionRespData(List(
       RolePermissionData(1, None, isNode = true, "test permission node", isEnabled = false),
       RolePermissionData(2, Some(1), isNode = false, "test permission 1", isEnabled = false),
@@ -209,7 +222,7 @@ class RolePermissionPanelSpec extends TestSpec with TestRendererUtils {
       permissionsByParentId = data.permissions.groupBy(_.parentId),
       role = Some(data.role)
     )
-    val props = RolePermissionPanelProps(dispatch, actions, state, data.role.id.get)
+    val props = RolePermissionPanelProps(dispatch, actions.actions, state, data.role.id.get)
     val component = <(RolePermissionPanel())(^.wrapped := props)()
     
     //when

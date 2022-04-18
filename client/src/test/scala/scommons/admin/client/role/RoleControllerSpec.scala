@@ -1,11 +1,13 @@
 package scommons.admin.client.role
 
+import io.github.shogowada.scalajs.reactjs.React.Props
+import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.role.{RoleData, RoleListResp}
 import scommons.admin.client.role.RoleActions._
 import scommons.admin.client.role.RoleControllerSpec._
 import scommons.admin.client.role.permission.RolePermissionController
-import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.{PathParams, RouteParams}
+import scommons.admin.client.{AdminImagesCss, MockAdminStateDef}
+import scommons.client.controller.RouteParams
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.{BrowseTreeItemData, BrowseTreeNodeData}
 import scommons.client.util.BrowsePath
@@ -15,8 +17,27 @@ import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
+import scala.scalajs.js.Dynamic.literal
 
 class RoleControllerSpec extends TestSpec {
+
+  //noinspection TypeAnnotation
+  class Actions {
+    val roleListFetch = mockFunction[Dispatch, RoleListFetchAction]
+
+    val actions = new MockRoleActions(
+      roleListFetchMock = roleListFetch
+    )
+  }
+
+  //noinspection TypeAnnotation
+  class State {
+    val roleState = mockFunction[RoleState]
+
+    val state = new MockAdminStateDef(
+      roleStateMock = roleState
+    )
+  }
 
   it should "return component" in {
     //given
@@ -33,15 +54,15 @@ class RoleControllerSpec extends TestSpec {
     val controller = new RoleController(apiActions)
     val dispatch = mock[Dispatch]
     val roleState = mock[RoleState]
-    val state = mock[AdminStateDef]
-    val routeParams = mock[RouteParams]
-    val pathParams = PathParams("/apps/1/2/roles/3")
+    val state = new State
+    val routeParams = new RouteParams(new RouterProps(Props[Unit](literal(
+      "location" -> literal("pathname" -> "/apps/1/2/roles/3")
+    ))))
     
-    (routeParams.pathParams _).expects().returning(pathParams)
-    (state.roleState _).expects().returning(roleState)
+    state.roleState.expects().returning(roleState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
+    val result = controller.mapStateAndRouteToProps(dispatch, state.state, routeParams)
 
     //then
     inside(result) { case RolePanelProps(disp, actions, compState, selectedSystemId, selectedId) =>
@@ -55,8 +76,8 @@ class RoleControllerSpec extends TestSpec {
 
   it should "setup roles node" in {
     //given
-    val apiActions = mock[RoleActions]
-    val controller = new RoleController(apiActions)
+    val actions = new Actions
+    val controller = new RoleController(actions.actions)
     val rolesPath = BrowsePath("/some-path")
     val roleListFetchAction =
       RoleListFetchAction(FutureTask("Fetching", Future.successful(RoleListResp(Nil))))
@@ -67,8 +88,7 @@ class RoleControllerSpec extends TestSpec {
     )
     val dispatch = mockFunction[Any, Any]
 
-    (apiActions.roleListFetch _).expects(dispatch)
-      .returning(roleListFetchAction)
+    actions.roleListFetch.expects(dispatch).returning(roleListFetchAction)
     dispatch.expects(roleListFetchAction).returning(*)
     dispatch.expects(roleCreateRequestAction).returning(*)
 

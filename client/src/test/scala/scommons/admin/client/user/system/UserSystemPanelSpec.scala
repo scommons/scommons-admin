@@ -15,10 +15,23 @@ import scala.concurrent.Future
 
 class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val userSystemsFetch = mockFunction[Dispatch, Int, UserSystemFetchAction]
+    val userSystemsAdd = mockFunction[Dispatch, Int, UserSystemUpdateReq, UserSystemAddAction]
+    val userSystemsRemove = mockFunction[Dispatch, Int, UserSystemUpdateReq, UserSystemRemoveAction]
+
+    val actions = new MockUserSystemActions(
+      userSystemsFetchMock = userSystemsFetch,
+      userSystemsAddMock = userSystemsAdd,
+      userSystemsRemoveMock = userSystemsRemove
+    )
+  }
+
   it should "dispatch UserSystemAddAction if add item(s) when onSelectChange" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val version = 123
     val userId = 11
     val userData = UserData(
@@ -37,14 +50,14 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
     val comp = testRender(<(UserSystemPanel())(^.wrapped := props)())
     val pickListProps = findComponentProps(comp, PickList)
     val data = UserSystemUpdateReq(Set(1), version)
     val action = UserSystemAddAction(
       FutureTask("Test", Future.successful(UserSystemResp(respData)))
     )
-    (actions.userSystemsAdd _).expects(dispatch, userId, data)
+    actions.userSystemsAdd.expects(dispatch, userId, data)
       .returning(action)
 
     //then
@@ -57,7 +70,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch UserSystemRemoveAction if remove item(s) when onSelectChange" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 11
     val version = 123
     val userData = UserData(
@@ -76,14 +89,14 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
     val comp = testRender(<(UserSystemPanel())(^.wrapped := props)())
     val pickListProps = findComponentProps(comp, PickList)
     val data = UserSystemUpdateReq(Set(1), version)
     val action = UserSystemRemoveAction(
       FutureTask("Test", Future.successful(UserSystemResp(respData)))
     )
-    (actions.userSystemsRemove _).expects(dispatch, userId, data)
+    actions.userSystemsRemove.expects(dispatch, userId, data)
       .returning(action)
 
     //then
@@ -96,7 +109,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch UserSystemFetchAction when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 11
     val userData = UserData(
       id = Some(userId),
@@ -111,11 +124,11 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       userData
     )
     val state = UserSystemState()
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
     val action = UserSystemFetchAction(
       FutureTask("Fetching", Future.successful(UserSystemResp(respData)))
     )
-    (actions.userSystemsFetch _).expects(dispatch, userId)
+    actions.userSystemsFetch.expects(dispatch, userId)
       .returning(action)
 
     //then
@@ -131,7 +144,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch UserSystemFetchAction if same selectedUser id when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 11
     val userData = UserData(
       id = Some(userId),
@@ -149,7 +162,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
 
     //then
     dispatch.expects(*).never()
@@ -164,7 +177,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch UserSystemFetchAction if selectedUser not defined when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 11
     val userData = UserData(
       id = Some(userId),
@@ -182,7 +195,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = None)
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = None)
 
     //then
     dispatch.expects(*).never()
@@ -197,7 +210,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch UserSystemFetchAction when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 22
     val userData = UserData(
       id = Some(11),
@@ -215,8 +228,8 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val prevProps = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(
+    val prevProps = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(
       userData.copy(id = Some(userId))
     ))
     props.selectedUser.get.id should not be prevProps.selectedUser.get.id
@@ -224,7 +237,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
     val action = UserSystemFetchAction(
       FutureTask("Fetching", Future.successful(UserSystemResp(respData)))
     )
-    (actions.userSystemsFetch _).expects(dispatch, userId)
+    actions.userSystemsFetch.expects(dispatch, userId)
       .returning(action)
     val renderer = createTestRenderer(<(UserSystemPanel())(^.wrapped := prevProps)())
 
@@ -241,7 +254,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch UserSystemFetchAction if same selectedUser id when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 11
     val userData = UserData(
       id = Some(userId),
@@ -259,7 +272,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val prevProps = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val prevProps = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
     val props = UserSystemPanelProps(dispatch, mock[UserSystemActions], state, selectedUser = Some(
       userData.copy(login = "changed_login")
     ))
@@ -280,7 +293,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch UserSystemFetchAction if selectedUser not defined when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userId = 11
     val userData = UserData(
       id = Some(userId),
@@ -298,7 +311,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = respData.systems,
       userId = respData.user.id
     )
-    val prevProps = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val prevProps = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
     val props = UserSystemPanelProps(dispatch, mock[UserSystemActions], state, selectedUser = None)
     props should not be prevProps
     prevProps.selectedUser should not be None
@@ -318,7 +331,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[UserSystemActions]
+    val actions = new Actions
     val userData = UserData(
       id = Some(11),
       company = UserCompanyData(2, "Test Company"),
@@ -338,7 +351,7 @@ class UserSystemPanelSpec extends TestSpec with TestRendererUtils {
       systems = data.systems,
       userId = data.user.id
     )
-    val props = UserSystemPanelProps(dispatch, actions, state, selectedUser = Some(userData))
+    val props = UserSystemPanelProps(dispatch, actions.actions, state, selectedUser = Some(userData))
     val component = <(UserSystemPanel())(^.wrapped := props)()
     
     //when

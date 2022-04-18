@@ -10,15 +10,30 @@ import scala.concurrent.Future
 
 class SystemGroupActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val getSystemGroupById = mockFunction[Int, Future[SystemGroupResp]]
+    val listSystemGroups = mockFunction[Future[SystemGroupListResp]]
+    val createSystemGroup = mockFunction[SystemGroupData, Future[SystemGroupResp]]
+    val updateSystemGroup = mockFunction[SystemGroupData, Future[SystemGroupResp]]
+
+    val api = new MockSystemGroupApi(
+      getSystemGroupByIdMock = getSystemGroupById,
+      listSystemGroupsMock = listSystemGroups,
+      createSystemGroupMock = createSystemGroup,
+      updateSystemGroupMock = updateSystemGroup
+    )
+  }
+
   it should "dispatch SystemGroupListFetchedAction when systemGroupListFetch" in {
     //given
-    val api = mock[SystemGroupApi]
-    val actions = new SystemGroupActionsTest(api)
+    val api = new Api
+    val actions = new SystemGroupActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val dataList = List(SystemGroupData(Some(1), "test name"))
     val expectedResp = SystemGroupListResp(dataList)
 
-    (api.listSystemGroups _).expects()
+    api.listSystemGroups.expects()
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemGroupListFetchedAction(dataList))
     
@@ -35,14 +50,14 @@ class SystemGroupActionsSpec extends AsyncTestSpec {
   
   it should "dispatch SystemGroupCreatedAction when systemGroupCreate" in {
     //given
-    val api = mock[SystemGroupApi]
-    val actions = new SystemGroupActionsTest(api)
+    val api = new Api
+    val actions = new SystemGroupActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val name = "test name"
     val data = SystemGroupData(Some(1), name)
     val expectedResp = SystemGroupResp(data)
 
-    (api.createSystemGroup _).expects(SystemGroupData(None, name))
+    api.createSystemGroup.expects(SystemGroupData(None, name))
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemGroupCreatedAction(data))
     
@@ -59,14 +74,14 @@ class SystemGroupActionsSpec extends AsyncTestSpec {
   
   it should "dispatch SystemGroupUpdatedAction when systemGroupUpdate" in {
     //given
-    val api = mock[SystemGroupApi]
-    val actions = new SystemGroupActionsTest(api)
+    val api = new Api
+    val actions = new SystemGroupActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = SystemGroupData(Some(1), "test name")
     val respData = SystemGroupData(Some(1), "updated test name")
     val expectedResp = SystemGroupResp(respData)
 
-    (api.updateSystemGroup _).expects(data)
+    api.updateSystemGroup.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemGroupUpdatedAction(respData))
     

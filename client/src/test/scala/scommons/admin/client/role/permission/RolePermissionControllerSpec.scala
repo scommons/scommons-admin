@@ -1,15 +1,27 @@
 package scommons.admin.client.role.permission
 
-import scommons.admin.client.AdminStateDef
-import scommons.client.controller.{PathParams, RouteParams}
-import scommons.react.redux.Dispatch
+import io.github.shogowada.scalajs.reactjs.React.Props
+import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
+import scommons.admin.client.MockAdminStateDef
+import scommons.client.controller.RouteParams
 import scommons.react.test.TestSpec
+
+import scala.scalajs.js.Dynamic.literal
 
 class RolePermissionControllerSpec extends TestSpec {
 
+  //noinspection TypeAnnotation
+  class State {
+    val rolePermissionState = mockFunction[RolePermissionState]
+
+    val state = new MockAdminStateDef(
+      rolePermissionStateMock = rolePermissionState
+    )
+  }
+
   it should "return component" in {
     //given
-    val apiActions = mock[RolePermissionActions]
+    val apiActions = new MockRolePermissionActions
     val controller = new RolePermissionController(apiActions)
 
     //when & then
@@ -18,19 +30,19 @@ class RolePermissionControllerSpec extends TestSpec {
 
   it should "map state to props" in {
     //given
-    val apiActions = mock[RolePermissionActions]
+    val apiActions = new MockRolePermissionActions
     val controller = new RolePermissionController(apiActions)
-    val dispatch = mock[Dispatch]
-    val rolePermissionState = mock[RolePermissionState]
-    val state = mock[AdminStateDef]
-    val routeParams = mock[RouteParams]
-    val pathParams = PathParams("/apps/1/2/roles/3")
-
-    (routeParams.pathParams _).expects().returning(pathParams)
-    (state.rolePermissionState _).expects().returning(rolePermissionState)
+    val dispatch = mockFunction[Any, Any]
+    val rolePermissionState = RolePermissionState()
+    val state = new State
+    val routeParams = new RouteParams(new RouterProps(Props[Unit](literal(
+      "location" -> literal("pathname" -> "/apps/1/2/roles/3")
+    ))))
+    
+    state.rolePermissionState.expects().returning(rolePermissionState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
+    val result = controller.mapStateAndRouteToProps(dispatch, state.state, routeParams)
 
     //then
     inside(result) { case RolePermissionPanelProps(disp, actions, compState, selectedRoleId) =>
@@ -43,19 +55,19 @@ class RolePermissionControllerSpec extends TestSpec {
   
   it should "set selectedRoleId to -1 if no such id when mapStateAndRouteToProps" in {
     //given
-    val apiActions = mock[RolePermissionActions]
+    val apiActions = new MockRolePermissionActions
     val controller = new RolePermissionController(apiActions)
-    val dispatch = mock[Dispatch]
-    val rolePermissionState = mock[RolePermissionState]
-    val state = mock[AdminStateDef]
-    val routeParams = mock[RouteParams]
-    val pathParams = PathParams("/apps/1/2/roles")
+    val dispatch = mockFunction[Any, Any]
+    val rolePermissionState = RolePermissionState()
+    val state = new State
+    val routeParams = new RouteParams(new RouterProps(Props[Unit](literal(
+      "location" -> literal("pathname" -> "/apps/1/2/roles")
+    ))))
 
-    (routeParams.pathParams _).expects().returning(pathParams)
-    (state.rolePermissionState _).expects().returning(rolePermissionState)
+    state.rolePermissionState.expects().returning(rolePermissionState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
+    val result = controller.mapStateAndRouteToProps(dispatch, state.state, routeParams)
 
     //then
     inside(result) { case RolePermissionPanelProps(disp, actions, compState, selectedRoleId) =>

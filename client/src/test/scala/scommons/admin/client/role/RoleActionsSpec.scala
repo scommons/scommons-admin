@@ -10,10 +10,25 @@ import scala.concurrent.Future
 
 class RoleActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val getRoleById = mockFunction[Int, Future[RoleResp]]
+    val listRoles = mockFunction[Future[RoleListResp]]
+    val createRole = mockFunction[RoleData, Future[RoleResp]]
+    val updateRole = mockFunction[RoleData, Future[RoleResp]]
+
+    val api = new MockRoleApi(
+      getRoleByIdMock = getRoleById,
+      listRolesMock = listRoles,
+      createRoleMock = createRole,
+      updateRoleMock = updateRole
+    )
+  }
+
   it should "dispatch RoleListFetchedAction when roleListFetch" in {
     //given
-    val api = mock[RoleApi]
-    val actions = new RoleActionsTest(api)
+    val api = new Api
+    val actions = new RoleActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val dataList = List(RoleData(
       id = Some(11),
@@ -22,7 +37,7 @@ class RoleActionsSpec extends AsyncTestSpec {
     ))
     val expectedResp = RoleListResp(dataList)
 
-    (api.listRoles _).expects()
+    api.listRoles.expects()
       .returning(Future.successful(expectedResp))
     dispatch.expects(RoleListFetchedAction(dataList))
     
@@ -39,8 +54,8 @@ class RoleActionsSpec extends AsyncTestSpec {
   
   it should "dispatch RoleCreatedAction when roleCreate" in {
     //given
-    val api = mock[RoleApi]
-    val actions = new RoleActionsTest(api)
+    val api = new Api
+    val actions = new RoleActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = RoleData(
       id = None,
@@ -50,7 +65,7 @@ class RoleActionsSpec extends AsyncTestSpec {
     val respData = data.copy(id = Some(11))
     val expectedResp = RoleResp(respData)
 
-    (api.createRole _).expects(data)
+    api.createRole.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(RoleCreatedAction(respData))
     
@@ -67,8 +82,8 @@ class RoleActionsSpec extends AsyncTestSpec {
   
   it should "dispatch RoleUpdatedAction when roleUpdate" in {
     //given
-    val api = mock[RoleApi]
-    val actions = new RoleActionsTest(api)
+    val api = new Api
+    val actions = new RoleActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = RoleData(
       id = Some(11),
@@ -82,7 +97,7 @@ class RoleActionsSpec extends AsyncTestSpec {
     )
     val expectedResp = RoleResp(respData)
 
-    (api.updateRole _).expects(data)
+    api.updateRole.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(RoleUpdatedAction(respData))
     

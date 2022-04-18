@@ -24,16 +24,31 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
   UserPanel.userDetailsPanelComp = mockUiComponent("UserDetailsPanel")
   UserPanel.userSystemPanelComp = mockUiComponent("UserSystemPanel")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val userListFetch = mockFunction[Dispatch, Option[Int], Option[String], UserListFetchAction]
+    val userFetch = mockFunction[Dispatch, Int, UserFetchAction]
+    val userCreate = mockFunction[Dispatch, UserDetailsData, UserCreateAction]
+    val userUpdate = mockFunction[Dispatch, UserDetailsData, UserUpdateAction]
+
+    val actions = new MockUserActions(
+      userListFetchMock = userListFetch,
+      userFetchMock = userFetch,
+      userCreateMock = userCreate,
+      userUpdateMock = userUpdate
+    )
+  }
+
   it should "dispatch actions when select user" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val actions = new Actions
     var selectedParams: Option[UserParams] = None
     val onChangeParams = { params: UserParams =>
       selectedParams = Some(params)
     }
     val respData = mock[UserDetailsData]
-    val props = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams)
+    val props = getUserPanelProps(dispatch, userActions = actions.actions, onChangeParams = onChangeParams)
     val comp = testRender(<(UserPanel())(^.wrapped := props)())
     val tablePanelProps = findComponentProps(comp, userTablePanelComp)
     val userId = 22
@@ -41,7 +56,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     val action = UserFetchAction(
       FutureTask("Fetching", Future.successful(UserDetailsResp(respData)))
     )
-    (actions.userFetch _).expects(dispatch, userId).returning(action)
+    actions.userFetch.expects(dispatch, userId).returning(action)
     dispatch.expects(action)
 
     //when
@@ -56,9 +71,9 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
   it should "dispatch actions when load data" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val actions = new Actions
     val onChangeParams = mockFunction[UserParams, Unit]
-    val props = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams)
+    val props = getUserPanelProps(dispatch, userActions = actions.actions, onChangeParams = onChangeParams)
     val comp = testRender(<(UserPanel())(^.wrapped := props)())
     val tablePanelProps = findComponentProps(comp, userTablePanelComp)
     val params = props.selectedParams.copy(userId = None)
@@ -68,7 +83,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
       FutureTask("Fetching", Future.successful(UserListResp(Nil, None))),
       offset
     )
-    (actions.userListFetch _).expects(dispatch, offset, symbols).returning(action)
+    actions.userListFetch.expects(dispatch, offset, symbols).returning(action)
 
     //then
     dispatch.expects(action)
@@ -100,9 +115,9 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
   it should "dispatch UserCreateAction when onSave in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val userActions = mock[UserActions]
+    val actions = new Actions
     val props = {
-      val props = getUserPanelProps(dispatch, userActions = userActions)
+      val props = getUserPanelProps(dispatch, userActions = actions.actions)
       props.copy(data = props.data.copy(showCreatePopup = true))
     }
     val comp = testRender(<(UserPanel())(^.wrapped := props)())
@@ -125,7 +140,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     val action = UserCreateAction(
       FutureTask("Creating", Future.successful(UserDetailsResp(data)))
     )
-    (userActions.userCreate _).expects(dispatch, data)
+    actions.userCreate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -159,9 +174,9 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
   it should "dispatch UserUpdateAction when onSave in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val userActions = mock[UserActions]
+    val actions = new Actions
     val props: UserPanelProps = {
-      val props = getUserPanelProps(dispatch, userActions = userActions)
+      val props = getUserPanelProps(dispatch, userActions = actions.actions)
       props.copy(data = props.data.copy(showEditPopup = true))
     }
     val data = props.data.userDetails.get
@@ -170,7 +185,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     val action = UserUpdateAction(
       FutureTask("Updating", Future.successful(UserDetailsResp(data)))
     )
-    (userActions.userUpdate _).expects(dispatch, data)
+    actions.userUpdate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -205,13 +220,13 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
   it should "dispatch actions when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val actions = new Actions
     val respData = mock[UserDetailsData]
     val onChangeParams = mockFunction[UserParams, Unit]
     val userId = 123
     val selectedParams = UserParams(Some(userId))
     val props = {
-      val props = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams,
+      val props = getUserPanelProps(dispatch, userActions = actions.actions, onChangeParams = onChangeParams,
         selectedParams = selectedParams)
       props.copy(data = props.data.copy(dataList = Nil))
     }
@@ -222,8 +237,8 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     val fetchAction = UserFetchAction(
       FutureTask("Fetching User", Future.successful(UserDetailsResp(respData)))
     )
-    (actions.userListFetch _).expects(dispatch, None, None).returning(listFetchAction)
-    (actions.userFetch _).expects(dispatch, userId).returning(fetchAction)
+    actions.userListFetch.expects(dispatch, None, None).returning(listFetchAction)
+    actions.userFetch.expects(dispatch, userId).returning(fetchAction)
 
     //then
     dispatch.expects(listFetchAction)
@@ -259,10 +274,10 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
   it should "dispatch actions when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[UserActions]
+    val actions = new Actions
     val respData = mock[UserDetailsData]
     val onChangeParams = mockFunction[UserParams, Unit]
-    val prevProps = getUserPanelProps(dispatch, userActions = actions, onChangeParams = onChangeParams)
+    val prevProps = getUserPanelProps(dispatch, userActions = actions.actions, onChangeParams = onChangeParams)
     val renderer = createTestRenderer(<(UserPanel())(^.wrapped := prevProps)())
     val newUserId = 123
     val selectedParams = UserParams(Some(newUserId))
@@ -272,7 +287,7 @@ class UserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRendererUti
     val fetchAction = UserFetchAction(
       FutureTask("Fetching User", Future.successful(UserDetailsResp(respData)))
     )
-    (actions.userFetch _).expects(dispatch, newUserId).returning(fetchAction)
+    actions.userFetch.expects(dispatch, newUserId).returning(fetchAction)
 
     //then
     dispatch.expects(fetchAction)

@@ -1,21 +1,34 @@
 package scommons.admin.client.system
 
+import io.github.shogowada.scalajs.reactjs.React.Props
+import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.api.system.SystemData
 import scommons.admin.client.system.SystemActions._
-import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.{PathParams, RouteParams}
+import scommons.admin.client.{AdminImagesCss, MockAdminStateDef}
+import scommons.client.controller.RouteParams
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeNodeData
 import scommons.client.util.BrowsePath
 import scommons.react.redux.Dispatch
 import scommons.react.test.TestSpec
 
+import scala.scalajs.js.Dynamic.literal
+
 class SystemControllerSpec extends TestSpec {
+
+  //noinspection TypeAnnotation
+  class State {
+    val systemState = mockFunction[SystemState]
+
+    val state = new MockAdminStateDef(
+      systemStateMock = systemState
+    )
+  }
 
   it should "return component" in {
     //given
-    val apiActions = mock[SystemActions]
-    val controller = new SystemController(apiActions)
+    val actions = new MockSystemActions
+    val controller = new SystemController(actions)
 
     //when & then
     controller.uiComponent shouldBe SystemPanel
@@ -23,24 +36,24 @@ class SystemControllerSpec extends TestSpec {
 
   it should "map state to props" in {
     //given
-    val apiActions = mock[SystemActions]
-    val controller = new SystemController(apiActions)
+    val actions = new MockSystemActions
+    val controller = new SystemController(actions)
     val dispatch = mock[Dispatch]
     val systemState = mock[SystemState]
-    val state = mock[AdminStateDef]
-    val routeParams = mock[RouteParams]
-    val pathParams = PathParams("/apps/123/456")
+    val state = new State
+    val routeParams = new RouteParams(new RouterProps(Props[Unit](literal(
+      "location" -> literal("pathname" -> "/apps/123/456")
+    ))))
     
-    (routeParams.pathParams _).expects().returning(pathParams)
-    (state.systemState _).expects().returning(systemState)
+    state.systemState.expects().returning(systemState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
+    val result = controller.mapStateAndRouteToProps(dispatch, state.state, routeParams)
 
     //then
-    inside(result) { case SystemPanelProps(disp, actions, compState, selectedParentId, selectedId) =>
+    inside(result) { case SystemPanelProps(disp, resActions, compState, selectedParentId, selectedId) =>
       disp shouldBe dispatch
-      actions shouldBe apiActions
+      resActions shouldBe actions
       compState shouldBe systemState
       selectedParentId shouldBe Some(123)
       selectedId shouldBe Some(456)
@@ -49,24 +62,24 @@ class SystemControllerSpec extends TestSpec {
   
   it should "not map selected system id if path is not exact" in {
     //given
-    val apiActions = mock[SystemActions]
-    val controller = new SystemController(apiActions)
+    val actions = new MockSystemActions
+    val controller = new SystemController(actions)
     val dispatch = mock[Dispatch]
     val systemState = mock[SystemState]
-    val state = mock[AdminStateDef]
-    val routeParams = mock[RouteParams]
-    val pathParams = PathParams("/apps/123/456/not-exact")
+    val state = new State
+    val routeParams = new RouteParams(new RouterProps(Props[Unit](literal(
+      "location" -> literal("pathname" -> "/apps/123/456/not-exact")
+    ))))
     
-    (routeParams.pathParams _).expects().returning(pathParams)
-    (state.systemState _).expects().returning(systemState)
+    state.systemState.expects().returning(systemState)
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
+    val result = controller.mapStateAndRouteToProps(dispatch, state.state, routeParams)
 
     //then
-    inside(result) { case SystemPanelProps(disp, actions, compState, selectedParentId, selectedId) =>
+    inside(result) { case SystemPanelProps(disp, resActions, compState, selectedParentId, selectedId) =>
       disp shouldBe dispatch
-      actions shouldBe apiActions
+      resActions shouldBe actions
       compState shouldBe systemState
       selectedParentId shouldBe Some(123)
       selectedId shouldBe None
@@ -75,8 +88,8 @@ class SystemControllerSpec extends TestSpec {
 
   it should "setup application node" in {
     //given
-    val apiActions = mock[SystemActions]
-    val controller = new SystemController(apiActions)
+    val actions = new MockSystemActions
+    val controller = new SystemController(actions)
     val parentId = 1
     val parentPath = BrowsePath(s"/apps/$parentId")
     val data = SystemData(

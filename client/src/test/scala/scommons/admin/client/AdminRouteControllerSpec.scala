@@ -22,6 +22,23 @@ import scommons.react.test.TestSpec
 
 class AdminRouteControllerSpec extends TestSpec {
 
+  //noinspection TypeAnnotation
+  class State {
+    val userState = mockFunction[UserState]
+    val systemGroupState = mockFunction[SystemGroupState]
+    val systemState = mockFunction[SystemState]
+    val systemUserState = mockFunction[SystemUserState]
+    val roleState = mockFunction[RoleState]
+
+    val state = new MockAdminStateDef(
+      userStateMock = userState,
+      systemGroupStateMock = systemGroupState,
+      systemStateMock = systemState,
+      systemUserStateMock = systemUserState,
+      roleStateMock = roleState
+    )
+  }
+
   it should "return component" in {
     //given
     val companyController = mock[CompanyController]
@@ -113,15 +130,15 @@ class AdminRouteControllerSpec extends TestSpec {
         }
       )
     )
-    val state = mock[AdminStateDef]
-    (state.userState _).expects().returning(userState)
-    (state.systemGroupState _).expects().returning(systemGroupState)
-    (state.systemState _).expects().returning(systemState)
-    (state.systemUserState _).expects().returning(systemUserState)
-    (state.roleState _).expects().returning(roleState)
+    val state = new State
+    state.userState.expects().returning(userState)
+    state.systemGroupState.expects().returning(systemGroupState)
+    state.systemState.expects().returning(systemState)
+    state.systemUserState.expects().returning(systemUserState)
+    state.roleState.expects().returning(roleState)
 
     //when
-    val result = controller.mapStateToProps(expectedDispatch, state, props)
+    val result = controller.mapStateToProps(expectedDispatch, state.state, props)
     
     //then
     inside(result) {

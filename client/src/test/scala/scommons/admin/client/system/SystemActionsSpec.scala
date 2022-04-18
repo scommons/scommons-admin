@@ -10,10 +10,25 @@ import scala.concurrent.Future
 
 class SystemActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val getSystemById = mockFunction[Int, Future[SystemResp]]
+    val listSystems = mockFunction[Future[SystemListResp]]
+    val createSystem = mockFunction[SystemData, Future[SystemResp]]
+    val updateSystem = mockFunction[SystemData, Future[SystemResp]]
+
+    val api = new MockSystemApi(
+      getSystemByIdMock = getSystemById,
+      listSystemsMock = listSystems,
+      createSystemMock = createSystem,
+      updateSystemMock = updateSystem
+    )
+  }
+
   it should "dispatch SystemListFetchedAction when systemListFetch" in {
     //given
-    val api = mock[SystemApi]
-    val actions = new SystemActionsTest(api)
+    val api = new Api
+    val actions = new SystemActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val dataList = List(SystemData(
       id = Some(11),
@@ -25,7 +40,7 @@ class SystemActionsSpec extends AsyncTestSpec {
     ))
     val expectedResp = SystemListResp(dataList)
 
-    (api.listSystems _).expects()
+    api.listSystems.expects()
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemListFetchedAction(dataList))
     
@@ -42,8 +57,8 @@ class SystemActionsSpec extends AsyncTestSpec {
   
   it should "dispatch SystemCreatedAction when systemCreate" in {
     //given
-    val api = mock[SystemApi]
-    val actions = new SystemActionsTest(api)
+    val api = new Api
+    val actions = new SystemActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = SystemData(
       id = None,
@@ -56,7 +71,7 @@ class SystemActionsSpec extends AsyncTestSpec {
     val respData = data.copy(id = Some(11))
     val expectedResp = SystemResp(respData)
 
-    (api.createSystem _).expects(data)
+    api.createSystem.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemCreatedAction(respData))
     
@@ -73,8 +88,8 @@ class SystemActionsSpec extends AsyncTestSpec {
   
   it should "dispatch SystemUpdatedAction when systemUpdate" in {
     //given
-    val api = mock[SystemApi]
-    val actions = new SystemActionsTest(api)
+    val api = new Api
+    val actions = new SystemActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = SystemData(
       id = Some(11),
@@ -94,7 +109,7 @@ class SystemActionsSpec extends AsyncTestSpec {
     )
     val expectedResp = SystemResp(respData)
 
-    (api.updateSystem _).expects(data)
+    api.updateSystem.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemUpdatedAction(respData))
     

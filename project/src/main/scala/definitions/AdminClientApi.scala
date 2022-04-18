@@ -29,7 +29,9 @@ object AdminClientApi {
       // Add JVM-specific settings here
     ).jsSettings(
       // Add JS-specific settings here
-      coverageEnabled := false
+      Seq(
+        coverageEnabled := false
+      ) ++ ScalaJsModule.settings: _*
     )
 
   lazy val jvm: Project = `scommons-admin-client-api`.jvm

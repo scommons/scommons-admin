@@ -14,10 +14,25 @@ import scala.concurrent.Future
 
 class SystemUserActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val listSystemUsers = mockFunction[Int, Option[Int], Option[Int], Option[String], Future[SystemUserListResp]]
+    val listSystemUserRoles = mockFunction[Int, Int, Future[SystemUserRoleResp]]
+    val addSystemUserRoles = mockFunction[Int, Int, SystemUserRoleUpdateReq, Future[SystemUserRoleResp]]
+    val removeSystemUserRoles = mockFunction[Int, Int, SystemUserRoleUpdateReq, Future[SystemUserRoleResp]]
+
+    val api = new MockSystemUserApi(
+      listSystemUsersMock = listSystemUsers,
+      listSystemUserRolesMock = listSystemUserRoles,
+      addSystemUserRolesMock = addSystemUserRoles,
+      removeSystemUserRolesMock = removeSystemUserRoles
+    )
+  }
+
   it should "dispatch SystemUserListFetchedAction when userListFetch" in {
     //given
-    val api = mock[SystemUserApi]
-    val actions = new SystemUserActionsTest(api)
+    val api = new Api
+    val actions = new SystemUserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val offset = Some(12)
     val symbols = Some("test")
@@ -26,7 +41,7 @@ class SystemUserActionsSpec extends AsyncTestSpec {
     val totalCount = Some(12345)
     val expectedResp = SystemUserListResp(dataList, totalCount)
 
-    (api.listSystemUsers _).expects(systemId, offset, Some(SystemUserActions.listLimit), symbols)
+    api.listSystemUsers.expects(systemId, offset, Some(SystemUserActions.listLimit), symbols)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemUserListFetchedAction(dataList, totalCount))
     
@@ -44,15 +59,15 @@ class SystemUserActionsSpec extends AsyncTestSpec {
 
   it should "dispatch SystemUserRoleFetchedAction(None) when systemUserRolesFetch" in {
     //given
-    val api = mock[SystemUserApi]
-    val actions = new SystemUserActionsTest(api)
+    val api = new Api
+    val actions = new SystemUserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val resp = SystemUserRoleResp(AdminUiApiStatuses.SystemUserNotFound)
     val expectedResp = SystemUserRoleResp(ApiStatus.Ok, None)
     val systemId = 22
     val userId = 11
 
-    (api.listSystemUserRoles _).expects(systemId, userId)
+    api.listSystemUserRoles.expects(systemId, userId)
       .returning(Future.successful(resp))
     dispatch.expects(SystemUserRoleFetchedAction(None))
 
@@ -69,8 +84,8 @@ class SystemUserActionsSpec extends AsyncTestSpec {
 
   it should "dispatch SystemUserRoleFetchedAction(Some) when systemUserRolesFetch" in {
     //given
-    val api = mock[SystemUserApi]
-    val actions = new SystemUserActionsTest(api)
+    val api = new Api
+    val actions = new SystemUserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = SystemUserRoleRespData(
       roles = List(SystemUserRoleData(1, "test role 1", isSelected = true)),
@@ -89,7 +104,7 @@ class SystemUserActionsSpec extends AsyncTestSpec {
     val expectedResp = SystemUserRoleResp(respData)
     val systemId = 22
 
-    (api.listSystemUserRoles _).expects(systemId, respData.systemUser.userId)
+    api.listSystemUserRoles.expects(systemId, respData.systemUser.userId)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemUserRoleFetchedAction(Some(respData)))
 
@@ -106,8 +121,8 @@ class SystemUserActionsSpec extends AsyncTestSpec {
 
   it should "dispatch SystemUserRoleAddedAction when systemUserRolesAdd" in {
     //given
-    val api = mock[SystemUserApi]
-    val actions = new SystemUserActionsTest(api)
+    val api = new Api
+    val actions = new SystemUserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = SystemUserRoleRespData(
       roles = List(SystemUserRoleData(1, "test role 1", isSelected = true)),
@@ -127,7 +142,7 @@ class SystemUserActionsSpec extends AsyncTestSpec {
     val systemId = 22
     val data = SystemUserRoleUpdateReq(Set(1, 2, 3), 4)
 
-    (api.addSystemUserRoles _).expects(systemId, respData.systemUser.userId, data)
+    api.addSystemUserRoles.expects(systemId, respData.systemUser.userId, data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemUserRoleAddedAction(respData))
 
@@ -144,8 +159,8 @@ class SystemUserActionsSpec extends AsyncTestSpec {
 
   it should "dispatch SystemUserRoleRemovedAction when systemUserRolesRemove" in {
     //given
-    val api = mock[SystemUserApi]
-    val actions = new SystemUserActionsTest(api)
+    val api = new Api
+    val actions = new SystemUserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = SystemUserRoleRespData(
       roles = List(SystemUserRoleData(1, "test role 1", isSelected = true)),
@@ -165,7 +180,7 @@ class SystemUserActionsSpec extends AsyncTestSpec {
     val systemId = 22
     val data = SystemUserRoleUpdateReq(Set(1, 2, 3), 4)
 
-    (api.removeSystemUserRoles _).expects(systemId, respData.systemUser.userId, data)
+    api.removeSystemUserRoles.expects(systemId, respData.systemUser.userId, data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(SystemUserRoleRemovedAction(respData))
 

@@ -21,15 +21,26 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
   SystemUserPanel.tabPanelComp = mockUiComponent("TabPanel")
   SystemUserPanel.systemUserRolePanel = mockUiComponent("SystemUserRolePanel")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val systemUserRolesFetch = mockFunction[Dispatch, Int, Int, SystemUserRoleFetchAction]
+    val systemUserListFetch = mockFunction[Dispatch, Int, Option[Int], Option[String], SystemUserListFetchAction]
+
+    val actions = new MockSystemUserActions(
+      systemUserRolesFetchMock = systemUserRolesFetch,
+      systemUserListFetchMock = systemUserListFetch
+    )
+  }
+
   it should "dispatch actions when select user" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemUserActions]
+    val actions = new Actions
     var selectedParams: Option[SystemUserParams] = None
     val onChangeParams = { params: SystemUserParams =>
       selectedParams = Some(params)
     }
-    val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+    val props = getSystemUserPanelProps(dispatch, actions.actions, onChangeParams = onChangeParams)
     val systemId = props.selectedParams.systemId.get
     val comp = createTestRenderer(<(SystemUserPanel())(^.wrapped := props)()).root
     val tablePanelProps = findComponentProps(comp, systemUserTablePanel)
@@ -39,7 +50,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
     val action = SystemUserRoleFetchAction(
       FutureTask("Fetching Roles", Future.successful(SystemUserRoleResp(respData)))
     )
-    (actions.systemUserRolesFetch _).expects(dispatch, systemId, userId).returning(action)
+    actions.systemUserRolesFetch.expects(dispatch, systemId, userId).returning(action)
     dispatch.expects(action)
 
     //when
@@ -54,9 +65,9 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
   it should "dispatch actions when load data" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemUserActions]
+    val actions = new Actions
     val onChangeParams = mockFunction[SystemUserParams, Unit]
-    val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+    val props = getSystemUserPanelProps(dispatch, actions.actions, onChangeParams = onChangeParams)
     val systemId = props.selectedParams.systemId.get
     val comp = createTestRenderer(<(SystemUserPanel())(^.wrapped := props)()).root
     val tablePanelProps = findComponentProps(comp, systemUserTablePanel)
@@ -66,7 +77,7 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
     val action = SystemUserListFetchAction(
       FutureTask("Fetching SystemUsers", Future.successful(SystemUserListResp(Nil, None))), offset
     )
-    (actions.systemUserListFetch _).expects(dispatch, systemId, offset, symbols).returning(action)
+    actions.systemUserListFetch.expects(dispatch, systemId, offset, symbols).returning(action)
 
     //then
     dispatch.expects(action)
@@ -81,12 +92,12 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
   it should "dispatch actions if diff params when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemUserActions]
+    val actions = new Actions
     val onChangeParams = mockFunction[SystemUserParams, Unit]
     val systemId = 123
     val userId = 12345
     val props = {
-      val props = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+      val props = getSystemUserPanelProps(dispatch, actions.actions, onChangeParams = onChangeParams)
       props.copy(selectedParams = props.selectedParams.copy(systemId = Some(systemId), userId = Some(userId)))
     }
     val listFetchAction = SystemUserListFetchAction(
@@ -96,8 +107,8 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
     val rolesFetchAction = SystemUserRoleFetchAction(
       FutureTask("Fetching Roles", Future.successful(SystemUserRoleResp(respData)))
     )
-    (actions.systemUserListFetch _).expects(dispatch, systemId, None, None).returning(listFetchAction)
-    (actions.systemUserRolesFetch _).expects(dispatch, systemId, userId).returning(rolesFetchAction)
+    actions.systemUserListFetch.expects(dispatch, systemId, None, None).returning(listFetchAction)
+    actions.systemUserRolesFetch.expects(dispatch, systemId, userId).returning(rolesFetchAction)
 
     //then
     dispatch.expects(listFetchAction)
@@ -135,9 +146,9 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
   it should "dispatch actions if diff params when update" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemUserActions]
+    val actions = new Actions
     val onChangeParams = mockFunction[SystemUserParams, Unit]
-    val prevProps = getSystemUserPanelProps(dispatch, actions = actions, onChangeParams = onChangeParams)
+    val prevProps = getSystemUserPanelProps(dispatch, actions.actions, onChangeParams = onChangeParams)
     val renderer = createTestRenderer(<(SystemUserPanel())(^.wrapped := prevProps)())
     val newSystemId = 123
     val newUserId = 12345
@@ -151,8 +162,8 @@ class SystemUserPanelSpec extends AsyncTestSpec with BaseTestSpec with TestRende
     val rolesFetchAction = SystemUserRoleFetchAction(
       FutureTask("Fetching Roles", Future.successful(SystemUserRoleResp(respData)))
     )
-    (actions.systemUserListFetch _).expects(dispatch, newSystemId, None, None).returning(listFetchAction)
-    (actions.systemUserRolesFetch _).expects(dispatch, newSystemId, newUserId).returning(rolesFetchAction)
+    actions.systemUserListFetch.expects(dispatch, newSystemId, None, None).returning(listFetchAction)
+    actions.systemUserRolesFetch.expects(dispatch, newSystemId, newUserId).returning(rolesFetchAction)
 
     //then
     dispatch.expects(listFetchAction)

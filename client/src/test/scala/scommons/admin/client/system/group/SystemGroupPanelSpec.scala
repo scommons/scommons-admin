@@ -15,10 +15,23 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
 
   SystemGroupPanel.inputPopupComp = mockUiComponent("InputPopup")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val systemGroupListFetch = mockFunction[Dispatch, SystemGroupListFetchAction]
+    val systemGroupCreate = mockFunction[Dispatch, String, SystemGroupCreateAction]
+    val systemGroupUpdate = mockFunction[Dispatch, SystemGroupData, SystemGroupUpdateAction]
+
+    val actions = new MockSystemGroupActions(
+      systemGroupListFetchMock = systemGroupListFetch,
+      systemGroupCreateMock = systemGroupCreate,
+      systemGroupUpdateMock = systemGroupUpdate
+    )
+  }
+
   it should "dispatch SystemGroupCreateAction when onOk in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(
       dataList = List(
         SystemGroupData(Some(1), "test env 1"),
@@ -26,14 +39,14 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showCreatePopup = true
     )
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
     val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
     val createPopupProps = findComponentProps(comp, inputPopupComp)
     val text = "new env"
     val action = SystemGroupCreateAction(
       FutureTask("Creating", Future.successful(SystemGroupResp(SystemGroupData(Some(1), text))))
     )
-    (actions.systemGroupCreate _).expects(dispatch, text)
+    actions.systemGroupCreate.expects(dispatch, text)
       .returning(action)
 
     //then
@@ -46,7 +59,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemGroupCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(
       dataList = List(
         SystemGroupData(Some(1), "test env 1"),
@@ -54,7 +67,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showCreatePopup = true
     )
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
     val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
     val createPopupProps = findComponentProps(comp, inputPopupComp)
 
@@ -68,7 +81,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemGroupUpdateAction when onOk in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(
       dataList = List(
         SystemGroupData(Some(1), "test env 1"),
@@ -76,7 +89,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showEditPopup = true
     )
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
     val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
     val editPopupProps = findComponentProps(comp, inputPopupComp)
     val text = "updated env"
@@ -84,7 +97,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
     val action = SystemGroupUpdateAction(
       FutureTask("Updating", Future.successful(SystemGroupResp(data)))
     )
-    (actions.systemGroupUpdate _).expects(dispatch, data)
+    actions.systemGroupUpdate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -97,7 +110,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemGroupUpdateRequestAction(false) when onCancel in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(
       dataList = List(
         SystemGroupData(Some(1), "test env 1"),
@@ -105,7 +118,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showEditPopup = true
     )
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
     val comp = createTestRenderer(<(SystemGroupPanel())(^.wrapped := props)()).root
     val editPopupProps = findComponentProps(comp, inputPopupComp)
 
@@ -119,13 +132,13 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemGroupListFetchAction if empty dataList when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState()
-    val props = SystemGroupPanelProps(dispatch, actions, state, None)
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, None)
     val action = SystemGroupListFetchAction(
       FutureTask("Fetching", Future.successful(SystemGroupListResp(Nil)))
     )
-    (actions.systemGroupListFetch _).expects(dispatch)
+    actions.systemGroupListFetch.expects(dispatch)
       .returning(action)
 
     //then
@@ -141,12 +154,12 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch SystemGroupListFetchAction if non empty dataList when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(List(
       SystemGroupData(Some(1), "test env 1"),
       SystemGroupData(Some(2), "test env 2")
     ))
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
 
     //then
     dispatch.expects(*).never()
@@ -161,12 +174,12 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(List(
       SystemGroupData(Some(1), "test env 1"),
       SystemGroupData(Some(2), "test env 2")
     ))
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
     val component = <(SystemGroupPanel())(^.wrapped := props)()
     
     //when
@@ -179,7 +192,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show create popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(
       dataList = List(
         SystemGroupData(Some(1), "test env 1"),
@@ -187,7 +200,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showCreatePopup = true
     )
-    val props = SystemGroupPanelProps(dispatch, actions, state, None)
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, None)
     val component = <(SystemGroupPanel())(^.wrapped := props)()
     
     //when
@@ -200,7 +213,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show edit popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[SystemGroupActions]
+    val actions = new Actions
     val state = SystemGroupState(
       dataList = List(
         SystemGroupData(Some(1), "test env 1"),
@@ -208,7 +221,7 @@ class SystemGroupPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showEditPopup = true
     )
-    val props = SystemGroupPanelProps(dispatch, actions, state, Some(1))
+    val props = SystemGroupPanelProps(dispatch, actions.actions, state, Some(1))
     val component = <(SystemGroupPanel())(^.wrapped := props)()
     
     //when

@@ -1,26 +1,50 @@
 package scommons.admin.client.user
 
+import io.github.shogowada.scalajs.reactjs.React.Props
+import io.github.shogowada.scalajs.reactjs.router.RouterProps.RouterProps
 import scommons.admin.client.AdminRouteController.buildUsersPath
 import scommons.admin.client.api.user.UserListResp
 import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.user.UserActions._
 import scommons.admin.client.user.system.{UserSystemActions, UserSystemState}
-import scommons.admin.client.{AdminImagesCss, AdminStateDef}
-import scommons.client.controller.{PathParams, RouteParams}
+import scommons.admin.client.{AdminImagesCss, MockAdminStateDef}
+import scommons.client.controller.RouteParams
 import scommons.client.ui.Buttons
 import scommons.client.ui.tree.BrowseTreeItemData
 import scommons.client.util.BrowsePath
+import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
 import scommons.react.test.TestSpec
 
 import scala.concurrent.Future
+import scala.scalajs.js.Dynamic.literal
 
 class UserControllerSpec extends TestSpec {
+
+  //noinspection TypeAnnotation
+  class Actions {
+    val userListFetch = mockFunction[Dispatch, Option[Int], Option[String], UserListFetchAction]
+
+    val actions = new MockUserActions(
+      userListFetchMock = userListFetch
+    )
+  }
+
+  //noinspection TypeAnnotation
+  class State {
+    val userState = mockFunction[UserState]
+    val userSystemState = mockFunction[UserSystemState]
+
+    val state = new MockAdminStateDef(
+      userStateMock = userState,
+      userSystemStateMock = userSystemState
+    )
+  }
 
   it should "return component" in {
     //given
     val companyActions = mock[CompanyActions]
-    val userActions = mock[UserActions]
+    val userActions = new MockUserActions
     val userSystemActions = mock[UserSystemActions]
     val controller = new UserController(companyActions, userActions, userSystemActions)
     
@@ -31,26 +55,28 @@ class UserControllerSpec extends TestSpec {
   it should "map state to props" in {
     //given
     val companyActions = mock[CompanyActions]
-    val userActions = mock[UserActions]
+    val userActions = new MockUserActions
     val userSystemActions = mock[UserSystemActions]
     val controller = new UserController(companyActions, userActions, userSystemActions)
     val dispatch = mockFunction[Any, Any]
     val userState = mock[UserState]
     val userSystemState = mock[UserSystemState]
-    val state = mock[AdminStateDef]
-    val routeParams = mock[RouteParams]
-    val pathParams = PathParams(s"/users/123/profile")
+    val state = new State
+    val pushMock = mockFunction[String, Unit]
+    val routeParams = new RouteParams(new RouterProps(Props[Unit](literal(
+      "location" -> literal("pathname" -> "/users/123/profile"),
+      "history" -> literal("push" -> pushMock)
+    ))))
     val params = UserParams(Some(456), Some(UserDetailsTab.apps))
     val path = buildUsersPath(params)
 
-    (state.userState _).expects().returning(userState)
-    (state.userSystemState _).expects().returning(userSystemState)
-    (routeParams.pathParams _).expects().returning(pathParams)
-    (routeParams.push _).expects(path.value)
+    state.userState.expects().returning(userState)
+    state.userSystemState.expects().returning(userSystemState)
+    pushMock.expects(path.value)
     dispatch.expects(UserParamsChangedAction(params))
 
     //when
-    val result = controller.mapStateAndRouteToProps(dispatch, state, routeParams)
+    val result = controller.mapStateAndRouteToProps(dispatch, state.state, routeParams)
     
     //then
     inside(result) {
@@ -78,9 +104,9 @@ class UserControllerSpec extends TestSpec {
   it should "setup users item" in {
     //given
     val companyActions = mock[CompanyActions]
-    val userActions = mock[UserActions]
+    val userActions = new Actions
     val userSystemActions = mock[UserSystemActions]
-    val controller = new UserController(companyActions, userActions, userSystemActions)
+    val controller = new UserController(companyActions, userActions.actions, userSystemActions)
     val userListFetchAction =
       UserListFetchAction(FutureTask("Fetching", Future.successful(UserListResp(Nil, None))), None)
     val expectedActions = Map(
@@ -89,7 +115,7 @@ class UserControllerSpec extends TestSpec {
     val usersPath = BrowsePath("/some-path")
     val dispatch = mockFunction[Any, Any]
 
-    (userActions.userListFetch _).expects(dispatch, None, None)
+    userActions.userListFetch.expects(dispatch, None, None)
       .returning(userListFetchAction)
     dispatch.expects(userListFetchAction)
       .returning(*)

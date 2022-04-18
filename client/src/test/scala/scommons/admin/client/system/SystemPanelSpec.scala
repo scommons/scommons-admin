@@ -15,10 +15,23 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   SystemPanel.systemEditPopup = mockUiComponent("SystemEditPopup")
   SystemPanel.systemEditPanel = mockUiComponent("SystemEditPanel")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val systemListFetch = mockFunction[Dispatch, SystemListFetchAction]
+    val systemCreate = mockFunction[Dispatch, SystemData, SystemCreateAction]
+    val systemUpdate = mockFunction[Dispatch, SystemData, SystemUpdateAction]
+
+    val actions = new MockSystemActions(
+      systemListFetchMock = systemListFetch,
+      systemCreateMock = systemCreate,
+      systemUpdateMock = systemUpdate
+    )
+  }
+
   it should "dispatch SystemCreateAction when onSave in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemActions]
+    val actions = new Actions
     val state = SystemState(List(SystemData(
       id = Some(11),
       name = "test name",
@@ -28,7 +41,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
       parentId = 1
     )).groupBy(_.parentId))
     val props = {
-      val props = SystemPanelProps(dispatch, actions, state, Some(1), None)
+      val props = SystemPanelProps(dispatch, actions.actions, state, Some(1), None)
       props.copy(state = props.state.copy(showCreatePopup = true))
     }
     val comp = createTestRenderer(<(SystemPanel())(^.wrapped := props)()).root
@@ -44,7 +57,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
     val action = SystemCreateAction(
       FutureTask("Creating", Future.successful(SystemResp(data.copy(id = Some(11)))))
     )
-    (actions.systemCreate _).expects(dispatch, data)
+    actions.systemCreate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -57,7 +70,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemActions]
+    val actions = new MockSystemActions
     val state = SystemState(List(SystemData(
       id = Some(11),
       name = "test name",
@@ -83,7 +96,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemUpdateAction when onSave in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemActions]
+    val actions = new Actions
     val existingData = SystemData(
       id = Some(11),
       name = "test name",
@@ -93,14 +106,14 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
       parentId = 1
     )
     val state = SystemState(List(existingData).groupBy(_.parentId))
-    val props = SystemPanelProps(dispatch, actions, state.copy(showEditPopup = true), Some(1), Some(11))
+    val props = SystemPanelProps(dispatch, actions.actions, state.copy(showEditPopup = true), Some(1), Some(11))
     val comp = createTestRenderer(<(SystemPanel())(^.wrapped := props)()).root
     val editPopupProps = findComponentProps(comp, systemEditPopup)
     val data = existingData.copy(name = "updated name")
     val action = SystemUpdateAction(
       FutureTask("Updating", Future.successful(SystemResp(data)))
     )
-    (actions.systemUpdate _).expects(dispatch, data)
+    actions.systemUpdate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -113,7 +126,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemUpdateRequestAction(false) when onCancel in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemActions]
+    val actions = new MockSystemActions
     val state = SystemState(List(SystemData(
       id = Some(11),
       name = "test name",
@@ -136,13 +149,13 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemListFetchAction if empty systems when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemActions]
+    val actions = new Actions
     val state = SystemState()
-    val props = SystemPanelProps(dispatch, actions, state, None, None)
+    val props = SystemPanelProps(dispatch, actions.actions, state, None, None)
     val action = SystemListFetchAction(
       FutureTask("Fetching", Future.successful(SystemListResp(Nil)))
     )
-    (actions.systemListFetch _).expects(dispatch)
+    actions.systemListFetch.expects(dispatch)
       .returning(action)
 
     //then
@@ -158,7 +171,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch SystemListFetchAction if non empty systems when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemActions]
+    val actions = new MockSystemActions
     val state = SystemState(List(SystemData(
       id = Some(11),
       name = "test name",
@@ -182,7 +195,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[SystemActions]
+    val actions = new MockSystemActions
     val state = SystemState(List(SystemData(
       id = Some(11),
       name = "test name",
@@ -204,7 +217,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show create popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[SystemActions]
+    val actions = new MockSystemActions
     val state = SystemState(
       systemsByParentId = List(SystemData(
         id = Some(11),
@@ -229,7 +242,7 @@ class SystemPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show edit popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[SystemActions]
+    val actions = new MockSystemActions
     val state = SystemState(
       systemsByParentId = List(SystemData(
         id = Some(11),

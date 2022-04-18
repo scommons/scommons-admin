@@ -2,8 +2,8 @@ package scommons.admin.client.user
 
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.api.user._
-import scommons.admin.client.company.CompanyActions
 import scommons.admin.client.company.CompanyActions.CompanyListFetchAction
+import scommons.admin.client.company.{CompanyActions, MockCompanyActions}
 import scommons.admin.client.user.UserEditPanel._
 import scommons.client.ui.select.{SearchSelectProps, SelectData}
 import scommons.client.ui.{PasswordFieldProps, TextFieldProps}
@@ -19,6 +19,15 @@ class UserEditPanelSpec extends TestSpec with TestRendererUtils {
   UserEditPanel.passwordFieldComp = mockUiComponent("PasswordField")
   UserEditPanel.searchSelectComp = mockUiComponent("SearchSelect")
   
+  //noinspection TypeAnnotation
+  class Actions {
+    val companyListFetch = mockFunction[Dispatch, Option[Int], Option[String], CompanyListFetchAction]
+
+    val actions = new MockCompanyActions(
+      companyListFetchMock = companyListFetch
+    )
+  }
+
   it should "call onChange, onEnter when in login field" in {
     //given
     val onChange = mockFunction[UserDetailsData, Unit]
@@ -67,8 +76,8 @@ class UserEditPanelSpec extends TestSpec with TestRendererUtils {
 
   it should "call companyListFetch when onLoad in company field" in {
     //given
-    val companyActions = mock[CompanyActions]
-    val props = getUserEditPanelProps(companyActions = companyActions)
+    val companyActions = new Actions
+    val props = getUserEditPanelProps(companyActions = companyActions.actions)
     val comp = testRender(<(UserEditPanel())(^.wrapped := props)())
     val fieldProps = findComponentProps(comp, searchSelectComp)
     val inputValue = "some input"
@@ -76,7 +85,7 @@ class UserEditPanelSpec extends TestSpec with TestRendererUtils {
       Future.successful(CompanyListResp(Nil))), Some(0))
 
     //then
-    (companyActions.companyListFetch _).expects(props.dispatch, Some(0), Some(inputValue))
+    companyActions.companyListFetch.expects(props.dispatch, Some(0), Some(inputValue))
       .returning(action)
 
     //when

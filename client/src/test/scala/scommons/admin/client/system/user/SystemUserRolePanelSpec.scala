@@ -19,10 +19,21 @@ class SystemUserRolePanelSpec extends TestSpec with TestRendererUtils {
   SystemUserRolePanel.pickListComp = mockUiComponent("PickList")
   SystemUserRolePanel.checkBoxTree = mockUiComponent("CheckBoxTree")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val systemUserRolesAdd = mockFunction[Dispatch, Int, Int, SystemUserRoleUpdateReq, SystemUserRoleAddAction]
+    val systemUserRolesRemove = mockFunction[Dispatch, Int, Int, SystemUserRoleUpdateReq, SystemUserRoleRemoveAction]
+
+    val actions = new MockSystemUserActions(
+      systemUserRolesAddMock = systemUserRolesAdd,
+      systemUserRolesRemoveMock = systemUserRolesRemove
+    )
+  }
+
   it should "dispatch SystemUserRoleAddAction if add item(s) when onSelectChange" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemUserActions]
+    val actions = new Actions
     val systemId = 22
     val userData = SystemUserData(
       userId = 11,
@@ -40,14 +51,14 @@ class SystemUserRolePanelSpec extends TestSpec with TestRendererUtils {
       userRoles = respData.roles,
       permissionsByParentId = respData.permissions.groupBy(_.parentId)
     )
-    val props = getSystemUserRolePanelProps(dispatch, actions, data = state, systemId = systemId)
+    val props = getSystemUserRolePanelProps(dispatch, actions.actions, data = state, systemId = systemId)
     val comp = testRender(<(SystemUserRolePanel())(^.wrapped := props)())
     val pickListProps = findComponentProps(comp, pickListComp)
     val data = SystemUserRoleUpdateReq(Set(1), userData.version)
     val action = SystemUserRoleAddAction(
       FutureTask("Test", Future.successful(SystemUserRoleResp(respData)))
     )
-    (actions.systemUserRolesAdd _).expects(dispatch, systemId, userData.userId, data)
+    actions.systemUserRolesAdd.expects(dispatch, systemId, userData.userId, data)
       .returning(action)
 
     //then
@@ -60,7 +71,7 @@ class SystemUserRolePanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch SystemUserRoleRemoveAction if remove item(s) when onSelectChange" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[SystemUserActions]
+    val actions = new Actions
     val systemId = 22
     val userData = SystemUserData(
       userId = 11,
@@ -78,14 +89,14 @@ class SystemUserRolePanelSpec extends TestSpec with TestRendererUtils {
       userRoles = respData.roles,
       permissionsByParentId = respData.permissions.groupBy(_.parentId)
     )
-    val props = getSystemUserRolePanelProps(dispatch, actions, data = state, systemId = systemId)
+    val props = getSystemUserRolePanelProps(dispatch, actions.actions, data = state, systemId = systemId)
     val comp = testRender(<(SystemUserRolePanel())(^.wrapped := props)())
     val pickListProps = findComponentProps(comp, pickListComp)
     val data = SystemUserRoleUpdateReq(Set(1), userData.version)
     val action = SystemUserRoleRemoveAction(
       FutureTask("Test", Future.successful(SystemUserRoleResp(respData)))
     )
-    (actions.systemUserRolesRemove _).expects(dispatch, systemId, userData.userId, data)
+    actions.systemUserRolesRemove.expects(dispatch, systemId, userData.userId, data)
       .returning(action)
 
     //then

@@ -15,6 +15,7 @@ object AdminClient extends AdminModule with CommonClientModule {
   override def definition: Project = {
     super.definition
       .enablePlugins(ScalaJSWeb, SbtWeb)
+      .settings(ScalaJsModule.settings: _*)
       .settings(
         coverageExcludedPackages := coverageExcludedPackages.value +
           ";.*AdminMain" +

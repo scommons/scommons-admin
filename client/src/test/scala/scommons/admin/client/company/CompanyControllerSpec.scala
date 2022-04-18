@@ -1,11 +1,11 @@
 package scommons.admin.client.company
 
 import io.github.shogowada.scalajs.reactjs.React.Props
-import scommons.admin.client.AdminStateDef
+import scommons.admin.client.MockAdminStateDef
 import scommons.admin.client.api.company.CompanyListResp
 import scommons.admin.client.company.CompanyActions._
-import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.ui.tree.BrowseTreeItemData
+import scommons.client.ui.{ButtonImagesCss, Buttons}
 import scommons.client.util.BrowsePath
 import scommons.react.redux.Dispatch
 import scommons.react.redux.task.FutureTask
@@ -15,10 +15,28 @@ import scala.concurrent.Future
 
 class CompanyControllerSpec extends TestSpec {
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val companyListFetch = mockFunction[Dispatch, Option[Int], Option[String], CompanyListFetchAction]
+
+    val actions = new MockCompanyActions(
+      companyListFetchMock = companyListFetch
+    )
+  }
+
+  //noinspection TypeAnnotation
+  class State {
+    val companyState = mockFunction[CompanyState]
+
+    val state = new MockAdminStateDef(
+      companyStateMock = companyState
+    )
+  }
+
   it should "return component" in {
     //given
-    val apiActions = mock[CompanyActions]
-    val controller = new CompanyController(apiActions)
+    val actions = new MockCompanyActions
+    val controller = new CompanyController(actions)
     
     //when & then
     controller.uiComponent shouldBe CompanyPanel
@@ -26,29 +44,29 @@ class CompanyControllerSpec extends TestSpec {
   
   it should "map state to props" in {
     //given
-    val apiActions = mock[CompanyActions]
+    val actions = new MockCompanyActions
     val props = mock[Props[Unit]]
-    val controller = new CompanyController(apiActions)
+    val controller = new CompanyController(actions)
     val dispatch = mock[Dispatch]
     val companyState = mock[CompanyState]
-    val state = mock[AdminStateDef]
-    (state.companyState _).expects().returning(companyState)
+    val state = new State
+    state.companyState.expects().returning(companyState)
 
     //when
-    val result = controller.mapStateToProps(dispatch, state, props)
+    val result = controller.mapStateToProps(dispatch, state.state, props)
     
     //then
-    inside(result) { case CompanyPanelProps(disp, actions, compState) =>
+    inside(result) { case CompanyPanelProps(disp, resActions, compState) =>
       disp shouldBe dispatch
-      actions shouldBe apiActions
+      resActions shouldBe actions
       compState shouldBe companyState
     }
   }
 
   it should "setup companies item" in {
     //given
-    val apiActions = mock[CompanyActions]
-    val controller = new CompanyController(apiActions)
+    val actions = new Actions
+    val controller = new CompanyController(actions.actions)
     val companyListFetchAction =
       CompanyListFetchAction(FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))), None)
     val expectedActions = Map(
@@ -57,7 +75,7 @@ class CompanyControllerSpec extends TestSpec {
     val companiesPath = BrowsePath("/some-path")
     val dispatch = mockFunction[Any, Any]
 
-    (apiActions.companyListFetch _).expects(dispatch, None, None)
+    actions.companyListFetch.expects(dispatch, None, None)
       .returning(companyListFetchAction)
     dispatch.expects(companyListFetchAction)
       .returning(*)

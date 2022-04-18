@@ -12,10 +12,23 @@ import scala.concurrent.Future
 
 class UserSystemActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val listUserSystems = mockFunction[Int, Future[UserSystemResp]]
+    val addUserSystems = mockFunction[Int, UserSystemUpdateReq, Future[UserSystemResp]]
+    val removeUserSystems = mockFunction[Int, UserSystemUpdateReq, Future[UserSystemResp]]
+
+    val api = new MockUserSystemApi(
+      listUserSystemsMock = listUserSystems,
+      addUserSystemsMock = addUserSystems,
+      removeUserSystemsMock = removeUserSystems
+    )
+  }
+
   it should "dispatch UserSystemFetchedAction and UserUpdatedAction when userSystemsFetch" in {
     //given
-    val api = mock[UserSystemApi]
-    val actions = new UserSystemActionsTest(api)
+    val api = new Api
+    val actions = new UserSystemActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = UserSystemRespData(
       List(UserSystemData(1, "test_app", isSelected = false)),
@@ -29,7 +42,7 @@ class UserSystemActionsSpec extends AsyncTestSpec {
     )
     val expectedResp = UserSystemResp(respData)
 
-    (api.listUserSystems _).expects(respData.user.id.get)
+    api.listUserSystems.expects(respData.user.id.get)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserUpdatedAction(respData.user))
     dispatch.expects(UserSystemFetchedAction(respData))
@@ -47,8 +60,8 @@ class UserSystemActionsSpec extends AsyncTestSpec {
   
   it should "dispatch UserSystemAddedAction and UserUpdatedAction when userSystemsAdd" in {
     //given
-    val api = mock[UserSystemApi]
-    val actions = new UserSystemActionsTest(api)
+    val api = new Api
+    val actions = new UserSystemActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = UserSystemRespData(
       List(UserSystemData(1, "test_app", isSelected = false)),
@@ -63,7 +76,7 @@ class UserSystemActionsSpec extends AsyncTestSpec {
     val data = UserSystemUpdateReq(Set(1, 2, 3), 4)
     val expectedResp = UserSystemResp(respData)
 
-    (api.addUserSystems _).expects(respData.user.id.get, data)
+    api.addUserSystems.expects(respData.user.id.get, data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserUpdatedAction(respData.user))
     dispatch.expects(UserSystemAddedAction(respData))
@@ -81,8 +94,8 @@ class UserSystemActionsSpec extends AsyncTestSpec {
   
   it should "dispatch UserSystemRemovedAction and UserUpdatedAction when userSystemsRemove" in {
     //given
-    val api = mock[UserSystemApi]
-    val actions = new UserSystemActionsTest(api)
+    val api = new Api
+    val actions = new UserSystemActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = UserSystemRespData(
       List(UserSystemData(1, "test_app", isSelected = false)),
@@ -97,7 +110,7 @@ class UserSystemActionsSpec extends AsyncTestSpec {
     val data = UserSystemUpdateReq(Set(1, 2, 3), 4)
     val expectedResp = UserSystemResp(respData)
 
-    (api.removeUserSystems _).expects(respData.user.id.get, data)
+    api.removeUserSystems.expects(respData.user.id.get, data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserUpdatedAction(respData.user))
     dispatch.expects(UserSystemRemovedAction(respData))

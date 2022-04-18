@@ -12,10 +12,23 @@ import scala.concurrent.Future
 
 class RolePermissionActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val listRolePermissions = mockFunction[Int, Future[RolePermissionResp]]
+    val addRolePermissions = mockFunction[Int, RolePermissionUpdateReq, Future[RolePermissionResp]]
+    val removeRolePermissions = mockFunction[Int, RolePermissionUpdateReq, Future[RolePermissionResp]]
+
+    val api = new MockRolePermissionApi(
+      listRolePermissionsMock = listRolePermissions,
+      addRolePermissionsMock = addRolePermissions,
+      removeRolePermissionsMock = removeRolePermissions
+    )
+  }
+
   it should "dispatch RolePermissionFetchedAction and RoleUpdatedAction when rolePermissionsFetch" in {
     //given
-    val api = mock[RolePermissionApi]
-    val actions = new RolePermissionActionsTest(api)
+    val api = new Api
+    val actions = new RolePermissionActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = RolePermissionRespData(
       List(RolePermissionData(1, None, isNode = true, "test permission node", isEnabled = false)),
@@ -23,7 +36,7 @@ class RolePermissionActionsSpec extends AsyncTestSpec {
     )
     val expectedResp = RolePermissionResp(respData)
 
-    (api.listRolePermissions _).expects(respData.role.id.get)
+    api.listRolePermissions.expects(respData.role.id.get)
       .returning(Future.successful(expectedResp))
     dispatch.expects(RoleUpdatedAction(respData.role))
     dispatch.expects(RolePermissionFetchedAction(respData))
@@ -41,8 +54,8 @@ class RolePermissionActionsSpec extends AsyncTestSpec {
   
   it should "dispatch RolePermissionAddedAction and RoleUpdatedAction when rolePermissionsAdd" in {
     //given
-    val api = mock[RolePermissionApi]
-    val actions = new RolePermissionActionsTest(api)
+    val api = new Api
+    val actions = new RolePermissionActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = RolePermissionRespData(
       List(RolePermissionData(1, None, isNode = true, "test permission node", isEnabled = false)),
@@ -51,7 +64,7 @@ class RolePermissionActionsSpec extends AsyncTestSpec {
     val data = RolePermissionUpdateReq(Set(1, 2, 3), 4)
     val expectedResp = RolePermissionResp(respData)
 
-    (api.addRolePermissions _).expects(respData.role.id.get, data)
+    api.addRolePermissions.expects(respData.role.id.get, data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(RoleUpdatedAction(respData.role))
     dispatch.expects(RolePermissionAddedAction(respData))
@@ -69,8 +82,8 @@ class RolePermissionActionsSpec extends AsyncTestSpec {
   
   it should "dispatch RolePermissionRemovedAction and RoleUpdatedAction when rolePermissionsRemove" in {
     //given
-    val api = mock[RolePermissionApi]
-    val actions = new RolePermissionActionsTest(api)
+    val api = new Api
+    val actions = new RolePermissionActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val respData = RolePermissionRespData(
       List(RolePermissionData(1, None, isNode = true, "test permission node", isEnabled = false)),
@@ -79,7 +92,7 @@ class RolePermissionActionsSpec extends AsyncTestSpec {
     val data = RolePermissionUpdateReq(Set(1, 2, 3), 4)
     val expectedResp = RolePermissionResp(respData)
 
-    (api.removeRolePermissions _).expects(respData.role.id.get, data)
+    api.removeRolePermissions.expects(respData.role.id.get, data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(RoleUpdatedAction(respData.role))
     dispatch.expects(RolePermissionRemovedAction(respData))

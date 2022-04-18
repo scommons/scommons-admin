@@ -15,10 +15,23 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
 
   RolePanel.inputPopupComp = mockUiComponent("InputPopup")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val roleListFetch = mockFunction[Dispatch, RoleListFetchAction]
+    val roleCreate = mockFunction[Dispatch, RoleData, RoleCreateAction]
+    val roleUpdate = mockFunction[Dispatch, RoleData, RoleUpdateAction]
+
+    val actions = new MockRoleActions(
+      roleListFetchMock = roleListFetch,
+      roleCreateMock = roleCreate,
+      roleUpdateMock = roleUpdate
+    )
+  }
+
   it should "dispatch RoleCreateAction when onOk in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RoleActions]
+    val actions = new Actions
     val state = RoleState(
       rolesBySystemId = List(
         RoleData(Some(1), 3, "test role 1"),
@@ -26,14 +39,14 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
       ).groupBy(_.systemId),
       showCreatePopup = true
     )
-    val props = RolePanelProps(dispatch, actions, state, Some(2), None)
+    val props = RolePanelProps(dispatch, actions.actions, state, Some(2), None)
     val comp = createTestRenderer(<(RolePanel())(^.wrapped := props)()).root
     val createPopupProps = findComponentProps(comp, inputPopupComp)
     val data = RoleData(None, 2, "new role")
     val action = RoleCreateAction(
       FutureTask("Creating", Future.successful(RoleResp(data.copy(id = Some(1)))))
     )
-    (actions.roleCreate _).expects(dispatch, data)
+    actions.roleCreate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -46,7 +59,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RoleCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RoleActions]
+    val actions = new MockRoleActions
     val state = RoleState(
       rolesBySystemId = List(
         RoleData(Some(1), 3, "test role 1"),
@@ -68,7 +81,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RoleUpdateAction when onOk in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RoleActions]
+    val actions = new Actions
     val state = RoleState(
       rolesBySystemId = List(
         RoleData(Some(1), 3, "test role 1"),
@@ -76,14 +89,14 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
       ).groupBy(_.systemId),
       showEditPopup = true
     )
-    val props = RolePanelProps(dispatch, actions, state, Some(3), Some(1))
+    val props = RolePanelProps(dispatch, actions.actions, state, Some(3), Some(1))
     val comp = createTestRenderer(<(RolePanel())(^.wrapped := props)()).root
     val editPopupProps = findComponentProps(comp, inputPopupComp)
     val data = RoleData(Some(1), 3, "updated role")
     val action = RoleUpdateAction(
       FutureTask("Updating", Future.successful(RoleResp(data)))
     )
-    (actions.roleUpdate _).expects(dispatch, data)
+    actions.roleUpdate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -96,7 +109,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RoleUpdateRequestAction(false) when onCancel in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RoleActions]
+    val actions = new MockRoleActions
     val state = RoleState(
       rolesBySystemId = List(
         RoleData(Some(1), 3, "test role 1"),
@@ -118,13 +131,13 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch RoleListFetchAction if empty rolesBySystemId when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RoleActions]
+    val actions = new Actions
     val state = RoleState()
-    val props = RolePanelProps(dispatch, actions, state, None, None)
+    val props = RolePanelProps(dispatch, actions.actions, state, None, None)
     val action = RoleListFetchAction(
       FutureTask("Fetching", Future.successful(RoleListResp(Nil)))
     )
-    (actions.roleListFetch _).expects(dispatch)
+    actions.roleListFetch.expects(dispatch)
       .returning(action)
 
     //then
@@ -140,7 +153,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch RoleListFetchAction if non empty rolesBySystemId when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[RoleActions]
+    val actions = new MockRoleActions
     val state = RoleState(List(
       RoleData(Some(1), 3, "test role 1"),
       RoleData(Some(2), 3, "test role 2")
@@ -160,7 +173,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[RoleActions]
+    val actions = new MockRoleActions
     val state = RoleState(List(
       RoleData(Some(1), 3, "test role 1"),
       RoleData(Some(2), 3, "test role 2")
@@ -178,7 +191,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show create popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[RoleActions]
+    val actions = new MockRoleActions
     val state = RoleState(
       rolesBySystemId = List(
         RoleData(Some(1), 3, "test role 1"),
@@ -199,7 +212,7 @@ class RolePanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show edit popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[RoleActions]
+    val actions = new MockRoleActions
     val state = RoleState(
       rolesBySystemId = List(
         RoleData(Some(1), 3, "test role 1"),

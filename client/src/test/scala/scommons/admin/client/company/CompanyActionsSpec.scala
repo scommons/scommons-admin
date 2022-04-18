@@ -10,10 +10,25 @@ import scala.concurrent.Future
 
 class CompanyActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val getCompanyById = mockFunction[Int, Future[CompanyResp]]
+    val listCompanies = mockFunction[Option[Int], Option[Int], Option[String], Future[CompanyListResp]]
+    val createCompany = mockFunction[CompanyData, Future[CompanyResp]]
+    val updateCompany = mockFunction[CompanyData, Future[CompanyResp]]
+
+    val api = new MockCompanyApi(
+      getCompanyByIdMock = getCompanyById,
+      listCompaniesMock = listCompanies,
+      createCompanyMock = createCompany,
+      updateCompanyMock = updateCompany
+    )
+  }
+
   it should "dispatch CompanyListFetchedAction when companyListFetch" in {
     //given
-    val api = mock[CompanyApi]
-    val actions = new CompanyActionsTest(api)
+    val api = new Api
+    val actions = new CompanyActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val offset = Some(12)
     val symbols = Some("test")
@@ -21,7 +36,7 @@ class CompanyActionsSpec extends AsyncTestSpec {
     val totalCount = Some(12345)
     val expectedResp = CompanyListResp(dataList, totalCount)
 
-    (api.listCompanies _).expects(offset, Some(CompanyActions.listLimit), symbols)
+    api.listCompanies.expects(offset, Some(CompanyActions.listLimit), symbols)
       .returning(Future.successful(expectedResp))
     dispatch.expects(CompanyListFetchedAction(dataList, totalCount))
     
@@ -39,14 +54,14 @@ class CompanyActionsSpec extends AsyncTestSpec {
   
   it should "dispatch CompanyCreatedAction when companyCreate" in {
     //given
-    val api = mock[CompanyApi]
-    val actions = new CompanyActionsTest(api)
+    val api = new Api
+    val actions = new CompanyActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val name = "test name"
     val data = CompanyData(Some(1), name)
     val expectedResp = CompanyResp(data)
 
-    (api.createCompany _).expects(CompanyData(None, name))
+    api.createCompany.expects(CompanyData(None, name))
       .returning(Future.successful(expectedResp))
     dispatch.expects(CompanyCreatedAction(data))
     
@@ -63,14 +78,14 @@ class CompanyActionsSpec extends AsyncTestSpec {
   
   it should "dispatch CompanyUpdatedAction when companyUpdate" in {
     //given
-    val api = mock[CompanyApi]
-    val actions = new CompanyActionsTest(api)
+    val api = new Api
+    val actions = new CompanyActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = CompanyData(Some(1), "test name")
     val respData = CompanyData(Some(1), "updated test name")
     val expectedResp = CompanyResp(respData)
 
-    (api.updateCompany _).expects(data)
+    api.updateCompany.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(CompanyUpdatedAction(respData))
     

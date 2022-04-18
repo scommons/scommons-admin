@@ -18,19 +18,32 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   CompanyPanel.companyTablePanel = mockUiComponent("CompanyTablePanel")
   CompanyPanel.inputPopup = mockUiComponent("InputPopup")
 
+  //noinspection TypeAnnotation
+  class Actions {
+    val companyListFetch = mockFunction[Dispatch, Option[Int], Option[String], CompanyListFetchAction]
+    val companyCreate = mockFunction[Dispatch, String, CompanyCreateAction]
+    val companyUpdate = mockFunction[Dispatch, CompanyData, CompanyUpdateAction]
+
+    val actions = new MockCompanyActions(
+      companyListFetchMock = companyListFetch,
+      companyCreateMock = companyCreate,
+      companyUpdateMock = companyUpdate
+    )
+  }
+
   it should "dispatch CompanyCreateRequestAction when ADD command" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState()
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val offset = None
     val symbols = None
     val action = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       offset
     )
-    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(action)
+    actions.companyListFetch.expects(dispatch, offset, symbols).returning(action)
     dispatch.expects(action)
     
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
@@ -46,16 +59,16 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyUpdateRequestAction when EDIT command" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState()
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val offset = None
     val symbols = None
     val action = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       offset
     )
-    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(action)
+    actions.companyListFetch.expects(dispatch, offset, symbols).returning(action)
     dispatch.expects(action)
 
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
@@ -71,16 +84,16 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyCreateAction when onOk in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(showCreatePopup = true)
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val offset = None
     val symbols = None
     val fetchAction = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       offset
     )
-    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(fetchAction)
+    actions.companyListFetch.expects(dispatch, offset, symbols).returning(fetchAction)
     dispatch.expects(fetchAction)
 
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
@@ -89,7 +102,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
     val action = CompanyCreateAction(
       FutureTask("Creating", Future.successful(CompanyResp(CompanyData(Some(1), text))))
     )
-    (actions.companyCreate _).expects(dispatch, text).returning(action)
+    actions.companyCreate.expects(dispatch, text).returning(action)
 
     //then
     dispatch.expects(action)
@@ -101,16 +114,16 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyCreateRequestAction(false) when onCancel in create popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(showCreatePopup = true)
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val offset = None
     val symbols = None
     val fetchAction = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       offset
     )
-    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(fetchAction)
+    actions.companyListFetch.expects(dispatch, offset, symbols).returning(fetchAction)
     dispatch.expects(fetchAction)
 
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
@@ -126,7 +139,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyUpdateAction when onOk in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(
       dataList = List(
         CompanyData(Some(1), "test comp 1"),
@@ -135,7 +148,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
       selectedId = Some(1),
       showEditPopup = true
     )
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
     val editPopupProps = findComponentProps(comp, inputPopup)
     val text = "updated comp"
@@ -143,7 +156,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
     val action = CompanyUpdateAction(
       FutureTask("Updating", Future.successful(CompanyResp(data)))
     )
-    (actions.companyUpdate _).expects(dispatch, data)
+    actions.companyUpdate.expects(dispatch, data)
       .returning(action)
 
     //then
@@ -156,7 +169,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyUpdateRequestAction(false) when onCancel in edit popup" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(
       dataList = List(
         CompanyData(Some(1), "test comp 1"),
@@ -165,7 +178,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
       selectedId = Some(1),
       showEditPopup = true
     )
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
     val editPopupProps = findComponentProps(comp, inputPopup)
 
@@ -179,16 +192,16 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanySelectedAction when select row" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState()
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val offset = None
     val symbols = None
     val fetchAction = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       offset
     )
-    (actions.companyListFetch _).expects(dispatch, offset, symbols).returning(fetchAction)
+    actions.companyListFetch.expects(dispatch, offset, symbols).returning(fetchAction)
     dispatch.expects(fetchAction)
 
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
@@ -205,14 +218,14 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyListFetchAction when select page" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState()
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val fetchAction = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       None
     )
-    (actions.companyListFetch _).expects(dispatch, None, None).returning(fetchAction)
+    actions.companyListFetch.expects(dispatch, None, None).returning(fetchAction)
     dispatch.expects(fetchAction)
 
     val comp = createTestRenderer(<(CompanyPanel())(^.wrapped := props)()).root
@@ -223,7 +236,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       offset
     )
-    (actions.companyListFetch _).expects(dispatch, offset, symbols)
+    actions.companyListFetch.expects(dispatch, offset, symbols)
       .returning(action)
 
     //then
@@ -236,15 +249,15 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "dispatch CompanyListFetchAction if empty dataList when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState()
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val comp = <(CompanyPanel())(^.wrapped := props)()
     val action = CompanyListFetchAction(
       FutureTask("Fetching", Future.successful(CompanyListResp(Nil, None))),
       None
     )
-    (actions.companyListFetch _).expects(dispatch, None, None)
+    actions.companyListFetch.expects(dispatch, None, None)
       .returning(action)
 
     //then
@@ -260,12 +273,12 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "not dispatch CompanyListFetchAction if non empty dataList when mount" in {
     //given
     val dispatch = mockFunction[Any, Any]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(List(
       CompanyData(Some(1), "Test Company"),
       CompanyData(Some(2), "Test Company 2")
     ))
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val comp = <(CompanyPanel())(^.wrapped := props)()
 
     //then
@@ -281,12 +294,12 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(List(
       CompanyData(Some(1), "test comp 1"),
       CompanyData(Some(2), "test comp 2")
     ))
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val component = <(CompanyPanel())(^.wrapped := props)()
     
     //when
@@ -299,7 +312,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show create popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(
       dataList = List(
         CompanyData(Some(1), "test comp 1"),
@@ -307,7 +320,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
       ),
       showCreatePopup = true
     )
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val component = <(CompanyPanel())(^.wrapped := props)()
     
     //when
@@ -320,7 +333,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
   it should "render component and show edit popup" in {
     //given
     val dispatch = mock[Dispatch]
-    val actions = mock[CompanyActions]
+    val actions = new Actions
     val state = CompanyState(
       dataList = List(
         CompanyData(Some(1), "test comp 1"),
@@ -329,7 +342,7 @@ class CompanyPanelSpec extends TestSpec with TestRendererUtils {
       selectedId = Some(1),
       showEditPopup = true
     )
-    val props = CompanyPanelProps(dispatch, actions, state)
+    val props = CompanyPanelProps(dispatch, actions.actions, state)
     val component = <(CompanyPanel())(^.wrapped := props)()
     
     //when

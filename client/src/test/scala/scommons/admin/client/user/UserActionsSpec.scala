@@ -10,10 +10,25 @@ import scala.concurrent.Future
 
 class UserActionsSpec extends AsyncTestSpec {
 
+  //noinspection TypeAnnotation
+  class Api {
+    val getUserById = mockFunction[Int, Future[UserDetailsResp]]
+    val listUsers = mockFunction[Option[Int], Option[Int], Option[String], Future[UserListResp]]
+    val createUser = mockFunction[UserDetailsData, Future[UserDetailsResp]]
+    val updateUser = mockFunction[UserDetailsData, Future[UserDetailsResp]]
+
+    val api = new MockUserApi(
+      getUserByIdMock = getUserById,
+      listUsersMock = listUsers,
+      createUserMock = createUser,
+      updateUserMock = updateUser
+    )
+  }
+
   it should "dispatch UserListFetchedAction when userListFetch" in {
     //given
-    val api = mock[UserApi]
-    val actions = new UserActionsTest(api)
+    val api = new Api
+    val actions = new UserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val offset = Some(12)
     val symbols = Some("test")
@@ -21,7 +36,7 @@ class UserActionsSpec extends AsyncTestSpec {
     val totalCount = Some(12345)
     val expectedResp = UserListResp(dataList, totalCount)
 
-    (api.listUsers _).expects(offset, Some(UserActions.listLimit), symbols)
+    api.listUsers.expects(offset, Some(UserActions.listLimit), symbols)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserListFetchedAction(dataList, totalCount))
     
@@ -39,8 +54,8 @@ class UserActionsSpec extends AsyncTestSpec {
   
   it should "dispatch UserFetchedAction when userFetch" in {
     //given
-    val api = mock[UserApi]
-    val actions = new UserActionsTest(api)
+    val api = new Api
+    val actions = new UserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val id = 1
     val respData = UserDetailsData(
@@ -60,7 +75,7 @@ class UserActionsSpec extends AsyncTestSpec {
     )
     val expectedResp = UserDetailsResp(respData)
 
-    (api.getUserById _).expects(id)
+    api.getUserById.expects(id)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserFetchedAction(respData))
     
@@ -77,8 +92,8 @@ class UserActionsSpec extends AsyncTestSpec {
   
   it should "dispatch UserCreatedAction when userCreate" in {
     //given
-    val api = mock[UserApi]
-    val actions = new UserActionsTest(api)
+    val api = new Api
+    val actions = new UserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = UserDetailsData(
       user = UserData(
@@ -98,7 +113,7 @@ class UserActionsSpec extends AsyncTestSpec {
     val respData = data.copy(user = data.user.copy(active = false))
     val expectedResp = UserDetailsResp(respData)
 
-    (api.createUser _).expects(data)
+    api.createUser.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserCreatedAction(expectedResp.data.get))
     
@@ -115,8 +130,8 @@ class UserActionsSpec extends AsyncTestSpec {
   
   it should "dispatch UserDetailsUpdatedAction when userUpdate" in {
     //given
-    val api = mock[UserApi]
-    val actions = new UserActionsTest(api)
+    val api = new Api
+    val actions = new UserActionsTest(api.api)
     val dispatch = mockFunction[Any, Any]
     val data = UserDetailsData(
       user = UserData(
@@ -136,7 +151,7 @@ class UserActionsSpec extends AsyncTestSpec {
     val respData = data.copy(user = data.user.copy(active = false))
     val expectedResp = UserDetailsResp(respData)
 
-    (api.updateUser _).expects(data)
+    api.updateUser.expects(data)
       .returning(Future.successful(expectedResp))
     dispatch.expects(UserDetailsUpdatedAction(respData))
     
