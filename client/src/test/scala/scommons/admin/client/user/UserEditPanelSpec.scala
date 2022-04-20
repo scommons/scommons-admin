@@ -283,116 +283,106 @@ class UserEditPanelSpec extends TestSpec with TestRendererUtils {
   private def assertUserEditPanel(result: TestInstance, props: UserEditPanelProps): Unit = {
     val data = props.initialData
 
-    assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
-      case List(
-      loginComp,
-      passwordComp,
-      companyComp,
-      firstNameComp,
-      lastNameComp,
-      emailComp,
-      phoneComp,
-      noteComp
-      ) =>
-        assertNativeComponent(loginComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Login"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, textFieldComp) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe data.user.login
-                requestFocus shouldBe props.requestFocus
-                requestSelect shouldBe props.requestFocus
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(passwordComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Password"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, passwordFieldComp) {
-              case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                password shouldBe data.user.password
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(companyComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Company"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, searchSelectComp) {
-              case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
-                selected shouldBe {
-                  if (data.user.company.id == -1) None
-                  else Some(SelectData(data.user.company.id.toString, data.user.company.name))
-                }
-                isClearable shouldBe false
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*First Name"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, textFieldComp) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe data.profile.firstName
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*Last Name"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, textFieldComp) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe data.profile.lastName
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(emailComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("*E-mail"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, textFieldComp) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe data.profile.email
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), inside(_) { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("Phone"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), inside(_) { case List(fieldComp) =>
-            assertTestComponent(fieldComp, textFieldComp) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe data.profile.phone.getOrElse("")
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe false
-            }
-          })
-        })
-        assertNativeComponent(noteComp, <.p()(<.small()("(*) Indicates required fields")))
-    })
+    assertNativeComponent(result, <.div(^.className := "form-horizontal")(
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*Login"),
+        <.div(^.className := "controls")(
+          <(textFieldComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe data.user.login
+              requestFocus shouldBe props.requestFocus
+              requestSelect shouldBe props.requestFocus
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*Password"),
+        <.div(^.className := "controls")(
+          <(passwordFieldComp())(^.assertWrapped(inside(_) {
+            case PasswordFieldProps(password, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              password shouldBe data.user.password
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*Company"),
+        <.div(^.className := "controls")(
+          <(searchSelectComp())(^.assertWrapped(inside(_) {
+            case SearchSelectProps(selected, _, _, isClearable, readOnly) =>
+              selected shouldBe {
+                if (data.user.company.id == -1) None
+                else Some(SelectData(data.user.company.id.toString, data.user.company.name))
+              }
+              isClearable shouldBe false
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*First Name"),
+        <.div(^.className := "controls")(
+          <(textFieldComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe data.profile.firstName
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*Last Name"),
+        <.div(^.className := "controls")(
+          <(textFieldComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe data.profile.lastName
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("*E-mail"),
+        <.div(^.className := "controls")(
+          <(textFieldComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe data.profile.email
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("Phone"),
+        <.div(^.className := "controls")(
+          <(textFieldComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe data.profile.phone.getOrElse("")
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe false
+          }))()
+        )
+      ),
+      <.p()(<.small()("(*) Indicates required fields"))
+    ))
   }
 }

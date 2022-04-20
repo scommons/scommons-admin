@@ -26,13 +26,13 @@ object AdminServer extends AdminModule with CommonPlayModule {
       .settings(
         scalaJSProjects := Seq(AdminClient.definition),
 
-        mainClass in Compile := Some("play.core.server.ProdServerStart"),
+        Compile / mainClass := Some("play.core.server.ProdServerStart"),
         dockerExposedPorts := port,
 
-        //dockerImageCreationTask := (publishLocal in Docker).value,
+        //dockerImageCreationTask := (Docker / publishLocal).value,
         dockerBaseImage := "openjdk:9-slim",
-        mappings in (Compile, packageDoc) := Seq(),
-        publishArtifact in (Compile, packageDoc) := false,
+        Compile / packageDoc / mappings := Seq(),
+        Compile / packageDoc / publishArtifact := false,
 
         dockerCommands := {
           val commands = dockerCommands.value

@@ -92,7 +92,7 @@ class UserDetailsPanelSpec extends TestSpec with TestRendererUtils {
       }
     }
 
-    assertTestComponent(result, tabPanelComp) {
+    assertTestComponent(result, tabPanelComp)(inside(_) {
       case TabPanelProps(List(systemsItem, profileItem), selectedIndex, _, direction) =>
         selectedIndex shouldBe props.selectedTab.map {
           case UserDetailsTab.`apps` => 0
@@ -115,6 +115,6 @@ class UserDetailsPanelSpec extends TestSpec with TestRendererUtils {
 
           assertUserProfilePanel(render.get.apply(null), props.profile)
         }
-    }
+    })
   }
 }

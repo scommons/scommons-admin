@@ -8,6 +8,11 @@ case class UserProfilePanelProps(data: UserProfileData)
 
 object UserProfilePanel extends FunctionComponent[UserProfilePanelProps] {
 
+  private[user] var firstNameComp: UiComponent[TextFieldProps] = TextField
+  private[user] var lastNameComp: UiComponent[TextFieldProps] = TextField
+  private[user] var emailComp: UiComponent[TextFieldProps] = TextField
+  private[user] var phoneComp: UiComponent[TextFieldProps] = TextField
+
   override protected def create(): ReactClass = {
     ReactMemo[Props](super.create(), { (prevProps, nextProps) =>
       prevProps.wrapped == nextProps.wrapped
@@ -22,7 +27,7 @@ object UserProfilePanel extends FunctionComponent[UserProfilePanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("First Name"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(firstNameComp())(^.wrapped := TextFieldProps(
             text = props.data.firstName,
             onChange = onChange,
             readOnly = true
@@ -32,7 +37,7 @@ object UserProfilePanel extends FunctionComponent[UserProfilePanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("Last Name"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(lastNameComp())(^.wrapped := TextFieldProps(
             text = props.data.lastName,
             onChange = onChange,
             readOnly = true
@@ -42,7 +47,7 @@ object UserProfilePanel extends FunctionComponent[UserProfilePanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("E-mail"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(emailComp())(^.wrapped := TextFieldProps(
             text = props.data.email,
             onChange = onChange,
             readOnly = true
@@ -52,7 +57,7 @@ object UserProfilePanel extends FunctionComponent[UserProfilePanelProps] {
       <.div(^.className := "control-group")(
         <.label(^.className := "control-label")("Phone"),
         <.div(^.className := "controls")(
-          <(TextField())(^.wrapped := TextFieldProps(
+          <(phoneComp())(^.wrapped := TextFieldProps(
             text = props.data.phone.getOrElse(""),
             onChange = onChange,
             readOnly = true

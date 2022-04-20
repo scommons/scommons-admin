@@ -3,6 +3,7 @@ package common
 import com.typesafe.sbt.digest.Import.digest
 import com.typesafe.sbt.gzip.Import.gzip
 import com.typesafe.sbt.web.SbtWeb.autoImport._
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import play.sbt.routes.RoutesKeys
 import play.sbt.{PlayImport, PlayLayoutPlugin, PlayScala}
 import sbt._
@@ -29,10 +30,10 @@ trait CommonPlayModule extends CommonModule {
         RoutesKeys.routesImport -= "controllers.Assets.Asset", //remove unused import warning from routes file
         coverageExcludedPackages := "<empty>;Reverse.*;router.*",
 
-        pipelineStages in Assets := Seq(scalaJSPipeline),
+        Assets / pipelineStages := Seq(scalaJSPipeline),
         pipelineStages := Seq(digest, gzip),
 
-        devCommands in scalaJSPipeline ++= Seq("test", "testOnly")
+        Compile / fullOptJS / scalaJSLinkerConfig ~= (_.withSourceMap(false))
       )
   }
 

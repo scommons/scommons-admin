@@ -2,7 +2,9 @@ package scommons.admin.client.user
 
 import scala.collection.mutable
 
-class UserDetailsTab private(val id: String) extends AnyVal {
+sealed abstract class UserDetailsTab private(val id: String) {
+
+  UserDetailsTab.values += id -> this
   
   override def toString: String = id
 }
@@ -13,12 +15,6 @@ object UserDetailsTab {
   
   def of(id: String): Option[UserDetailsTab] = values.get(id)
 
-  def apply(id: String): UserDetailsTab = {
-    val tab = new UserDetailsTab(id)
-    UserDetailsTab.values += id -> tab
-    tab
-  }
-  
-  val apps = UserDetailsTab("apps")
-  val profile = UserDetailsTab("profile")
+  case object apps extends UserDetailsTab("apps")
+  case object profile extends UserDetailsTab("profile")
 }

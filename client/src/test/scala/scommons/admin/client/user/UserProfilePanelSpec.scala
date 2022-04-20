@@ -1,12 +1,16 @@
 package scommons.admin.client.user
 
 import scommons.admin.client.api.user._
-import scommons.client.ui.{TextField, TextFieldProps}
-import scommons.react.test.TestSpec
-import scommons.react.test.raw.TestInstance
-import scommons.react.test.util.TestRendererUtils
+import scommons.admin.client.user.UserProfilePanel._
+import scommons.client.ui.TextFieldProps
+import scommons.react.test._
 
 class UserProfilePanelSpec extends TestSpec with TestRendererUtils {
+
+  UserProfilePanel.firstNameComp = mockUiComponent("firstNameComp")
+  UserProfilePanel.lastNameComp = mockUiComponent("lastNameComp")
+  UserProfilePanel.emailComp = mockUiComponent("emailComp")
+  UserProfilePanel.phoneComp = mockUiComponent("phoneComp")
   
   it should "render component" in {
     //given
@@ -25,69 +29,63 @@ class UserProfilePanelSpec extends TestSpec with TestRendererUtils {
   }
 
   private def assertUserProfilePanel(result: TestInstance, props: UserProfilePanelProps): Unit = {
-    assertNativeComponent(result, <.div(^.className := "form-horizontal")(), {
-      case List(
-      firstNameComp,
-      lastNameComp,
-      emailComp,
-      phoneComp
-      ) =>
-        assertNativeComponent(firstNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("First Name"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertTestComponent(fieldComp, TextField) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe props.data.firstName
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe true
-            }
-          })
-        })
-        assertNativeComponent(lastNameComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("Last Name"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertTestComponent(fieldComp, TextField) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe props.data.lastName
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe true
-            }
-          })
-        })
-        assertNativeComponent(emailComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("E-mail"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertTestComponent(fieldComp, TextField) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe props.data.email
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe true
-            }
-          })
-        })
-        assertNativeComponent(phoneComp, <.div(^.className := "control-group")(), { case List(labelComp, controls) =>
-          assertNativeComponent(labelComp, <.label(^.className := "control-label")("Phone"))
-          assertNativeComponent(controls, <.div(^.className := "controls")(), { case List(fieldComp) =>
-            assertTestComponent(fieldComp, TextField) {
-              case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
-                text shouldBe props.data.phone.getOrElse("")
-                requestFocus shouldBe false
-                requestSelect shouldBe false
-                className shouldBe None
-                placeholder shouldBe None
-                readOnly shouldBe true
-            }
-          })
-        })
-    })
+    assertNativeComponent(result, <.div(^.className := "form-horizontal")(
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("First Name"),
+        <.div(^.className := "controls")(
+          <(firstNameComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe props.data.firstName
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe true
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("Last Name"),
+        <.div(^.className := "controls")(
+          <(lastNameComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe props.data.lastName
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe true
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("E-mail"),
+        <.div(^.className := "controls")(
+          <(emailComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe props.data.email
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe true
+          }))()
+        )
+      ),
+      <.div(^.className := "control-group")(
+        <.label(^.className := "control-label")("Phone"),
+        <.div(^.className := "controls")(
+          <(phoneComp())(^.assertWrapped(inside(_) {
+            case TextFieldProps(text, _, requestFocus, requestSelect, className, placeholder, _, readOnly) =>
+              text shouldBe props.data.phone.getOrElse("")
+              requestFocus shouldBe false
+              requestSelect shouldBe false
+              className shouldBe None
+              placeholder shouldBe None
+              readOnly shouldBe true
+          }))()
+        )
+      )
+    ))
   }
 }
