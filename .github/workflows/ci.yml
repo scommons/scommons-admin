@@ -54,7 +54,10 @@ jobs:
             ${{ runner.os }}-node_modules-cache-v2-
 
       - name: Run tests
-        run: sbt coverage test it:test && sbt coverageAggregate coveralls
+        run: |
+          sbt ";project scommons-admin-server ;set test in Test := {} ;project scommons-admin" coverage test
+          sbt "project scommons-admin-server" coverage test it:test
+          sbt coverageAggregate coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
@@ -68,14 +71,14 @@ jobs:
         if: ${{ !github.event.pull_request && env.TAG_NAME == '' }}
 
       - name: Publish RELEASE
-        run:
-          VERSION="$(echo "$TAG_NAME" | cut -d'v' -f 2)" &&
-          echo "Publish a release version=$VERSION for tag $TAG_NAME" &&
-          version=$VERSION sbt clean "project scommons-admin-server" docker:publishLocal &&
-          docker tag scommons-admin-server:$VERSION scommons/admin:$VERSION &&
-          docker tag scommons/admin:$VERSION scommons/admin:latest &&
-          docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN &&
-          docker push scommons/admin:$VERSION &&
+        run: |
+          VERSION="$(echo "$TAG_NAME" | cut -d'v' -f 2)"
+          echo "Publish a release version=$VERSION for tag $TAG_NAME"
+          version=$VERSION sbt clean "project scommons-admin-server" docker:publishLocal
+          docker tag scommons-admin-server:$VERSION scommons/admin:$VERSION
+          docker tag scommons/admin:$VERSION scommons/admin:latest
+          docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
+          docker push scommons/admin:$VERSION
           docker push scommons/admin:latest
         if: ${{ env.TAG_NAME != '' }}
         env:
