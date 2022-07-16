@@ -68,11 +68,9 @@ class CompanyApiImpl(service: CompanyService)(implicit ec: ExecutionContext)
     getById(data).flatMap { current =>
       if (current.isEmpty && update) Future.successful(CompanyResp(CompanyNotFound))
       else {
-        Future.sequence(List(
-          getByName(current, entity)
-        )).flatMap {
-          case List(Some(_)) => Future.successful(CompanyResp(CompanyAlreadyExists))
-          case List(None) => onSuccess(entity)
+        getByName(current, entity).flatMap {
+          case Some(_) => Future.successful(CompanyResp(CompanyAlreadyExists))
+          case None => onSuccess(entity)
         }
       }
     }

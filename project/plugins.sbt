@@ -1,11 +1,9 @@
 //resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-//addSbtPlugin(("org.scommons.sbt" % "sbt-scommons-plugin" % "0.8.0-SNAPSHOT").changing())
-addSbtPlugin("org.scommons.sbt" % "sbt-scommons-plugin" % "0.8.0")
+addSbtPlugin(("org.scommons.sbt" % "sbt-scommons-plugin" % "0.9.0-SNAPSHOT").changing())
+//addSbtPlugin("org.scommons.sbt" % "sbt-scommons-plugin" % "0.8.0")
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.5.1")
-addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.20.0")
 addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.20.0")
 
 // play plugin version should be the same as in `common.Libs.playVer` !!!

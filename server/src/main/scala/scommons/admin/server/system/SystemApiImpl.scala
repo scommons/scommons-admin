@@ -65,11 +65,9 @@ class SystemApiImpl(service: SystemService)(implicit ec: ExecutionContext)
     getById(data).flatMap { current =>
       if (current.isEmpty && update) Future.successful(SystemResp(SystemNotFound))
       else {
-        Future.sequence(List(
-          getByName(current, entity)
-        )).flatMap {
-          case List(Some(_)) => Future.successful(SystemResp(SystemAlreadyExists))
-          case List(None) => current match {
+        getByName(current, entity).flatMap {
+          case Some(_) => Future.successful(SystemResp(SystemAlreadyExists))
+          case None => current match {
             case None => onSuccess(entity)
             case Some(curr) => onSuccess(entity.copy(
               //DON'T UPDATE READ-ONLY FIELDS !!!

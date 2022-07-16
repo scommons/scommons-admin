@@ -10,7 +10,7 @@ class SwaggerControllerSpec extends BaseControllersSpec {
     val request = wsUrl(s"$baseUrl/api-docs")
 
     //when
-    val response = request.get.futureValue
+    val response = request.get().futureValue
 
     //then
     response.status shouldBe 200
@@ -28,7 +28,7 @@ class SwaggerControllerSpec extends BaseControllersSpec {
     val request = wsUrl(s"$baseUrl/swagger.html")
 
     //when
-    val response = request.get.futureValue
+    val response = request.get().futureValue
 
     //then
     response.status shouldBe 200
@@ -41,7 +41,7 @@ class SwaggerControllerSpec extends BaseControllersSpec {
     val request = wsUrl(s"$baseUrl/assets/lib/swagger-ui/index.html")
 
     //when
-    val response = request.get.futureValue
+    val response = request.get().futureValue
 
     //then
     response.status shouldBe 200
