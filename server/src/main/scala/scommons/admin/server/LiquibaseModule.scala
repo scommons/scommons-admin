@@ -206,7 +206,7 @@ class PlayLiquibase @Inject()(environment: Environment, config: Configuration, i
   /** Get the db parameters from the configuration if only one is defined */
   protected def singleJdbcDatabaseConfig: Option[DatabaseConfig]  = {
     Try(injector.instanceOf(classOf[DBApi])).toOption.flatMap { dbApi =>
-      val dbs = dbApi.databases
+      val dbs = dbApi.databases()
       if (dbs.length == 1) {
         dbs.head match {
           case db: DefaultDatabase => Some(db.databaseConfig)

@@ -17,18 +17,18 @@ GET     /scommons-admin/swagger.html                scommons.play.controllers.Co
 
 GET     /scommons-admin/ui/companies/:id            scommons.admin.server.company.CompanyController.getById(id: Int)
 GET     /scommons-admin/ui/companies                scommons.admin.server.company.CompanyController.list(offset: Option[Int], limit: Option[Int], symbols: Option[String])
-POST    /scommons-admin/ui/companies                scommons.admin.server.company.CompanyController.create
-PUT     /scommons-admin/ui/companies                scommons.admin.server.company.CompanyController.update
+POST    /scommons-admin/ui/companies                scommons.admin.server.company.CompanyController.create()
+PUT     /scommons-admin/ui/companies                scommons.admin.server.company.CompanyController.update()
 
 GET     /scommons-admin/ui/systems/groups/:id       scommons.admin.server.system.group.SystemGroupController.getById(id: Int)
-GET     /scommons-admin/ui/systems/groups           scommons.admin.server.system.group.SystemGroupController.list
-POST    /scommons-admin/ui/systems/groups           scommons.admin.server.system.group.SystemGroupController.create
-PUT     /scommons-admin/ui/systems/groups           scommons.admin.server.system.group.SystemGroupController.update
+GET     /scommons-admin/ui/systems/groups           scommons.admin.server.system.group.SystemGroupController.list()
+POST    /scommons-admin/ui/systems/groups           scommons.admin.server.system.group.SystemGroupController.create()
+PUT     /scommons-admin/ui/systems/groups           scommons.admin.server.system.group.SystemGroupController.update()
 
 GET     /scommons-admin/ui/systems/:id              scommons.admin.server.system.SystemController.getById(id: Int)
-GET     /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.list
-POST    /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.create
-PUT     /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.update
+GET     /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.list()
+POST    /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.create()
+PUT     /scommons-admin/ui/systems                  scommons.admin.server.system.SystemController.update()
 
 GET     /scommons-admin/ui/systems/:id/users              scommons.admin.server.system.user.SystemUserController.listUsers(id: Int, offset: Option[Int], limit: Option[Int], symbols: Option[String])
 GET     /scommons-admin/ui/systems/:id/users/:uid/roles   scommons.admin.server.system.user.SystemUserController.listRoles(id: Int, uid: Int)
@@ -36,9 +36,9 @@ POST    /scommons-admin/ui/systems/:id/users/:uid/roles   scommons.admin.server.
 PUT     /scommons-admin/ui/systems/:id/users/:uid/roles   scommons.admin.server.system.user.SystemUserController.removeRoles(id: Int, uid: Int)
 
 GET     /scommons-admin/ui/roles/:id                scommons.admin.server.role.RoleController.getById(id: Int)
-GET     /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.list
-POST    /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.create
-PUT     /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.update
+GET     /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.list()
+POST    /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.create()
+PUT     /scommons-admin/ui/roles                    scommons.admin.server.role.RoleController.update()
 
 GET     /scommons-admin/ui/roles/:id/permissions    scommons.admin.server.role.permission.RolePermissionController.list(id: Int)
 POST    /scommons-admin/ui/roles/:id/permissions    scommons.admin.server.role.permission.RolePermissionController.add(id: Int)
@@ -46,8 +46,8 @@ PUT     /scommons-admin/ui/roles/:id/permissions    scommons.admin.server.role.p
 
 GET     /scommons-admin/ui/users/:id                scommons.admin.server.user.UserController.getById(id: Int)
 GET     /scommons-admin/ui/users                    scommons.admin.server.user.UserController.list(offset: Option[Int], limit: Option[Int], symbols: Option[String])
-POST    /scommons-admin/ui/users                    scommons.admin.server.user.UserController.create
-PUT     /scommons-admin/ui/users                    scommons.admin.server.user.UserController.update
+POST    /scommons-admin/ui/users                    scommons.admin.server.user.UserController.create()
+PUT     /scommons-admin/ui/users                    scommons.admin.server.user.UserController.update()
 
 GET     /scommons-admin/ui/users/:id/systems        scommons.admin.server.user.system.UserSystemController.list(id: Int)
 POST    /scommons-admin/ui/users/:id/systems        scommons.admin.server.user.system.UserSystemController.add(id: Int)

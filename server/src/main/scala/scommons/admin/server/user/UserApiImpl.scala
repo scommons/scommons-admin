@@ -18,7 +18,7 @@ class UserApiImpl(userService: UserService,
   def getUserById(id: Int): Future[UserDetailsResp] = {
     userService.getUserDetailsById(id).map {
       case None => UserDetailsResp(UserNotFound)
-      case Some((details)) => UserDetailsResp(convertToUserDetailsData(details))
+      case Some(details) => UserDetailsResp(convertToUserDetailsData(details))
     }
   }
 
@@ -105,15 +105,20 @@ class UserApiImpl(userService: UserService,
     getById(data).flatMap { current =>
       if (current.isEmpty && update) Future.successful(UserDetailsResp(UserNotFound))
       else {
-        Future.sequence(List(
-          getByLogin(current, entity),
-          getByEmail(current, entity),
-          checkCompanyExists(current, entity)
-        )).flatMap {
-          case List(Some(_), _, _) => Future.successful(UserDetailsResp(UserLoginAlreadyExists))
-          case List(_, Some(_), _) => Future.successful(UserDetailsResp(UserEmailAlreadyExists))
-          case List(_, _, false) => Future.successful(UserDetailsResp(CompanyNotFound))
-          case List(None, None, true) => current match {
+        val getByLoginF = getByLogin(current, entity)
+        val getByEmailF = getByEmail(current, entity)
+        val checkCompanyExistsF = checkCompanyExists(current, entity)
+        (for {
+          maybeUser <- getByLoginF
+          maybeProfile <- getByEmailF
+          companyExists <- checkCompanyExistsF
+        } yield {
+          (maybeUser, maybeProfile, companyExists)
+        }).flatMap {
+          case (Some(_), _, _) => Future.successful(UserDetailsResp(UserLoginAlreadyExists))
+          case (_, Some(_), _) => Future.successful(UserDetailsResp(UserEmailAlreadyExists))
+          case (_, _, false) => Future.successful(UserDetailsResp(CompanyNotFound))
+          case (None, None, true) => current match {
             case None => onSuccess(current, entity)
             case Some(curr) => onSuccess(current, entity.copy(
               user = entity.user.copy(

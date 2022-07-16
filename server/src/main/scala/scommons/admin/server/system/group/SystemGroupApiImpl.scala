@@ -65,11 +65,9 @@ class SystemGroupApiImpl(service: SystemGroupService)(implicit ec: ExecutionCont
     getById(data).flatMap { current =>
       if (current.isEmpty && update) Future.successful(SystemGroupResp(SystemGroupNotFound))
       else {
-        Future.sequence(List(
-          getByName(current, entity)
-        )).flatMap {
-          case List(Some(_)) => Future.successful(SystemGroupResp(SystemGroupAlreadyExists))
-          case List(None) => onSuccess(entity)
+        getByName(current, entity).flatMap {
+          case Some(_) => Future.successful(SystemGroupResp(SystemGroupAlreadyExists))
+          case None => onSuccess(entity)
         }
       }
     }

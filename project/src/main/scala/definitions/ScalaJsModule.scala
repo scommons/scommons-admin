@@ -2,7 +2,6 @@ package definitions
 
 import org.scalajs.jsenv.nodejs.NodeJSEnv
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import sbt.Keys._
 import sbt._
 
 object ScalaJsModule {
@@ -14,8 +13,6 @@ object ScalaJsModule {
     Test / jsEnv := new NodeJSEnv(NodeJSEnv.Config().withArgs(List("--enable-source-maps"))),
     Test / scalaJSLinkerConfig ~= {
       _.withSourceMap(true)
-    },
-
-    scalaVersion := "2.13.5"
+    }
   )
 }
