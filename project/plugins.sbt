@@ -1,8 +1,8 @@
 //resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-addSbtPlugin(("org.scommons.sbt" % "sbt-scommons-plugin" % "0.9.0-SNAPSHOT").changing())
-//addSbtPlugin("org.scommons.sbt" % "sbt-scommons-plugin" % "0.8.0")
+//addSbtPlugin(("org.scommons.sbt" % "sbt-scommons-plugin" % "0.9.0-SNAPSHOT").changing())
+addSbtPlugin("org.scommons.sbt" % "sbt-scommons-plugin" % "0.9.0")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.20.0")
 
