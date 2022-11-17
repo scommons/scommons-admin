@@ -1,6 +1,7 @@
 package definitions
 
 import common.Libs
+import org.scoverage.coveralls.Imports.CoverallsKeys._
 import sbt.Keys._
 import sbt._
 import scommons.sbtplugin.project.CommonModule
@@ -24,6 +25,8 @@ trait AdminModule extends CommonModule {
 object AdminModule {
 
   val settings: Seq[Setting[_]] = Seq(
-    organization := "org.scommons.admin"
+    organization := "org.scommons.admin",
+
+    coverallsService := GitHubActionsCI.jobId.map(_ => GitHubActionsCI)
   )
 }
