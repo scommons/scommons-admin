@@ -69,9 +69,17 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
       - name: Publish SNAPSHOT
-        run:
-          echo "TODO - Publish latest version"
+        run: |
+          VERSION="SNAPSHOT"
+          echo "Publish version=$VERSION"
+          version=$VERSION sbt clean ";set Global / scalaJSStage := FullOptStage ;project scommons-admin-server" docker:publishLocal
+          docker tag scommons-admin-server:$VERSION scommons/admin:$VERSION
+          docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
+          docker push scommons/admin:$VERSION
         if: ${{ !github.event.pull_request && env.TAG_NAME == '' }}
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Publish RELEASE
         run: |
