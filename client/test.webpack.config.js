@@ -1,6 +1,6 @@
 
 const nodeExternals = require('webpack-node-externals')
-const merge = require("webpack-merge")
+const { merge } = require("webpack-merge")
 const commonConfig = require("./scommons.webpack.config.js")
 
 module.exports = merge(commonConfig, {

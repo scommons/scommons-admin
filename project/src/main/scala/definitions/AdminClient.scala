@@ -1,6 +1,7 @@
 package definitions
 
 import com.typesafe.sbt.web.SbtWeb
+import common.Libs
 import sbt._
 import scommons.sbtplugin.project.CommonClientModule
 import scoverage.ScoverageKeys._
@@ -29,7 +30,12 @@ object AdminClient extends AdminModule with CommonClientModule {
   override def runtimeDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {
     super.runtimeDependencies.value ++ Seq(
       // specify your custom runtime dependencies here
-    )
+    ) ++ {
+      if (coverageEnabled.value) Seq(
+        Libs.scalaJsJavaSecureRandom.value
+      )
+      else Nil
+    }
   }
 
   override def testDependencies: Def.Initialize[Seq[ModuleID]] = Def.setting {

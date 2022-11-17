@@ -1,7 +1,7 @@
 
 [![CI](https://github.com/scommons/scommons-admin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/scommons/scommons-admin/actions/workflows/ci.yml?query=workflow%3Aci+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/scommons/scommons-admin/badge.svg?branch=master)](https://coveralls.io/github/scommons/scommons-admin?branch=master)
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.5.0.svg)](https://www.scala-js.org)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.8.0.svg)](https://www.scala-js.org)
 [![Docker image](https://img.shields.io/docker/v/scommons/admin?label=docker%20image&sort=date)](https://hub.docker.com/r/scommons/admin)
 
 # scommons-admin
@@ -31,7 +31,7 @@ docker run -d --name scommons-admin -p 9000:9000 \
 
 To build and run ALL tests use the following command:
 ```bash
-sbt -mem 2048 clean "project scommons-admin-server" test it:test && sbt -mem 2048 ";project scommons-admin-server ;set Test / test := {} ;project scommons-admin" test
+sbt clean "project scommons-admin-server" test it:test && sbt ";project scommons-admin-server ;set Test / test := {} ;project scommons-admin" test
 ```
 
 #### How to Run Server locally in DEV mode
@@ -40,7 +40,7 @@ Before you can run server, please, make sure you have PostgreSQL DB up and runni
 
 To start the application server locally in development mode with refresh workflow:
 ```bash
-sbt -mem 2048 clean ';project scommons-admin-server ;set Assets / WebKeys.exportedMappings := Seq()' run
+sbt clean ';project scommons-admin-server ;set Assets / WebKeys.exportedMappings := Seq()' run
 ```
 
 ## Admin Client UI
