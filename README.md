@@ -1,8 +1,8 @@
 
 [![CI](https://github.com/scommons/scommons-admin/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/scommons/scommons-admin/actions/workflows/ci.yml?query=workflow%3Aci+branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/github/scommons/scommons-admin/badge.svg?branch=master)](https://coveralls.io/github/scommons/scommons-admin?branch=master)
+[![Docker image](https://img.shields.io/docker/v/scommons/admin?label=docker%20image&sort=semver)](https://hub.docker.com/r/scommons/admin)
 [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.8.0.svg)](https://www.scala-js.org)
-[![Docker image](https://img.shields.io/docker/v/scommons/admin?label=docker%20image&sort=date)](https://hub.docker.com/r/scommons/admin)
 
 # scommons-admin
 Easy applications, users and permissions management
