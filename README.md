@@ -60,7 +60,7 @@ http://localhost:9000/scommons-admin/swagger.html
 ### Documentation
 
 You can find more documentation
-[here](https://scommons.org/scommons-admin/)
+[here](https://scommons.github.io/scommons-admin/)
 
 ### Screenshots
 
